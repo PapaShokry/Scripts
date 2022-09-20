@@ -30,10 +30,12 @@ public class NulgathDemandsWork
     public void ScriptMain(IScriptInterface bot)
     {
         Core.BankingBlackList.AddRange(Nation.bagDrops);
+        Core.BankingBlackList.AddRange(NDWItems);
         Core.BankingBlackList.Add("Archfiend Essence Fragment");
         Core.SetOptions();
 
         Uni35(1);
+        NDWQuest(NDWItems);
 
         Core.SetOptions(false);
     }
@@ -52,7 +54,7 @@ public class NulgathDemandsWork
         Core.AddDrop(Nation.bagDrops);
         Core.AddDrop(NDWItems);
         Core.AddDrop("unidentified 27");
-        
+
         foreach (string item in items)
         {
             if (Core.CheckInventory(items, quant))

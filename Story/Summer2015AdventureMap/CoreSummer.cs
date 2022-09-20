@@ -27,12 +27,12 @@ public class CoreSummer
         CyserosSecret();
     }
 
-    public void DreadSpace()
+    public void DreadSpace(bool ReplicatorMerge = false)
     {
         if (Core.isCompletedBefore(4286))
             return;
 
-        Story.PreLoad();
+        Story.PreLoad(this);
 
         //1st Contact (4264)
         Story.KillQuest(4264, "dreadspace", "Undead Space Marine|Undead Space Warrior");
@@ -69,6 +69,8 @@ public class CoreSummer
 
         //Recover J6's Head! (4272)
         Story.KillQuest(4272, "dreadspace", "Holo Gunslinger|Holo Outlaw");
+        if (ReplicatorMerge)
+            return;
 
         //Titanic II (4274)
         Story.KillQuest(4274, "dreadspace", "Jack|Rosie");
@@ -115,7 +117,7 @@ public class CoreSummer
         if (Core.isCompletedBefore(4307))
             return;
 
-        Story.PreLoad();
+        Story.PreLoad(this);
 
         // 4296 A Walking Nightmare
         Story.MapItemQuest(4296, "deadmoor", 3457);
@@ -240,7 +242,7 @@ public class CoreSummer
         if (Core.isCompletedBefore(1348))
             return;
 
-        Story.PreLoad();
+        Story.PreLoad(this);
 
         // This Town in a Desktop Globe
         Story.MapItemQuest(1293, "Terrarium", 586);
@@ -319,7 +321,7 @@ public class CoreSummer
         if (Core.isCompletedBefore(4384))
             return;
 
-        Story.PreLoad();
+        Story.PreLoad(this);
 
         // Titan Hollow
         Story.ChainQuest(4348);
@@ -568,7 +570,7 @@ public class CoreSummer
         if (Core.isCompletedBefore(4375))
             return;
 
-        Story.PreLoad();
+        Story.PreLoad(this);
 
         //Find The Leak (4365)
         Story.KillQuest(4365, "goose", "Queen's Sage");

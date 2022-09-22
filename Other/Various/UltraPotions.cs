@@ -46,7 +46,6 @@ public class PotionBuyer
         #region Starting Requirements
         Farm.AlchemyREP();
         Farm.GoodREP();
-        Farm.AlchemyREP();
         #endregion
 
         #region Potion Gathering
@@ -86,9 +85,9 @@ public class PotionBuyer
                         Farm.DragonRunestone(PurchaseQuant);
                         
                         if (potion == "Potent Malevolence Elixir")
-                            Farm.AlchemyPacket(reagent1, reagent2, trait: "SPw", P2w: true);
+                            Farm.AlchemyPacket(reagent1, reagent2, trait: CoreFarms.AlchemyTraits.SPw, P2w: true);
                         else
-                            Farm.AlchemyPacket(reagent1, reagent2, trait: "APw", P2w: true);
+                            Farm.AlchemyPacket(reagent1, reagent2, trait: CoreFarms.AlchemyTraits.APw, P2w: true);
                     }
                     Core.TrashCan(reagent1, "Dragon Runestone");
                     break;
@@ -112,7 +111,7 @@ public class PotionBuyer
                         Core.BuyItem("alchemyacademy", 2114, reagent1, PurchaseQuant);
                         Core.HuntMonster("mudluk", "Swamp Frogdrake", reagent2, potionQuant, isTemp: false);
                         Farm.DragonRunestone(PurchaseQuant);
-                        Farm.AlchemyPacket(reagent1, reagent2, trait: "Dam", P2w: true);
+                        Farm.AlchemyPacket(reagent1, reagent2, trait: CoreFarms.AlchemyTraits.Dam, P2w: true);
                     }
 
                     Core.TrashCan(reagent2, "Dragon Runestone");
@@ -136,7 +135,7 @@ public class PotionBuyer
                         Core.HuntMonster("orecavern", "Deathmole", reagent2, potionQuant, isTemp: false);
 
                         Farm.DragonRunestone(PurchaseQuant);
-                        Farm.AlchemyPacket(reagent1, reagent2, trait: "Luc", P2w: true);
+                        Farm.AlchemyPacket(reagent1, reagent2, trait: CoreFarms.AlchemyTraits.Luc, P2w: true);
                     }
                     Core.TrashCan("Dragon Runestone");
                     break;
@@ -161,7 +160,7 @@ public class PotionBuyer
                         Core.HuntMonster("Bloodtusk", "Trollola Plant", reagent2, potionQuant, isTemp: false);
 
                         Farm.DragonRunestone(PurchaseQuant);
-                        Farm.AlchemyPacket(reagent1, reagent2, trait: "Int", P2w: true);
+                        Farm.AlchemyPacket(reagent1, reagent2, trait: CoreFarms.AlchemyTraits.Int, P2w: true);
                     }
                     break;
             }

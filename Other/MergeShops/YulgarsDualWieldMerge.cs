@@ -7,7 +7,7 @@
 //cs_include Scripts/Legion/CoreLegion.cs
 //cs_include Scripts/Other/WeaponReflection.cs
 //cs_include Scripts/Nation/Various/JuggernautItems.cs
-//cs_include Scripts/Nation/Various/DragonBlade.cs
+//cs_include Scripts/Nation/Various/DragonBlade[mem}.cs
 //cs_include Scripts/Other/Weapons/ShadowReaperOfDoom.cs
 using Skua.Core.Interfaces;
 using Skua.Core.Models.Items;
@@ -51,7 +51,10 @@ public class YulgarsDualWieldMerge
             Core.BuyItem(Bot.Map.Name, 1317, "Golden 8th Birthday Candle");
         Bot.Sleep(1500);
         if (!Core.CheckInventory("Golden 8th Birthday Candle"))
-            Core.Logger("Golden Candle not found - stopping bot.", messageBox: true, stopBot: true);
+        {
+            Core.Logger("Golden Candle not found - stopping bot.", messageBox: true);
+            return;
+        }
         //Only edit the map and shopID here
         Adv.StartBuyAllMerge("nostalgiaquest", 1311, findIngredients);
 

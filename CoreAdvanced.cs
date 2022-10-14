@@ -99,6 +99,7 @@ public class CoreAdvanced
         matsOnly = mode == 2;
         List<ShopItem> shopItems = Core.GetShopItems(map, shopID);
         List<ShopItem> items = new();
+        bool memSkipped = false;
 
         foreach (ShopItem item in shopItems)
         {
@@ -120,6 +121,32 @@ public class CoreAdvanced
                 else if (item.Coins)
                     items.Add(item);
             }
+            else if (mode == 3 && Bot.Config.Get<bool>("Select", $"{item.ID}"))
+            {
+                Core.Logger($"\"{item.Name}\" will be skipped, as you aren't member.");
+                memSkipped = true;
+            }
+        }
+
+        if (items.Count == 0)
+        {
+            switch (mode)
+            {
+                case 0: // all
+                case 2: // mergeMats
+                    Core.Logger("The bot fetched 0 items to farm. Something must have gone wrong.");
+                    return;
+                case 1: // acOnly
+                    if (shopItems.All(x => !x.Coins))
+                        Core.Logger("The bot fetched 0 items to farm. This is because none of the items in this shop are AC tagged.");
+                    else Core.Logger("The bot fetched 0 items to farm. Something must have gone wrong.");
+                    return;
+                case 3: // select
+                    if (memSkipped)
+                        Core.Logger("The bot fetched 0 items to farm. This is because you aren't member.");
+                    else Core.Logger("The bot fetched 0 items to farm. Something must have gone wrong.");
+                    return;
+            }
         }
 
         int t = 1;
@@ -129,14 +156,17 @@ public class CoreAdvanced
             {
                 if (!matsOnly)
                     Core.Logger($"Farming to buy {item.Name} (#{t}/{items.Count})");
+
                 getIngredients(item, 1);
+
                 if (!matsOnly && !Core.CheckInventory(item.ID, toInv: false))
                 {
                     Core.Logger($"Buying {item.Name} (#{t++}/{items.Count})");
                     BuyItem(map, shopID, item.ID);
+
                     if (item.Coins)
                         Core.ToBank(item.Name);
-                    else Core.Logger($"{item} Culd not be banked");
+                    else Core.Logger($"{item} could not be banked");
                 }
             }
             if (!matsOnly)
@@ -163,24 +193,44 @@ public class CoreAdvanced
                         else externalQuant = Bot.Inventory.GetQuantity(req.Name) + req.Quantity;
                     }
                 }
+                else if (MaxStackOneItems.Contains(req.Name))
+                    externalQuant = 1;
                 else
                     externalQuant = req.Quantity * (craftingQ - Bot.Inventory.GetQuantity(item.ID));
 
                 if (Core.CheckInventory(req.Name, externalQuant) && (matsOnly ? req.MaxStack == 1 : true))
                     continue;
 
-                if (shopItems.Select(x => x.ID).Contains(req.ID))
+                if (shopItems.Select(x => x.ID).Contains(req.ID) && !AltFarmItems.Contains(req.Name))
                 {
                     ShopItem selectedItem = shopItems.First(x => x.ID == req.ID);
 
-                    getIngredients(selectedItem, req.Quantity);
-                    if (!matsOnly)
-                        BuyItem(map, shopID, selectedItem.ID, req.Quantity);
+                    if (selectedItem.Requirements.Any(r => MaxStackOneItems.Contains(r.Name)))
+                    {
+                        while (!Core.CheckInventory(selectedItem.ID, req.Quantity))
+                        {
+                            getIngredients(selectedItem, req.Quantity);
+                            Bot.Sleep(Core.ActionDelay);
+
+                            if (!matsOnly)
+                                BuyItem(map, shopID, selectedItem.ID, (Bot.Inventory.GetQuantity(selectedItem.ID) + selectedItem.Quantity), selectedItem.Quantity);
+                            else break;
+                        }
+                    }
+                    else
+                    {
+                        getIngredients(selectedItem, req.Quantity);
+                        Bot.Sleep(Core.ActionDelay);
+
+                        if (!matsOnly)
+                            BuyItem(map, shopID, selectedItem.ID, req.Quantity);
+                    }
                 }
                 else
                 {
                     Core.AddDrop(req.Name);
                     externalItem = req;
+
                     findIngredients();
                 }
             }
@@ -190,6 +240,8 @@ public class CoreAdvanced
     public ItemBase externalItem = new();
     public int externalQuant = 0;
     public bool matsOnly = false;
+    public List<string> MaxStackOneItems = new();
+    public List<string> AltFarmItems = new();
 
     /// <summary>
     /// Checks if everything needed to buy the item is present, if not, it will log and return false
@@ -231,7 +283,7 @@ public class CoreAdvanced
         }
 
         //Member Check
-        if (item.Upgrade)
+        if (item.Upgrade && !Core.IsMember)
         {
             Core.Logger($"Cannot buy {item.Name} from {shopID} because you aren't a member.");
             return false;
@@ -266,11 +318,14 @@ public class CoreAdvanced
         {
             foreach (ItemBase req in item.Requirements)
             {
+                Bot.Drops.Pickup(req.ID);
+                Bot.Wait.ForPickup(req.ID);
+
                 if (!Core.CheckInventory(req.ID, req.Quantity))
                 {
                     if (Core.CheckInventory(req.ID))
                     {
-                        Core.Logger($"Cannot buy {item.Name} from {shopID}. You own {Bot.Inventory.GetQuantity(item.ID)}x {req.Name} but need {req.Quantity} .");
+                        Core.Logger($"Cannot buy {item.Name} from {shopID}. You own {Bot.Inventory.GetQuantity(req.ID)}x {req.Name} but need {req.Quantity} .");
                         return false;
                     }
                     Core.Logger($"Cannot buy {item.Name} from {shopID} because {req.Name} is missing.");
@@ -498,8 +553,6 @@ public class CoreAdvanced
             GearStore(true);
     }
 
-
-
     #endregion
 
     #region Gear
@@ -512,29 +565,33 @@ public class CoreAdvanced
     {
         Bot.Wait.ForPickup(ClassName);
 
+        if (!Core.CheckInventory(ClassName))
+            return;
         InventoryItem? itemInv = Bot.Inventory.Items.Find(i => i.Name.ToLower().Trim() == ClassName.ToLower().Trim() && i.Category == ItemCategory.Class);
-        if (itemInv == null)
-            Core.Logger($"Cant level up \"{ClassName}\" because you do not own it.", messageBox: true, stopBot: true);
-        if (GearRestore)
-            GearStore();
-
-        if (itemInv == null)
+        if (itemInv == null && !Bot.Inventory.TryGetItem("ClassName", out itemInv))
         {
-            Core.Logger($"\"{ClassName}\" is not a valid Class", messageBox: true, stopBot: true);
+            Core.Logger($"Cant level up \"{ClassName}\" because you do not own it.", messageBox: true);
             return;
         }
+        if (itemInv == null)
+            return;
         if (itemInv.Quantity == 302500)
         {
             Core.Logger($"\"{itemInv.Name}\" is already Rank 10");
             return;
         }
 
+        if (GearRestore)
+            GearStore();
+
         SmartEnhance(ClassName);
         string[]? CPBoost = BestGear(GearBoost.cp);
         EnhanceItem(CPBoost, CurrentClassEnh(), CurrentCapeSpecial(), CurrentHelmSpecial(), CurrentWeaponSpecial());
         Core.Equip(CPBoost);
+
         Farm.IcestormArena(Bot.Player.Level, true);
         Core.Logger($"\"{itemInv.Name}\" is now Rank 10");
+
         if (GearRestore)
             GearStore(true);
     }
@@ -820,11 +877,16 @@ public class CoreAdvanced
     /// <param name="Monster">The Monster object of the monster</param>
     public void _RaceGear(string Monster)
     {
+        if (!Bot.Monsters.MapMonsters.Any(x => x.Name.ToLower() == Monster.ToLower()))
+        {
+            Core.Logger("Could not find any monster with the name " + Monster);
+            return;
+        }
         GearStore();
         string Map = Bot.Map.LastMap;
         string MonsterRace = "";
         if (Monster != "*")
-            MonsterRace = Bot.Monsters.MapMonsters.First(x => x.Name.ToLower() == Monster.ToLower()).Race ?? "";
+            MonsterRace = Bot.Monsters.MapMonsters.First(x => x.Name.ToLower() == Monster.ToLower())?.Race ?? "";
         else MonsterRace = Bot.Monsters.CurrentMonsters.First().Race ?? "";
 
         if (MonsterRace == null || MonsterRace == "")
@@ -1370,26 +1432,44 @@ public class CoreAdvanced
             }
 
             // Empty check
+            ShopItem? bestEnhancement = null;
             if (availableEnh.Count == 0)
             {
                 Core.Logger($"Enhancement Failed: availableEnh is empty");
                 return;
             }
+            else if (availableEnh.Count == 1)
+                bestEnhancement = availableEnh.First();
+            else
+            {
+                // Sorting by level (ascending)
+                List<ShopItem> sortedList = availableEnh.OrderBy(x => x.Level).ToList();
 
-            // Sorting by level (ascending)
-            List<ShopItem> sortedList = availableEnh.OrderBy(x => x.Level).ToList();
+                // Grabbing the two best enhancements
+                List<ShopItem> bestTwoEnhancements = new();
+                if (sortedList.Count >= 4)
+                    bestTwoEnhancements = sortedList.Skip(sortedList.Count - 2).OrderBy(x => x.Level).ToList();
+                else if (sortedList.Count == 3)
+                    bestTwoEnhancements = sortedList.Skip(sortedList.Count - 1).OrderBy(x => x.Level).ToList();
+                else if (sortedList.Count == 2)
+                    bestTwoEnhancements = sortedList.Skip(sortedList.Count - 0).OrderBy(x => x.Level).ToList();
+                else
+                {
+                    Core.Logger($"Enhancement Failed: sortedList {(sortedList.Count > 0 ? $"has a count of {sortedList.Count}" : "is empty")}");
+                    return;
+                }
 
-            // Grabbing the two best enhancements
-            List<ShopItem> bestTwoEnhancements = new();
-            bestTwoEnhancements.Add(sortedList.First());
-            if (sortedList.Count >= 2)
-                bestTwoEnhancements.Add(sortedList.First(x => !bestTwoEnhancements.Contains(x)));
-            bestTwoEnhancements = bestTwoEnhancements.OrderBy(x => x.Level).ToList();
+                if (bestTwoEnhancements.Count != 2)
+                {
+                    Core.Logger($"Enhancement Failed: bestTwoEnhancements {(bestTwoEnhancements.Count > 0 ? $"has a count of {sortedList.Count}" : "is empty")}");
+                    return;
+                }
 
-            // Getting the best enhancement out of the two
-            ShopItem? bestEnhancement =
-                bestTwoEnhancements.First().Level == bestTwoEnhancements.Last().Level ?
-                    bestTwoEnhancements.First(x => Core.IsMember ? x.Upgrade : !x.Upgrade) : bestTwoEnhancements.Last();
+                // Getting the best enhancement out of the two
+                bestEnhancement =
+                   bestTwoEnhancements.First().Level == bestTwoEnhancements.Last().Level ?
+                       bestTwoEnhancements.First(x => Core.IsMember ? x.Upgrade : !x.Upgrade) : bestTwoEnhancements.Last();
+            }
 
             // Null check
             if (bestEnhancement == null)

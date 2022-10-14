@@ -16,7 +16,7 @@
 //cs_include Scripts/Seasonal/MayThe4th/MurderMoonStory.cs
 //cs_include Scripts/Seasonal/MayThe4th/MurderMoonMerge[CyberCrystal].cs
 //cs_include Scripts/Story/MemetsRealm/CoreMemet.cs
-//cs_include Scripts/Other\BloodMoonToken.cs
+//cs_include Scripts/Seasonal/Mogloween/VampireLord.cs
 //cs_include Scripts/Seasonal/StaffBirthdays/DageTheEvil/DageRecruit.cs
 //cs_include Scripts/Seasonal/StaffBirthdays/DageTheEvil/Undervoid.cs
 //cs_include Scripts/Seasonal/StarFestival/StarFestival.cs
@@ -37,6 +37,7 @@
 //cs_include Scripts/Seasonal/TalkLikeaPirateDay/DragonCapitalStory.cs
 //cs_include Scripts/Seasonal/TalkLikeaPirateDay/AluteaNursery.cs
 //cs_include Scripts/Seasonal/TalkLikeaPirateDay/BlazeBeardStory.cs
+//cs_include Scripts/Seasonal/TalkLikeaPirateDay/LowTideStory.cs
 using Skua.Core.Interfaces;
 
 public class AllSeasonal
@@ -56,7 +57,8 @@ public class AllSeasonal
     public MmmmMeatyQuest Meaty = new();
     public DarkLord DarkLord = new();
     public MurderMoon MurderMoon = new();
-    public BloodMoonToken BMToken = new();
+
+    public VampireLord VPL = new();
     public DageRecruitStory DageRecruit = new();
     public UndervoidStory Undervoid = new();
     public StarFestival StarFestival = new();
@@ -90,133 +92,128 @@ public class AllSeasonal
 
     public void Seasonals()
     {
-        DateTime dt = System.DateTime.Now;
-
-        foreach (int Month in dt.Month.ToString())
+        switch (DateTime.Now.Month)
         {
-            switch (dt.Month)
-            {
-                default:
-                    DageRecruit.CompleteDageRecruit();
-                    if (Bot.Quests.IsAvailable(7713))
-                        CelestialPirateCommander.GetCPC(true);
-                    break;
-
-                case 1:
-                    Core.Logger("Starting Scripts for January");
-                    //insert script voids here
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    break;
-
-                case 2:
-                    Core.Logger("Starting Scripts for Febuary");
-                    //insert script voids here
-                    Fezzini.FezziniScript();
-                    LoveSpell.LoveSpellScript();
-                    WheeleOfLove.DoWheeleOfLove();
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    break;
-
-                case 3:
-                    Core.Logger("Starting Scripts for March");
-                    //insert script voids here
-                    Pooka.CompletePooka();
-                    DarkLord.GetDL();
-                    MurderMoon.MurderMoonStory();
-                    Undervoid.CompleteUnderVoid();
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-
-                    break;
-
-                case 4:
-                    Core.Logger("Starting Scripts for April");
-                    //insert script voids here
-                    Derp.GetBadge();
-                    MeateorHunt.StoryLine();
-                    SSB.GetBadgeANDDoStory();
-                    Meaty.CompleteQuests();
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    break;
-
-                case 5:
-                    Core.Logger("Starting Scripts for May");
-                    //insert script voids here
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    break;
-
-                case 6:
-                    Core.Logger("Starting Scripts for June");
-                    // BeachPartyTokenItems.TokenItems();
-                    BlazingBeach.StoryLine();
-                    // BlazingBeachMerge.BuyAllMerge();
-                    BurningBeach.Storyline();
-                    // CoralBeachMerge.BuyAllMerge();
-                    LunaCove.LunaCove();
-                    // LunaCoveMerge.BuyAllMerge();
-                    // SweetSummerTreats.GetTreats();
-                    // UnLifeguardQuest.GetItems();
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    break;
-
-                case 7:
-                    Core.Logger("Starting Scripts for July");
-                    Frostvale.DoAll();
-                    // BeachPartyTokenItems.TokenItems();
-                    BlazingBeach.StoryLine();
-                    // BlazingBeachMerge.BuyAllMerge();
-                    BurningBeach.Storyline();
-                    // CoralBeachMerge.BuyAllMerge();
-                    LunaCove.LunaCove();
-                    // LunaCoveMerge.BuyAllMerge();
-                    // SweetSummerTreats.GetTreats();
-                    // UnLifeguardQuest.GetItems();
-                    StarFestival.StoryLine();
-                    MountOtzi.MountOtziQuests();
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    break;
-
-                case 8:
-                    Core.Logger("Starting Scripts for August");
-                    //insert script voids here
-                    Frostvale.DoAll();
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    break;
-
-                case 9:
-                    Core.Logger("Starting Scripts for September");
-                    //insert script voids here
+            default:
+                DageRecruit.CompleteDageRecruit();
+                if (Bot.Quests.IsAvailable(7713))
                     CelestialPirateCommander.GetCPC(true);
-                    KaijuWar.KaijuItems();
-                    HeartOfTheSeaStory.HeartOfTheSea();
-                    CetoleonWarStory.CetoleonWar();
-                    DragonPirateStory.DragonPirate();
-                    DragonCapitalStory.DragonCapital();
-                    LowTideStory.Storyline();
-                    AluteaNursery.DoAll();
-                    BlazeBeard.TokenQuests();
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    break;
+                break;
 
-                case 10:
-                    Core.Logger("Starting Scripts for October");
-                    //insert script voids here
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    break;
+            case 1:
+                Core.Logger("Starting Scripts for January");
+                //insert script voids here
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
 
-                case 11:
-                    Core.Logger("Starting Scripts for November");
-                    //insert script voids here
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    BMToken.BMToken();
-                    break;
+            case 2:
+                Core.Logger("Starting Scripts for Febuary");
+                //insert script voids here
+                Fezzini.FezziniScript();
+                LoveSpell.LoveSpellScript();
+                WheeleOfLove.DoWheeleOfLove();
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
 
-                case 12:
-                    Core.Logger("Starting Scripts for December");
-                    //insert script voids here
-                    // Frostvale.DoAll();
-                    Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
-                    break;
-            }
+            case 3:
+                Core.Logger("Starting Scripts for March");
+                //insert script voids here
+                Pooka.CompletePooka();
+                DarkLord.GetDL();
+                MurderMoon.MurderMoonStory();
+                Undervoid.CompleteUnderVoid();
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+
+                break;
+
+            case 4:
+                Core.Logger("Starting Scripts for April");
+                //insert script voids here
+                Derp.GetBadge();
+                MeateorHunt.StoryLine();
+                SSB.GetBadgeANDDoStory();
+                Meaty.CompleteQuests();
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
+
+            case 5:
+                Core.Logger("Starting Scripts for May");
+                //insert script voids here
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
+
+            case 6:
+                Core.Logger("Starting Scripts for June");
+                // BeachPartyTokenItems.TokenItems();
+                BlazingBeach.StoryLine();
+                // BlazingBeachMerge.BuyAllMerge();
+                BurningBeach.Storyline();
+                // CoralBeachMerge.BuyAllMerge();
+                LunaCove.LunaCove();
+                // LunaCoveMerge.BuyAllMerge();
+                // SweetSummerTreats.GetTreats();
+                // UnLifeguardQuest.GetItems();
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
+
+            case 7:
+                Core.Logger("Starting Scripts for July");
+                Frostvale.DoAll();
+                // BeachPartyTokenItems.TokenItems();
+                BlazingBeach.StoryLine();
+                // BlazingBeachMerge.BuyAllMerge();
+                BurningBeach.Storyline();
+                // CoralBeachMerge.BuyAllMerge();
+                LunaCove.LunaCove();
+                // LunaCoveMerge.BuyAllMerge();
+                // SweetSummerTreats.GetTreats();
+                // UnLifeguardQuest.GetItems();
+                StarFestival.StoryLine();
+                MountOtzi.MountOtziQuests();
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
+
+            case 8:
+                Core.Logger("Starting Scripts for August");
+                //insert script voids here
+                Frostvale.DoAll();
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
+
+            case 9:
+                Core.Logger("Starting Scripts for September");
+                //insert script voids here
+                CelestialPirateCommander.GetCPC(true);
+                KaijuWar.KaijuItems();
+                HeartOfTheSeaStory.HeartOfTheSea();
+                CetoleonWarStory.CetoleonWar();
+                DragonPirateStory.DragonPirate();
+                DragonCapitalStory.DragonCapital();
+                LowTideStory.Storyline();
+                AluteaNursery.DoAll();
+                BlazeBeard.TokenQuests();
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
+
+            case 10:
+                Core.Logger("Starting Scripts for October");
+                //insert script voids here
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
+
+            case 11:
+                Core.Logger("Starting Scripts for November");
+                //insert script voids here
+                VPL.GetClass(false);
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
+
+            case 12:
+                Core.Logger("Starting Scripts for December");
+                //insert script voids here
+                // Frostvale.DoAll();
+                Core.Logger($"Scripts Finished for {DateTime.Now.ToString("MMMM")}");
+                break;
         }
     }
 }

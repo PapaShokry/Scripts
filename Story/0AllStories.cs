@@ -66,23 +66,31 @@
 
 //cs_include Scripts/Story/ThroneofDarkness/CoreToD.cs
 
-
+//cs_include Scripts/Story/ArcAttack.cs
+//cs_include Scripts/Story/AriaPet[MEM].cs
 //cs_include Scripts/Story/Artixpointe.cs
 //cs_include Scripts/Story/ArtixWedding.cs
+//cs_include Scripts/Story/Asylum.cs
 
 //cs_include Scripts/Story/Banished.cs
 //cs_include Scripts/Story/BattleUnder.cs
+//cs_include Scripts/Story/BeastMakerStory[MEM].cs
 //cs_include Scripts/Story/BloodMoon.cs
+//cs_include Scripts/Story/Bludrut.cs
 //cs_include Scripts/Story/Borgars.cs
 
 //cs_include Scripts/Story/CastleTunnels.cs
+//cs_include Scripts/Story/Cleric.cs
 //cs_include Scripts/Story/CruxShip.cs
 
+//cs_include Scripts/Story/DarkCarnax.cs
+//cs_include Scripts/Story/DeadFly[Member].cs
 //cs_include Scripts/Story/DjinnGate.cs
 //cs_include Scripts/Story/DjinnGuard.cs
 //cs_include Scripts/Story/DoomVault.cs
 //cs_include Scripts/Story/DoomVaultB.cs
 //cs_include Scripts/Story/DragonFableOrigins.cs
+//cs_include Scripts/Story/DragonRoad[Upholader].cs
 //cs_include Scripts/Story/DreadForest.cs
 //cs_include Scripts/Story/DreamPalace.cs
 
@@ -94,6 +102,7 @@
 //cs_include Scripts/Story/FrozenNorthlands.cs
 
 //cs_include Scripts/Story/GameHaven.cs
+//cs_include Scripts/Story/GiantTaleStory.cs
 //cs_include Scripts/Story/Glacera.cs
 
 //cs_include Scripts/Story/J6Saga.cs
@@ -103,6 +112,7 @@
 //cs_include Scripts/Story/Manor.cs
 //cs_include Scripts/Story/MustyCave.cs
 
+//cs_include Scripts/Story/Noobshire.cs
 //cs_include Scripts/Story/NytheraSaga.cs
 
 //cs_include Scripts/Story/Oddities.cs
@@ -111,6 +121,8 @@
 
 //cs_include Scripts/Story/RavenlossSaga.cs
 
+//cs_include Scripts/Story/Safiria[Member].cs
+//cs_include Scripts/Story/ShadowGates.cs
 //cs_include Scripts/Story/ShadowSlayerK.cs
 //cs_include Scripts/Story/ShadowVault.cs
 //cs_include Scripts/Story/ShadowVoid.cs
@@ -119,16 +131,18 @@
 //cs_include Scripts/Story/StarSinc.cs
 //cs_include Scripts/Story/SuperDeath.cs
 
-//cs_include Scripts/Story/Table.cs
 //cs_include Scripts/Story/ThirdSpell.cs
 //cs_include Scripts/Story/TitanAttack.cs
 //cs_include Scripts/Story/TowerOfDoom.cs
 //cs_include Scripts/Story/Trygve.cs
 //cs_include Scripts/Story/Tutorial.cs
 
+//cs_include Scripts/Story/Ubear.cs
 //cs_include Scripts/Story/UnderGroundLab.cs
 
 //cs_include Scripts/Story/VasalkarLairWar.cs
+
+//cs_include Scripts/Story/WatchTower.cs
 
 //cs_include Scripts/Story/XansLair.cs
 
@@ -221,22 +235,31 @@ public class AllStories
     #endregion
 
     #region Standalone (sorted alphabetically)
+    public ArcAttack ArcAttack = new();
+    public AriaPet AriaPet = new();
     public Artixpointe Artixpointe = new();
     public ArtixWedding ArtixWedding = new();
+    public Asylum Asylum = new();
 
     public Banished Banished = new();
     public BattleUnder BattleUnder = new();
+    public BeastMakerStory BeastMakerStory = new();
     public BloodMoon BloodMoon = new();
+    public Bludrut Bludrut = new();
     public Borgars Borgars = new();
 
     public CastleTunnels CastleTunnels = new();
+    public Cleric Cleric = new();
     public CruxShip CruxShip = new();
 
+    public DarkCarnaxStory DarkCarnax = new();
+    public DeadFly DeadFly = new();
     public DjinnGateStory DjinnGateStory = new();
     public DjinnGuard DjinnGuard = new();
     public DoomVaultA DoomVaultA = new();
     public DoomVaultB DoomVaultB = new();
     public DragonFableOrigins DragonFableOrigins = new();
+    public DragonRoad DragonRoad = new();
     public DreadForest DreadForest = new();
     public DreamPalace DreamPalace = new();
 
@@ -245,6 +268,7 @@ public class AllStories
     public ExaltiaTower ExaltiaTower = new();
 
     public Gamehaven Gamehaven = new();
+    public GiantTaleStory GiantTaleStory = new();
 
     public FireHouse FireHouse = new();
     public FrozenNorthlands FrozenNorthlands = new();
@@ -256,6 +280,7 @@ public class AllStories
     public Manor Manor = new();
     public MustyCave MustyCave = new();
 
+    public Noobshire Noobshire = new();
     public NytheraSaga NytheraSaga = new();
 
     public J6Saga J6Saga = new();
@@ -266,6 +291,8 @@ public class AllStories
 
     public RavenlossSaga RavenlossSaga = new();
 
+    public Safiria Safiria = new();
+    public ShadowGates ShadowGates = new();
     public ShadowSlayerK ShadowSlayerK = new();
     public ShadowVault ShadowVault = new();
     public ShadowVoid ShadowVoid = new();
@@ -274,16 +301,18 @@ public class AllStories
     public StarSinc StarSinc = new();
     public SuperDeath SuperDeath = new();
 
-    public Table Table = new();
     public ThirdSpell ThirdSpell = new();
     public TitanAttackStory TitanAttackStory = new();
     public TowerOfDoom TowerOfDoom = new();
     public Trygve Trygve = new();
     public Tutorial Tutorial = new();
 
+    public Ubear Ubear = new();
     public UnderGroundLab UnderGroundLab = new();
 
     public LairWar LairWar = new(); //VasalkarLairWar.cs
+
+    public WatchTower WatchTower = new();
 
     public XansLair Xans = new();
 
@@ -458,13 +487,23 @@ public class AllStories
         #endregion
 
         #region Standalone
+        ArcAttack.StoryLine();
+        Core.Logger($"Story: Arc Attack - Complete");
+
+        if (Core.IsMember)
+        {
+            AriaPet.StoryLine();
+            Core.Logger($"Story: Aria Pet - Complete");
+        }
 
         Artixpointe.OmniArtifact();
         Core.Logger($"Story: Artixpointe - Complete");
 
         ArtixWedding.ArtixWeddingComplete();
         Core.Logger($"Story: ArtixWedding - Complete");
-
+        
+        Asylum.StoryLine();
+        Core.Logger($"Story: Asylum - Complete");
 
         Banished.doall();
         Core.Logger($"Story: Banished - Complete");
@@ -472,9 +511,18 @@ public class AllStories
         BattleUnder.BattleUnderAll();
         Core.Logger($"Story: BattleUnder - Complete");
 
+        if (Core.IsMember)
+        {
+            BeastMakerStory.StoryLine();
+            Core.Logger($"Story: Beast Maker - Complete");
+        }
+
         BloodMoon.BloodMoonSaga();
         Core.Logger($"Story: Blood Moon - Complete");
 
+        Bludrut.StoryLine();
+        Core.Logger($"Story: Bludrut - Complete");
+        
         Borgars.BorgarQuests();
         Core.Logger($"Story: Borgars - Complete");
 
@@ -485,9 +533,21 @@ public class AllStories
         CelestialPast.CompleteCeletialPast();
         Core.Logger($"Story: CelestialPast - Complete");
 
+        Cleric.StoryLine();
+        Core.Logger($"Story: Cleric - Complete");
+
         CruxShip.StoryLine();
         Core.Logger($"Story: CruxShip - Complete");
 
+
+        DarkCarnax.Storyline();
+        Core.Logger($"Story: Nightmare Carnax - Complete");
+
+        if (Core.IsMember)
+        {
+            DeadFly.StoryLine();
+            Core.Logger($"Story: DeadFly - Complete");
+        }
 
         DjinnGateStory.DjinnGate();
         Core.Logger($"Story: Djinn Gate - Complete");
@@ -503,6 +563,12 @@ public class AllStories
         DragonFableOrigins.DragonFableOriginsAll();
         Core.Logger($"Saga: Dragon Fable Origins - Complete");
 
+        if (Core.HasAchievement(22, "ip9") || Core.HasAchievement(15, "ip11") || Core.HasAchievement(8, "ip14") || !Core.HasAchievement(10, "ip16") || !Core.HasAchievement(12, "ip17") || !Core.HasAchievement(18, "ip18") || !Core.HasAchievement(2, "ip20"))
+        {
+            DragonRoad.StoryLine();
+            Core.Logger($"Story: DragonRoad  - Complete");
+        }
+
         DreadForest.Storyline();
         Core.Logger($"Story: Dread Forest - Complete");
 
@@ -513,8 +579,8 @@ public class AllStories
         Eden.EdenStoryline();
         Core.Logger($"Story: Eden - Complete");
 
-        EtherStormWastes.StoryLine();
-        Core.Logger($"Story: Ether Storm Wastes - Complete");
+        EtherStormWastes.DoAll();
+        Core.Logger($"Saga: Ether Storm Wastes - Complete");
 
         ExaltiaTower.StoryLine();
         Core.Logger($"Story: Exaltia Tower - Complete");
@@ -529,6 +595,9 @@ public class AllStories
 
         Gamehaven.Storyline();
         Core.Logger($"Story: Game Haven - Complete");
+
+        GiantTaleStory.DoAll();
+        Core.Logger($"Story: Giant Tale - Complete");
 
         GlaceraStory.DoAll();
         Core.Logger($"Story: Glacera - Complete");
@@ -547,6 +616,8 @@ public class AllStories
         MustyCave.Storyline();
         Core.Logger($"Story: MustyCave - Complete");
 
+        Noobshire.doAll();
+        Core.Logger($"Story: Noobshire - Complete");
 
         NytheraSaga.DoAll();
         Core.Logger($"Saga: Nythera - Complete");
@@ -563,6 +634,15 @@ public class AllStories
         RavenlossSaga.DoAll();
         Core.Logger($"Saga: RavenLoss - Complete");
 
+
+        if (Core.IsMember)
+        {
+            Safiria.StoryLine();
+            Core.Logger($"Story: Safiria - Complete");
+        }
+
+        ShadowGates.StoryLine();
+        Core.Logger($"Story: ShadowGates - Complete");
 
         ShadowSlayerK.Storyline();
         Core.Logger($"Story: Shadow Slayer K - Complete");
@@ -586,9 +666,6 @@ public class AllStories
         Core.Logger($"Story: SuperDeath - Complete");
 
 
-        Table.DoAll();
-        Core.Logger($"Story: Table - Complete");
-
         ThirdSpell.StoryLine();
         Core.Logger($"Story: Third Spell - Complete");
 
@@ -602,6 +679,8 @@ public class AllStories
         Core.Logger($"Story: Trygve - Complete");
 
 
+        Ubear.StoryLine();
+        Core.Logger($"Story: Ubear - Complete?");
 
         UnderGroundLab.partofundergroundlabb();
         Core.Logger($"Story: Underground Lab - Complete?");
@@ -610,6 +689,8 @@ public class AllStories
         LairWar.doAll();
         Core.Logger($"Story: Vasalkar Lair War - Complete");
 
+        WatchTower.StoryLine();
+        Core.Logger($"Story: WatchTower - Complete");
 
         Xans.DoAll();
         Core.Logger($"Story: Xans Lair - Complete");

@@ -21,7 +21,7 @@ public class TheLeeryContract
 
     public List<IOption> Options = new List<IOption>()
     {
-        new Option<bool>("skipSetup", "Skip this window next time", "You will be able to return to this screen via [Options] -> [Script Options] if you wish to change anything.", false),
+        CoreBots.Instance.SkipOptions,
         new Option<RewardsSelection>("RewardSelect", "Choose Your Quest Reward", "Select Your Quest Reward for The Leary Contract.", RewardsSelection.Godly_Golden_Dragon_Axe)
     };
 
@@ -39,9 +39,6 @@ public class TheLeeryContract
         if (!Core.IsMember)
             return;
 
-        if (!Bot.Config.Get<bool>("SkipOption"))
-            Bot.Config.Configure();
-
         List<Skua.Core.Models.Items.ItemBase> RewardOptions = Core.EnsureLoad(554).Rewards;
         List<string> RewardsList = new List<string>();
         foreach (Skua.Core.Models.Items.ItemBase Item in RewardOptions)
@@ -53,7 +50,11 @@ public class TheLeeryContract
         int x = 1;
 
         if (item == null)
-            Core.Logger($"{item.Name} not found in Quest Rewards", stopBot: true);
+        {
+            Core.Logger($"{item.Name} not found in Quest Rewards");
+            return;
+        }
+
 
         if (Core.CheckInventory(item.Name))
             return;
@@ -79,7 +80,7 @@ public class TheLeeryContract
         Ddog_Sea_Serpent_Sword = 4766,
         Godly_Golden_Dragon_Axe = 4724,
         Corpse_Maker_of_Nulgath = 4764,
-        
+
 
         All
     };

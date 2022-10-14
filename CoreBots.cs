@@ -88,6 +88,9 @@ public class CoreBots
     {
         if (changeTo)
         {
+            if (Bot.Config != null && Bot.Config.Options.Contains(SkipOptions) && !Bot.Config.Get<bool>(SkipOptions))
+                Bot.Config.Configure();
+
             if (CBO_Active())
             {
                 CBOList = File.ReadAllLines(AppPath + $@"\options\CBO_Storage({Bot.Player.Username}).txt").ToList();
@@ -188,9 +191,16 @@ public class CoreBots
                 List<string> Whitelisted = new() { "Note", "Item", "Resource", "QuestItem" };
                 List<string> WhitelistedSU = new() { "Note", "Item", "Resource", "QuestItem", "ServerUse" };
                 List<string> MiscForBank = new();
+
+                bool boostsEnabled = Bot.Boosts.Enabled || (CBO_Active() && (
+                                    (CBOBool("doGoldBoost", out bool _doGoldBoost) && _doGoldBoost) ||
+                                    (CBOBool("doClassBoost", out bool _doClassBoost) && _doClassBoost) ||
+                                    (CBOBool("doRepBoost", out bool _doRepBoost) && _doRepBoost) ||
+                                    (CBOBool("doExpBoost", out bool _doExpBoost) && _doExpBoost)));
+
                 foreach (var item in Bot.Inventory.Items)
                 {
-                    if (Bot.Boosts.Enabled ? !Whitelisted.Contains(item.Category.ToString()) : !WhitelistedSU.Contains(item.Category.ToString()))
+                    if (boostsEnabled ? !Whitelisted.Contains(item.Category.ToString()) : !WhitelistedSU.Contains(item.Category.ToString()))
                         continue;
                     if (item.Name != "Treasure Potion" && !BankingBlackList.Contains(item.Name) && item.Coins)
                         MiscForBank.Add(item.Name);
@@ -247,9 +257,13 @@ public class CoreBots
                 Equip(EquipmentBeforeBot.ToArray());
             if (!string.IsNullOrWhiteSpace(CustomStopLocation))
             {
-                if (CustomStopLocation.ToLower() == "home")
-                    Bot.Send.Packet($"%xt%zm%house%1%{Bot.Player.Username}%");
-                else if (new[] { "off", "disabled", "disable", "stop", "same", "currentmap", "bot.map.currentmap" }
+                if (CustomStopLocation.Trim().ToLower() == "home")
+                {
+                    if (Bot.House.Items.Count(h => h.Equipped) > 0)
+                        Bot.Send.Packet($"%xt%zm%house%1%{Bot.Player.Username}%");
+                    else Join("whitemap");
+                }
+                else if (new[] { "off", "disabled", "disable", "stop", "same", "currentmap", "bot.map.currentmap", String.Empty }
                                 .Any(m => m.ToLower() == CustomStopLocation.ToLower())) { }
                 else
                     Join(CustomStopLocation);
@@ -263,14 +277,18 @@ public class CoreBots
         }
 
         Bot.Options.CustomName = Bot.Player.Username.ToUpper();
-        Bot.Options.CustomGuild = $"< {(Bot.Flash.GetGameObject<string>("world.myAvatar.objData.guild.Name").Replace("&lt; ", "< ").Replace(" &gt;", " >"))} >"; ;
+        string guild = Bot.Flash.GetGameObject<string>("world.myAvatar.objData.guild.Name");
+        Bot.Options.CustomGuild = guild != null ? $"< {guild} >" : "";
+
+        if (File.Exists($"options/FollowerJoe/{Bot.Player.Username.ToLower()}.txt"))
+            File.Delete($"options/FollowerJoe/{Bot.Player.Username.ToLower()}.txt");
 
         if (crashed)
-            Logger("Bot Stopped due to crash");
+            Logger("Bot Stopped due to crash.");
         else if (!Bot.Player.LoggedIn)
-            Logger("Auto Relogin appears to have failed");
+            Logger("Auto Relogin appears to have failed.");
         else
-            Logger("Bot Stopped Successfully");
+            Logger("Bot Stopped Successfully.");
 
         GC.KeepAlive(Instance);
         return scriptFinished;
@@ -977,7 +995,7 @@ public class CoreBots
         var toReturn = Bot.Quests.Tree.Find(x => x.ID == questID) ?? _EnsureLoad(questID);
         if (toReturn == null)
         {
-            Logger("Failed to get the Quest Object, please restart the client.", messageBox: true, stopBot: true);
+            Logger($"Failed to get the Quest Object for questID {questID}, please restart the client.", messageBox: true, stopBot: true);
             return new();
         }
 
@@ -1008,7 +1026,7 @@ public class CoreBots
         var toReturn = Bot.Quests.Tree.Where(x => questIDs.Contains(x.ID)).ToList();
         if (toReturn.Count() <= 0 || toReturn == null)
         {
-            Logger("Failed to get the Quest Object, please restart the client.", messageBox: true, stopBot: true);
+            Logger($"Failed to get the Quest Object for questIDs {String.Join(" | ", questIDs)}, please restart the client.", messageBox: true, stopBot: true);
             return new();
         }
         return toReturn;
@@ -1264,23 +1282,9 @@ public class CoreBots
 
         Join("stalagbite", "r2", "Left");
 
-        if (item == null)
-        {
-            if (log)
-                Logger("Killing Escherion");
-            while (!Bot.ShouldExit && Bot.Monsters.MapMonsters.First(m => m.Name == "Stalagbite").Alive)
-            {
-                if (Bot.Monsters.MapMonsters.First(m => m.Name == "Stalagbite").Alive)
-                    Bot.Hunt.Monster("Vath");
-                Bot.Combat.Attack("Stalagbite");
-                Bot.Sleep(1000);
-            }
-            return;
-        }
-
         if (log)
             Logger($"Killing Vath for {item} ({quant}) [Temp = {isTemp}]");
-        while (!Bot.ShouldExit && !CheckInventory(item, quant))
+        while (!Bot.ShouldExit && item != null && !CheckInventory(item, quant))
         {
             if (Bot.Monsters.MapMonsters?.FirstOrDefault(m => m.Name == "Stalagbite")?.Alive ?? false)
                 Bot.Kill.Monster("Stalagbite");
@@ -1344,7 +1348,7 @@ public class CoreBots
             return;
 
         if (CheckInventory("Dragon of Time"))
-            Bot.Skills.StartAdvanced("Dragon of Time", true, ClassUseMode.Base);
+            Bot.Skills.StartAdvanced("Dragon of Time", true, ClassUseMode.Solo);
         else if (CheckInventory("Healer (Rare)"))
             Bot.Skills.StartAdvanced("Healer (Rare)", true, ClassUseMode.Base);
         else if (CheckInventory("Healer"))
@@ -1405,7 +1409,7 @@ public class CoreBots
     public void FarmingLogger(string item, int quant, [CallerMemberName] string caller = "")
         => Logger($"Farming {item} ({Bot.Inventory.GetQuantity(item)}/{quant})", caller);
 
-    public void DebugLogger(object _this, string marker = "Checkpoint", [CallerMemberName] string? caller = null, [CallerLineNumber] int lineNumber = 0)
+    public void DebugLogger(object _this, string? marker = null, [CallerMemberName] string? caller = null, [CallerLineNumber] int lineNumber = 0)
     {
         if (!DL_Enabled || ((DL_MarkerFilter == null ? false : DL_MarkerFilter != marker) || (DL_CallerFilter == null ? false : DL_CallerFilter != caller)))
             return;
@@ -1414,33 +1418,59 @@ public class CoreBots
         string[] compiledScript = CompiledScript();
 
         int compiledClassLine = Array.IndexOf(compiledScript, compiledScript.First(line => line.Trim() == $"public class {_class}")) + 1;
-
         string[] currentScript = File.ReadAllLines(Bot.Manager.LoadedScript);
-        int seperateClassLine = -1;
+        string[]? includedScript = null;
 
+        bool inCurrentScript = false;
         if (currentScript.Any(line => line.Trim() == $"public class {_class}"))
-            seperateClassLine = Array.IndexOf(currentScript, currentScript.First(line => line.Trim() == $"public class {_class}")) + 1;
+            inCurrentScript = true;
         else
         {
-            string[] cs_includes = currentScript.Where(x => x.StartsWith("//cs_include")).ToArray();
-            foreach (string cs in cs_includes)
+            foreach (string cs in currentScript.Where(x => x.StartsWith("//cs_include")).ToArray())
             {
-                string[] includedScript = File.ReadAllLines(cs.Replace("//cs_include ", ""));
+                includedScript = File.ReadAllLines(cs.Replace("//cs_include ", ""));
+
                 if (includedScript.Any(line => line.Trim() == $"public class {_class}"))
-                {
-                    seperateClassLine = Array.IndexOf(includedScript, includedScript.First(line => line.Trim() == $"public class {_class}")) + 1;
                     break;
-                }
             }
         }
 
-        if (seperateClassLine == -1)
+        if (!inCurrentScript && includedScript == null)
         {
-            Logger("Failed trying to find seperateClassLine", "DEBUG LOGGER");
+            Logger("includedScript is NULL", "DEBUG LOGGER");
             return;
         }
 
-        Logger($"{marker}, {_class} => {caller}, line {lineNumber - (compiledClassLine - seperateClassLine)}", "DEBUG LOGGER");
+        int count = 0;
+        int lastIndex = compiledClassLine;
+
+        foreach (string l in compiledScript[compiledClassLine..Array.FindIndex(compiledScript, compiledClassLine, l => l == "}")])
+        {
+            if (!l.Contains("Core.DebugLogger(this"))
+                continue;
+
+            count++;
+            lastIndex = Array.FindIndex(compiledScript, lastIndex + 1, _l => _l.Trim() == l.Trim());
+            if (lastIndex + 1 == lineNumber)
+                break;
+        }
+
+        int count2 = 0;
+        int lastIndex2 = -1;
+        string[] selectedScript = inCurrentScript || includedScript == null ? currentScript : includedScript;
+        foreach (string l in selectedScript)
+        {
+            if (!l.Contains("Core.DebugLogger(this"))
+                continue;
+
+            count2++;
+            lastIndex2 = Array.FindIndex(selectedScript, lastIndex2 + 1, _l => _l.Trim() == l.Trim());
+
+            if (count == count2)
+                break;
+        }
+
+        Logger($"{marker}{(String.IsNullOrEmpty(marker) ? null : " | ")}{_class} => {caller}, line {lastIndex2 + 1}", "DEBUG LOGGER");
     }
     private bool DL_Enabled { get; set; } = false;
     public string? DL_CallerFilter { get; set; } = null;
@@ -1461,8 +1491,7 @@ public class CoreBots
     /// <param name="caption">Title of the box</param>
     public void Message(string message, string caption)
     {
-        if (Bot.ShowMessageBox(message, caption) == true)
-            return;
+        Bot.Handlers.RegisterOnce(1, (Bot) => Bot.ShowMessageBox(message, caption));
     }
 
     /// <summary>
@@ -1593,10 +1622,7 @@ public class CoreBots
         Bot.Sleep(ActionDelay * 2);
     }
 
-    public bool HasAchievement(int ID, string ia = "ia0")
-    {
-        return Bot.Flash.CallGameFunction<bool>("world.getAchievement", ia, ID);
-    }
+    public bool HasAchievement(int ID, string ia = "ia0") => Bot.Flash.CallGameFunction<bool>("world.getAchievement", ia, ID);
 
     public void SetAchievement(int ID, string ia = "ia0")
     {
@@ -1604,45 +1630,79 @@ public class CoreBots
             Bot.Send.Packet($"%xt%zm%setAchievement%{Bot.Map.RoomID}%{ia}%{ID}%1%");
     }
 
+    public bool HasWebBadge(int badgeID) => GetBadgeJSON().Result.Contains($"\"badgeID\":{badgeID}");
+    public bool HasWebBadge(string badgeName) => GetBadgeJSON().Result.Contains($"\"sTitle\":\"{badgeName}\"");
+
+    // To find the 
+    private async Task<string> GetBadgeJSON()
+    {
+        string toReturn = string.Empty;
+        int ccid = Bot.Flash.GetGameObject<int>("world.myAvatar.objData.CharID");
+        if (ccid <= 0)
+            return toReturn;
+
+        HttpClient client = new HttpClient();
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
+        await Task.Run(async () =>
+        {
+            try
+            {
+                toReturn = await client.GetStringAsync($"https://account.aq.com/CharPage/Badges?ccid={ccid}");
+            }
+            catch { }
+        });
+        return toReturn;
+    }
+
     #region Save State
     public void SavedState(bool on = true)
     {
-        string[] Files = Directory.GetFiles(@"Scripts\SavedState");
-        string file = Files[Bot.Random.Next(0, Files.Count() - 1)];
-        string[] SavedStateRNG = File.ReadAllLines(file);
+        return;
+        //string[] Files = Directory.GetFiles(@"Scripts\SavedState");
+        //string file = Files[Bot.Random.Next(0, Files.Count() - 1)];
+        //string[] SavedStateRNG = File.ReadAllLines(file);
 
-        if (on)
-        {
-            int MinumumDelay = 180;
-            int MaximumDelay = 300;
-            int timerInterval = Bot.Random.Next(MinumumDelay, MaximumDelay + 1);
-            int SSH = 0;
-            Logger("Saved State Handler enabled");
-            Bot.Send.ClientModerator("These Moderator messages about botting are client side and wont be seen by AE", "Mod-Messages");
-            Bot.Handlers.RegisterHandler(5000, s =>
-            {
-                SSH++;
-                if (SSH >= (timerInterval / 5))
-                {
-                    int messageSelect = Bot.Random.Next(1, SavedStateRNG.Length);
-                    Bot.Send.ClientModerator($"Ignore the whisper below, this is to save your player data ({file.Split('\\').Last().Split('/').Last()})", "Saved-State");
-                    Bot.Send.Whisper(Bot.Player.Username, SavedStateRNG[messageSelect][2..]);
-                    timerInterval = Bot.Random.Next(MinumumDelay, MaximumDelay);
-                    SSH = 0;
-                }
-            }, "Saved-State Handler");
-        }
-        else if (Bot.Handlers.CurrentHandlers.Any(handler => handler.Name == "Saved-State Handler"))
-        {
-            Bot.Handlers.Remove("Saved-State Handler");
-            int messageSelect = Bot.Random.Next(1, SavedStateRNG.Length);
-            Bot.Send.ClientModerator("Final Saved-State before the Saved State Handler is turned off", "Saved-State");
-            Bot.Send.Whisper(Bot.Player.Username, SavedStateRNG[messageSelect][2..]);
-            Logger("Saved State Handler disabled");
-        }
+        //if (on)
+        //{
+        //    int MinumumDelay = 180;
+        //    int MaximumDelay = 300;
+        //    int timerInterval = Bot.Random.Next(MinumumDelay, MaximumDelay + 1);
+        //    int SSH = 0;
+        //    Logger("Saved State Handler enabled");
+        //    Bot.Send.ClientModerator("These Moderator messages about botting are client side and wont be seen by AE", "Mod-Messages");
+        //    Bot.Handlers.RegisterHandler(5000, s =>
+        //    {
+        //        SSH++;
+        //        if (SSH >= (timerInterval / 5))
+        //        {
+        //            int messageSelect = Bot.Random.Next(1, SavedStateRNG.Length);
+        //            Bot.Send.ClientModerator($"Ignore the whisper below, this is to save your player data ({file.Split('\\').Last().Split('/').Last()})", "Saved-State");
+        //            Bot.Send.Whisper(Bot.Player.Username, SavedStateRNG[messageSelect][2..]);
+        //            timerInterval = Bot.Random.Next(MinumumDelay, MaximumDelay);
+        //            SSH = 0;
+        //        }
+        //    }, "Saved-State Handler");
+        //}
+        //else if (Bot.Handlers.CurrentHandlers.Any(handler => handler.Name == "Saved-State Handler"))
+        //{
+        //    Bot.Handlers.Remove("Saved-State Handler");
+        //    int messageSelect = Bot.Random.Next(1, SavedStateRNG.Length);
+        //    Bot.Send.ClientModerator("Final Saved-State before the Saved State Handler is turned off", "Saved-State");
+        //    Bot.Send.Whisper(Bot.Player.Username, SavedStateRNG[messageSelect][2..]);
+        //    Logger("Saved State Handler disabled");
+        //}
     }
 
-    public Option<bool> SkipOptions = new Option<bool>("SkipOption", "Skip this window next time", "You will be able to return to this screen via [Options] -> [Script Options] if you wish to change anything.", false);
+    public int[] FromTo(int from, int to)
+    {
+        List<int> toReturn = new();
+        for (int i = from; i < to + 1; i++)
+            toReturn.Add(i);
+        return toReturn.ToArray();
+    }
+
+    public Option<bool> SkipOptions = new Option<bool>("SkipOption", "Skip this window next time", "You will be able to return to this screen via [Scripts] -> [Edit Script Options] if you wish to change anything.", false);
     public bool DontPreconfigure = true;
 
     #endregion
@@ -1753,7 +1813,7 @@ public class CoreBots
 
             lastJumpWait = $"{Bot.Map.Name} | {cell} | {pad}";
 
-            Bot.Sleep(ExitCombatDelay - 200);
+            Bot.Sleep(ExitCombatDelay < 200 ? ExitCombatDelay : ExitCombatDelay - 200);
             Bot.Wait.ForCombatExit();
         }
         Bot.Combat.Exit();
@@ -1770,8 +1830,11 @@ public class CoreBots
     /// <param name="ignoreCheck">If set to true, the bot will not check if the player is already in the given room</param>
     public void Join(string map, string cell = "Enter", string pad = "Spawn", bool publicRoom = false, bool ignoreCheck = false)
     {
-        map = map.ToLower() == "tercess" ? "tercessuinotlim" : map.ToLower(); map = map.Replace(" ", "");
-        if (Bot.Map.Name != null && Bot.Map.Name.ToLower() == map && !ignoreCheck)
+        map = map.Replace(" ", "");
+        map = map.ToLower() == "tercess" ? "tercessuinotlim" : map.ToLower();
+        string strippedMap = map.Contains('-') ? map.Split('-').First() : map;
+
+        if (Bot.Map.Name != null && Bot.Map.Name.ToLower() == strippedMap && !ignoreCheck)
             return;
 
         bool AggroMonsters = false;
@@ -1781,7 +1844,7 @@ public class CoreBots
             Bot.Options.AggroMonsters = false;
         }
 
-        switch (map)
+        switch (strippedMap)
         {
             default:
                 JumpWait();
@@ -1816,32 +1879,80 @@ public class CoreBots
 
             case "hyperium":
                 JumpWait();
-                tryJoin();
                 Bot.Send.Packet($"%xt%zm%serverUseItem%{Bot.Map.RoomID}%+%5041%525,275%hyperium%");
+                break;
+
+            case "lycan":
+                JumpWait();
+                Bot.Quests.UpdateQuest(598);
+                tryJoin();
+                break;
+
+            case "icestormarena":
+                JumpWait();
+                tryJoin();
+                Bot.Send.ClientPacket("{\"t\":\"xt\",\"b\":{\"r\":-1,\"o\":{\"cmd\":\"levelUp\",\"intExpToLevel\":\"0\",\"intLevel\":100}}}");
                 break;
         }
 
-        Jump(cell, pad);
-        Bot.Sleep(200);
+        if (Bot.Map.Name != null && strippedMap == Bot.Map.Name.ToLower())
+        {
+            if (Directory.Exists("options/FollowerJoe") &&
+                Directory.GetFiles("options/FollowerJoe").Any(x => x.Contains('-') && x.Split('-').Last() == Bot.Player.Username.ToLower() + ".txt"))
+            {
+                string[] lockedMaps =
+                {
+                    "tercessuinotlim",
+                    "doomvaultb",
+                    "doomvault",
+                    "shadowrealmpast",
+                    "shadowrealm",
+                    "battlegrounda",
+                    "battlegroundb",
+                    "battlegroundc",
+                    "battlegroundd",
+                    "battlegrounde",
+                    "battlegroundf",
+                    "confrontation",
+                    "darkoviaforest",
+                    "doomwood",
+                    "hollowdeep",
+                    "hyperium",
+                    "willowcreek",
+                    "shadowlordpast",
+                    "binky",
+                    "superlowe"
+                };
+                if (lockedMaps.Contains(strippedMap))
+                    File.WriteAllText($"options/FollowerJoe/{Bot.Player.Username.ToLower()}.txt", Bot.Map.FullName);
+            }
+            Jump(cell, pad);
+            Bot.Sleep(200);
+        }
 
         if (AggroMonsters)
             Bot.Options.AggroMonsters = true;
 
         void tryJoin()
         {
+            bool hasMapNumber = map.Contains('-') && Int32.TryParse(map.Split('-').Last(), out int result) && result >= 1000;
             for (int i = 0; i < 20; i++)
             {
-                Bot.Map.Join((publicRoom && PublicDifficult) || !PrivateRooms ? map : $"{map}-{PrivateRoomNumber}", cell, pad, ignoreCheck);
-                Bot.Wait.ForMapLoad(map);
+                if (hasMapNumber)
+                    Bot.Map.Join(map, cell, pad, ignoreCheck);
+                else Bot.Map.Join((publicRoom && PublicDifficult) || !PrivateRooms ? map : $"{map}-{PrivateRoomNumber}", cell, pad, ignoreCheck);
+                Bot.Wait.ForMapLoad(strippedMap);
+                Bot.Sleep(200);
 
                 string? currentMap = Bot.Map.Name;
-                if (!String.IsNullOrEmpty(currentMap) && currentMap.ToLower() == map)
+                if (!String.IsNullOrEmpty(currentMap) && currentMap.ToLower() == strippedMap)
                     break;
 
                 if (i == 19)
                     Logger($"Failed to join {map}");
             }
         }
+
     }
 
     /// <summary>
@@ -1916,62 +2027,80 @@ public class CoreBots
         return nr < 1000;
     }
 
-    //public bool isSeasonalMapActive(string map, bool log = true)
-    //{
-    //    map = map.ToLower().Replace(" ", "");
-    //    if (Bot.Map.Name != null && Bot.Map.Name.ToLower() == map)
-    //        return true;
+    /// <summary>
+    /// Checks if the map is available for joining or it is seasonal and not yet released
+    /// </summary>
+    public bool isSeasonalMapActive(string map, bool log = true)
+    {
+        map = map.ToLower().Replace(" ", "");
+        if (Bot.Map.Name != null && Bot.Map.Name.ToLower() == map)
+            return true;
+        bool AggroMonsters = false;
+        if (Bot.Options.AggroMonsters)
+        {
+            AggroMonsters = true;
+            Bot.Options.AggroMonsters = false;
+        }
 
-    //    bool AggroMonsters = false;
-    //    if (Bot.Options.AggroMonsters)
-    //    {
-    //        AggroMonsters = true;
-    //        Bot.Options.AggroMonsters = false;
-    //    }
+        JumpWait();
+        Bot.Events.ExtensionPacketReceived += MapIsNotAvailableListener;
+        bool seasonalMessageProc = false;
 
-    //    JumpWait();
-    //    Bot.Events.ExtensionPacketReceived += PacketListener;
-    //    bool seasonalMessageProc = false;
+        for (int i = 0; i < 20; i++)
+        {
+            Bot.Map.Join(!PrivateRooms ? map : $"{map}-{PrivateRoomNumber}");
+            Bot.Wait.ForMapLoad(map);
 
-    //    for (int i = 0; i < 20; i++)
-    //    {
-    //        Bot.Map.Join(!PrivateRooms ? map : $"{map}-{PrivateRoomNumber}");
-    //        Bot.Wait.ForMapLoad(map);
+            string? currentMap = Bot.Map.Name;
+            if (!String.IsNullOrEmpty(currentMap) && currentMap.ToLower() == map)
+                break;
 
-    //        string? currentMap = Bot.Map.Name;
-    //        if (!String.IsNullOrEmpty(currentMap) && currentMap.ToLower() == map)
-    //            break;
+            if (seasonalMessageProc)
+            {
+                seasonalMessageProc = false;
+                break;
+            }
 
-    //        if (seasonalMessageProc)
-    //        {
-    //            Bot.Events.ExtensionPacketReceived -= PacketListener;
-    //            return false;
-    //        }
+            if (i == 19)
+                Logger($"Failed to join {map}");
+        }
 
-    //        if (i == 19)
-    //            Logger($"Failed to join {map}");
-    //    }
 
-    //    if (AggroMonsters)
-    //        Bot.Options.AggroMonsters = true;
 
-    //    Bot.Events.ExtensionPacketReceived -= PacketListener;
-    //    return true;
+        if (AggroMonsters)
+            Bot.Options.AggroMonsters = true;
 
-    //    void PacketListener(dynamic packet)
-    //    {
-    //        string type = packet;
-    //        switch (type)
-    //        {
-    //            case "%xt%warning%-1%\"mogloween\" is not available.%":
-    //                if (log)
-    //                    Logger($"Map \"map\" is currently disabled.");
-    //                seasonalMessageProc = true;
-    //                break;
-    //        }
+        Bot.Events.ExtensionPacketReceived -= MapIsNotAvailableListener;
 
-    //    }
-    //}
+        if (Bot.Map.Name != null && Bot.Map.Name.ToLower() == map)
+            return true;
+        else
+            return false;
+
+        void MapIsNotAvailableListener(dynamic packet)
+        {
+            string type = packet["params"].type;
+            dynamic data = packet["params"].dataObj;
+            if (type is not null and "str")
+            {
+                string cmd = data[0];
+                switch (cmd)
+                {
+                    case "warning":
+                        string b = Convert.ToString(packet);
+                        if (b.Contains("is not available."))
+                        {
+                            if (log)
+                                Logger($" \"{map}\" is currently seasonal map. Check Wiki.");
+                            seasonalMessageProc = true;
+                            Bot.Events.ExtensionPacketReceived -= MapIsNotAvailableListener;
+                        }
+                        break;
+                }
+            }
+        }
+
+    }
 
     #endregion
 
@@ -2177,23 +2306,22 @@ public class CoreBots
             if (!File.Exists(path))
             {
                 DialogResult consent = Bot.ShowMessageBox(
-                    "We wish to gather data, in an effort to keep us motivated, knowing people use what we make.\n\n" +
-                    "We would gather the following things:\n" +
-                    "· An anon userID we generate which will allows us to know our active user count.\n" +
-                    "· Start time of scripts.\n" +
-                    "· What script is being run.\n" +
-                    "· Stop time of scripts, this would be paired with the point below\n" +
-                    "· Script Instance ID, a random number that allows us to match start- and stoptime.\n\n" +
-                    "Consent for this is requiered, and puts my mind at ease. " +
-                    "So you will be able to select what data is being send and what is not.\n\n" +
-                    "Select \"Full\" to give full consent.\n" +
-                    "Select \"Partial\" to give partial consent, you will then get a couple more pop-up boxes where you can select your preferences.\n" +
-                    "Select \"None\" to not consent, we will then gather no data whatsoever.",
+                    "Skua gathers data to help us bot makers get a better idea of what we should focus our efforts on.\n\n" +
+                    "The following information will be observed and collected:\n" +
+                    "· An anonymous user ID, which is generated for you by Skua, to help us estimate the active user count.\n" +
+                    "· How long it takes to start a script.\n" +
+                    "· What scripts are used and how often.\n" +
+                    "· How long it takes to stop a script.\n" +
+                    "· A Script Instance ID, to help us match start- and stoptime.\n\n" +
+                    "However, we require your consent for the same. " +
+                    "You can select what information the developers are allowed to collect from your instance here:\n\n" +
+                    "Select \"Full\" to give full consent to the developers collecting all the aforementioned information.\n" +
+                    "Select \"Partial\" if you would like to choose what information you are comfortable sharing with the developers.\n" +
+                    "Select \"None\" if you would prefer that none of your data is collected.",
 
                     "Data Collection",
                     "Full", "Partial", "None"
                 );
-
                 if (consent.Text == "Full")
                 {
                     genericData = true;

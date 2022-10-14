@@ -110,6 +110,8 @@ public class CoreArmyLite
         _AggroMonCells.Clear();
         _AggroMonNames.Clear();
         _AggroMonIDs.Clear();
+        _AggroMonMIDs.Clear();
+        _SmartAggroMonCells.Clear();
     }
 
     /// <summary>
@@ -117,6 +119,55 @@ public class CoreArmyLite
     /// </summary>
     public string AggroMonPacket(params int[] MonsterMapIDs)
         => $"%xt%zm%aggroMon%{Bot.Map.RoomID}%{String.Join('%', MonsterMapIDs)}%";
+
+    public void SmartAggroMonStart(string map, params string[] monsters)
+    {
+        Core.PrivateRooms = true;
+        Core.PrivateRoomNumber = getRoomNr();
+        Core.Join(map);
+
+        //Devining variables
+        var _monsters = Bot.Monsters.MapMonsters.Where(m => monsters.Contains(m.Name)).ToList();
+        var cellComparison = new Dictionary<string, int>();
+
+        //Prioritizing monsters of which fewer excist
+        foreach (Monster m in _monsters)
+            if (!cellComparison.ContainsKey(m.Cell))
+                cellComparison.Add(m.Cell, _monsters.Count(t => t.Name == m.Name));
+        var SortedDict = cellComparison.OrderBy(kvp => kvp.Value).ToDictionary(pair => pair.Key, pair => pair.Value).Keys.ToArray();
+        cellComparison = null;
+
+        //Special option on DivideOnCells, which will have it store all cells that it divides people to
+        _getCellsForSmartAggroMon = true;
+        DivideOnCells(SortedDict);
+        _getCellsForSmartAggroMon = false;
+
+        AggroMonCells(_SmartAggroMonCells.ToArray());
+        AggroMonStart(map);
+    }
+    private bool _getCellsForSmartAggroMon = false;
+    private List<string> _SmartAggroMonCells = new();
+
+    public void RunGeneratedAggroMon(string map, List<string> monNames, List<int> questIDs, ClassType classtype, List<string>? drops = null)
+    {
+        if (classtype != ClassType.None)
+            Core.EquipClass(classtype);
+
+        if (questIDs.Count > 0)
+            Core.RegisterQuests(questIDs.ToArray());
+
+        if (drops == null || drops.Count() == 0 || drops.All(x => String.IsNullOrEmpty(x)))
+            Bot.Drops.Stop();
+        else Core.AddDrop(drops.ToArray());
+
+        SmartAggroMonStart(map, monNames.ToArray());
+        while (!Bot.ShouldExit)
+            Bot.Combat.Attack("*");
+        AggroMonStop(true);
+
+        if (questIDs.Count > 0)
+            Core.CancelRegisteredQuests();
+    }
 
     #region Script Options
 
@@ -268,6 +319,39 @@ public class CoreArmyLite
     public void DivideOnCells(params string[] cells)
     {
         // Parsing all the player names from an unspecified amount of player name options
+        string[] _players = Players();
+
+        // If no paramaters are given, select all cells that have monsters in them
+        if ((cells == null || cells.Count() == 0))
+        {
+            List<Monster> monsters = Bot.Monsters.MapMonsters;
+            if (monsters == null || monsters.Count() == 0)
+                return;
+
+            List<string> _cells = new();
+            foreach (string cell in monsters.Select(m => m.Cell))
+                if (!_cells.Contains(cell))
+                    _cells.Add(cell);
+            cells = _cells.OrderBy(x => x).ToArray();
+        }
+
+        //Dividing the players amongst the cells
+        int cellCount = 0;
+        string username = Bot.Player.Username.ToLower();
+        foreach (string p in _players)
+        {
+            string cell = cells[cellCount];
+            if (_getCellsForSmartAggroMon && !_SmartAggroMonCells.Contains(cell))
+                _SmartAggroMonCells.Add(cell);
+
+            if (username == p)
+                Core.Jump(cell);
+            cellCount = cellCount == cells.Count() - 1 ? 0 : cellCount + 1;
+        }
+    }
+
+    public string[] Players()
+    {
         List<string> players = new();
         int i = 1;
         while (!Bot.ShouldExit)
@@ -288,29 +372,6 @@ public class CoreArmyLite
                 break;
             }
         }
-
-        // If no paramaters are given, select all cells that have monsters in them
-        if ((cells == null || cells.Count() == 0))
-        {
-            List<Monster> monsters = Bot.Monsters.MapMonsters;
-            if (monsters == null || monsters.Count() == 0)
-                return;
-
-            List<string> _cells = new();
-            foreach (string cell in monsters.Select(m => m.Cell))
-                if (!_cells.Contains(cell))
-                    _cells.Add(cell);
-            cells = _cells.OrderBy(x => x).ToArray();
-        }
-
-        //Dividing the players amongst the cells
-        int cellCount = 0;
-        string username = Bot.Player.Username.ToLower();
-        foreach (string p in players)
-        {
-            if (username == p)
-                Core.Jump(cells[cellCount]);
-            cellCount = cellCount == cells.Count() - 1 ? 0 : cellCount + 1;
-        }
+        return players.ToArray();
     }
 }

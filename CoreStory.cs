@@ -22,7 +22,6 @@ public class CoreStory
         Core.RunCore();
     }
 
-
     /// <summary>
     /// Kills a monster for a Quest, and turns in the quest if possible. Automatically checks if the next quest is unlocked. If it is, it will skip this one.
     /// </summary>
@@ -193,7 +192,7 @@ public class CoreStory
         if (AutoCompleteQuest)
             Core.EnsureComplete(QuestData.ID);
         Bot.Wait.ForQuestComplete(QuestData.ID);
-        Core.Logger($"Completed Quest: [{QuestData.ID}] - \"{QuestData.Name}\"");
+        Core.Logger($"Completed Quest: [{QuestData.ID}] - \"{QuestData.Name}\"", "QuestProgression");
         Bot.Sleep(1500);
     }
 
@@ -218,12 +217,6 @@ public class CoreStory
 
         Quest QuestData = Core.EnsureLoad(QuestID);
         ItemBase[] Rewards = QuestData.Rewards.ToArray();
-
-        if (QuestData == null)
-        {
-            Core.Logger($"Quest [{QuestID}] doesn't exist", messageBox: true, stopBot: true);
-            return true;
-        }
 
         int timeout = 0;
         while (!Bot.Quests.IsUnlocked(QuestID))
@@ -298,6 +291,127 @@ public class CoreStory
     }
     private bool CBO_Checked = false;
     private int lastFailedQuestID = 0;
+
+    public void LegacyQuestManager(Action questLogic, params int[] questIDs)
+    {
+        var questData = Core.EnsureLoad(questIDs);
+        var whereToGet = new List<LegacyQuestObject>();
+
+        //Core.DL_Enable();
+        Core.DebugLogger(this, "-------------\t");
+        foreach (var quest in questData)
+        {
+            var desiredQuestReward = quest.Rewards.Where(r => questData.Any(q => q.AcceptRequirements.Any(a => a.ID == r.ID || a.Name == r.Name))).ToList();
+            var requieredQuestID = questData.Find((q => q.Rewards.Any(r => quest.AcceptRequirements.Any(a => a.ID == r.ID || a.Name == r.Name))))?.ID ?? 0;
+            var requieredQuestReward = quest.AcceptRequirements?.Where(r => questData.Any(q => q.Rewards.Any(a => a.ID == r.ID || a.Name == r.Name)))?.ToList();
+
+            Core.DebugLogger(this, $"{quest.ID}\t\t");
+            Core.DebugLogger(this, $"{desiredQuestReward.FirstOrDefault()?.Name}\t");
+            Core.DebugLogger(this, $"{requieredQuestID}\t\t");
+            Core.DebugLogger(this, $"{requieredQuestReward.FirstOrDefault()?.Name}\t");
+            Core.DebugLogger(this, "-------------\t");
+
+            if (requieredQuestReward.Count() == 0 && quest.AcceptRequirements.Count() > 0)
+            {
+                Core.Logger("The managed failed to find the location of \"" +
+                String.Join("\" + \"", quest.AcceptRequirements.Select(a => a.Name)) +
+                $"\" for Quest ID {quest.ID}, is the function missing a Quest ID?",
+                messageBox: true);
+                return;
+            }
+
+            whereToGet.Add(new(quest.ID, desiredQuestReward, requieredQuestID, requieredQuestReward));
+        }
+
+        if (whereToGet.All(x => x.desiredQuestReward.Count == 0) || whereToGet.All(x => x.requiredQuestReward.Count == 0))
+        {
+            Core.Logger("None of Quest IDs filled in are supposed to be used in the LegacyQuestManager, " +
+                        "please report to the bot makers that they must make this story line in the normal way.",
+                        messageBox: true);
+            return;
+        }
+
+        int finalItemQuestID = whereToGet.Find(x => x.desiredQuestReward.Count == 0).desiredQuestID;
+        if (finalItemQuestID <= 0)
+        {
+            Core.Logger("Could not find the Quest ID of the last quest in the item chain");
+            return;
+        }
+
+        Core.Logger($"Final quest to work torwards: [{finalItemQuestID}] \"{Core.EnsureLoad(finalItemQuestID).Name}\"");
+
+        runQuest(finalItemQuestID);
+
+        List<string> toBank = new();
+        foreach (var l in whereToGet)
+            toBank.AddRange(l.requiredQuestReward.Select(i => i.Name));
+        Core.ToBank(toBank.ToArray());
+
+        void runQuest(int questID)
+        {
+            var runQuestData = whereToGet.Find(d => d.desiredQuestID == questID);
+            var questData = Core.EnsureLoad(questID);
+
+            if (runQuestData == null)
+            {
+                Core.Logger("runQuestData is NULL");
+                return;
+            }
+
+            var requiredReward = runQuestData.requiredQuestReward.Select(i => i.Name).ToArray();
+            if (runQuestData.desiredQuestReward.Count == 0)
+            {
+                if (!Core.CheckInventory(requiredReward))
+                    runQuest(runQuestData.requieredQuestID);
+                return;
+            }
+
+            var desiredReward = runQuestData.desiredQuestReward.Select(i => i.Name).ToArray();
+            if (Core.CheckInventory(desiredReward))
+            {
+                Core.Logger($"Already Completed: [{questID}] - \"{questData.Name}\"", "QuestProgression");
+                return;
+            }
+
+            if (!Core.CheckInventory(requiredReward))
+                runQuest(runQuestData.requieredQuestID);
+
+            if (_LegacyQuestStop)
+                return;
+
+            Core.Logger($"Doing Quest: [{questID}] - \"{questData.Name}\"", "QuestProgression");
+            Core.EnsureAccept(questID);
+            Core.AddDrop(desiredReward);
+
+            LegacyQuestID = questID;
+            questLogic();
+
+            TryComplete(questData, LegacyQuestAutoComplete);
+            foreach (var i in desiredReward)
+                Bot.Wait.ForPickup(i);
+
+            LegacyQuestAutoComplete = true;
+        }
+    }
+    private class LegacyQuestObject
+    {
+        public int desiredQuestID { get; set; } // In order to do ....
+        public List<ItemBase> desiredQuestReward { get; set; } // And obtain ...
+        public int requieredQuestID { get; set; } // You must do ...
+        public List<ItemBase> requiredQuestReward { get; set; } // And obtain ...
+
+        public LegacyQuestObject(int desiredQuestID, List<ItemBase> desiredQuestReward, int requieredQuestID, List<ItemBase> requiredQuestReward)
+        {
+            this.desiredQuestID = desiredQuestID;
+            this.desiredQuestReward = desiredQuestReward;
+            this.requieredQuestID = requieredQuestID;
+            this.requiredQuestReward = requiredQuestReward;
+        }
+    }
+    public int LegacyQuestID = -1;
+    public bool LegacyQuestAutoComplete = true;
+    private bool _LegacyQuestStop = false;
+    public void LegacyQuestStop() => _LegacyQuestStop = true;
 
     /// <summary>
     /// Put this at the start of your story script so that the bot will load all quests that are used in the bot. This will speed up any progression checks tremendiously.
@@ -465,11 +579,7 @@ public class CoreStory
         {
             lastQuestID = questID;
             Quest quest = Core.EnsureLoad(questID);
-            if (quest == null)
-            {
-                Core.Logger($"Quest [{questID}] doesn't exist", messageBox: true, stopBot: true);
-                return;
-            }
+
             List<string> reqItems = new();
             quest.AcceptRequirements.ForEach(item => reqItems.Add(item.Name));
             quest.Requirements.ForEach(item =>

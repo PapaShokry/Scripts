@@ -99,7 +99,7 @@ public class CoreNation
     /// <summary>
     /// Misc items to accept during Bloody Chaos if turned on
     /// </summary>
-    public string[] BloodyChaosSupplies = 
+    public string[] BloodyChaosSupplies =
     {
         "Tainted Gem",
         "Dark Crystal Shard",
@@ -338,10 +338,10 @@ public class CoreNation
 
         while (!Bot.ShouldExit && !Core.CheckInventory("Tainted Gem", quant))
         {
-            Core.EnsureAccept(7817);
-            Core.KillMonster("boxes", "Fort2", "Left", "*", "Cubes", 500, false, log: false);
-            Core.KillMonster("mountfrost", "War", "Left", "Snow Golem", "Ice Cubes", 6, log: false);
-            Core.EnsureComplete(7817);
+            Core.EnsureAccept(quant % 25 == 0 ? 7817 : 569);
+            Core.KillMonster("boxes", "Fort2", "Left", "*", "Cubes", quant % 25 == 0 ? 500 : 25, false, log: false);
+            Core.KillMonster("mountfrost", "War", "Left", "Snow Golem", "Ice Cubes", quant % 25 == 0 ? 6 : 1, log: false);
+            Core.EnsureComplete(quant % 25 == 0 ? 7817 : 569);
             Bot.Drops.Pickup("Tainted Gem");
             Core.Logger($"Completed x{i++}");
             if (Bot.Inventory.IsMaxStack("Tainted Gem"))
@@ -554,7 +554,7 @@ public class CoreNation
                     Core.HuntMonster("tercessuinotlim", "Dark Makai", "Dark Makai Rune", log: false);
                 }
 
-                Core.KillEscherion("Relic of Chaos", publicRoom: true);
+                Core.KillEscherion("Relic of Chaos", publicRoom: true, log: false);
                 Bot.Drops.Pickup(item);
 
                 if (item != "Voucher of Nulgath" && sellMemVoucher && Core.CheckInventory("Voucher of Nulgath") && !voucherNeeded)
@@ -724,33 +724,34 @@ public class CoreNation
                 }
             }
 
-            if (Core.CheckInventory("Voucher of Nulgath (non-mem)") && item != "Voucher of Nulgath (non-mem)")
-            {
-                Core.EquipClass(ClassType.Farm);
-                Core.EnsureAccept(605);
+            // if (Core.CheckInventory("Voucher of Nulgath (non-mem)") && item != "Voucher of Nulgath (non-mem)")
+            // {
+            //     Core.EquipClass(ClassType.Farm);
+            //     Core.EnsureAccept(605);
 
-                Core.HuntMonster("cloister", "Acornent", "Diamonds of Time", isTemp: false);
-                Core.HuntMonster("evilmarsh", "Tainted Elemental", "Tainted Rune of Evil");
+            //     Core.HuntMonster("cloister", "Acornent", "Diamonds of Time", isTemp: false);
+            //     Core.HuntMonster("evilmarsh", "Tainted Elemental", "Tainted Rune of Evil");
 
-                switch (item)
-                {
-                    case "Tainted Gem":
-                        Core.EnsureComplete(605, 4769);
-                        break;
-                    case "Dark Crystal Shard":
-                        Core.EnsureComplete(605, 4770);
-                        break;
-                    case "Gem of Nulgath":
-                        Core.EnsureComplete(605, 6136);
-                        break;
-                    case "Blood Gem of the Archfiend":
-                        Core.EnsureComplete(605, 22332);
-                        break;
-                    default: // Diamond of Nulgath
-                        Core.EnsureComplete(605, 4771);
-                        break;
-                }
-            }
+            //     switch (item)
+            //     {
+            //         case "Tainted Gem":
+            //             Core.EnsureComplete(605, 4769);
+            //             break;
+            //         case "Dark Crystal Shard":
+            //             Core.EnsureComplete(605, 4770);
+            //             break;
+            //         case "Gem of Nulgath":
+            //             Core.EnsureComplete(605, 6136);
+            //             break;
+            //         case "Blood Gem of the Archfiend":
+            //             Core.EnsureComplete(605, 22332);
+            //             break;
+            //         default: // Diamond of Nulgath
+            //             Core.EnsureComplete(605, 4771);
+            //             break;
+            //     }
+            // } //Disabled to to "Diamonds of Time"'s low Drop rate.
+            
             if (item != "Any")
                 Core.Logger($"{item}: {Bot.Inventory.GetQuantity(item)}/{quant}");
         }
@@ -764,13 +765,14 @@ public class CoreNation
     /// <param name="farmDiamond">Whether or not farm Diamonds</param>
     public void AssistingDrudgen(string item = "Any", int quant = 1)
     {
-        if (!Bot.Quests.IsAvailable(3826) && !Bot.Player.IsMember)
+        if (Core.CheckInventory(item, quant) || !Core.CheckInventory("Drudgen the Assistant") || !Core.CheckInventory("Twin Blade of Nulgath") || !Bot.Player.IsMember)
+            return;
+
+        if (!Bot.Quests.IsAvailable(3826))
         {
-            Core.Logger("Player is Either not a Member, or Quest \"Seal of Light\"[Daily] is Not Available yet today.");
+            Core.Logger("Quest \"Seal of Light\"[Daily] is not available yet today.");
             return;
         }
-        if ((Core.CheckInventory(item, quant) || !Core.CheckInventory("Drudgen the Assistant") || !Core.CheckInventory("Twin Blade of Nulgath")))
-            return;
 
         while (!Bot.ShouldExit && !Core.CheckInventory(item, quant))
         {
@@ -789,6 +791,37 @@ public class CoreNation
             }
             Core.EnsureComplete(5816);
         }
+    }
+
+    public void VoidKightSwordQuest(string item = "Any", int quant = 1)
+    {
+        if (Core.CheckInventory(item, quant) || (!Core.CheckInventory(38275) && !Core.CheckInventory(38254)))
+            return;
+
+        Core.AddDrop(bagDrops);
+        Core.AddDrop(item);
+
+        if (Core.CBOBool("Nation_SellMemVoucher", out bool _sellMemVoucher))
+            sellMemVoucher = _sellMemVoucher;
+
+        if (item != "Any")
+            Core.FarmingLogger(item, quant);
+
+        Core.RegisterQuests(Core.CheckInventory(38275) ? 5662 : 5659);
+        while (!Bot.ShouldExit && !Core.CheckInventory(item, quant))
+        {
+            Core.EquipClass(ClassType.Solo);
+            Core.HuntMonster("mobius", "Slugfit", "Slugfit Horn", 5);
+            Core.HuntMonster("faerie", "Aracara", "Aracara Silk");
+
+            Core.EquipClass(ClassType.Farm);
+            Core.KillMonster("tercessuinotlim", "m2", "Bottom", "Dark Makai", "Makai Fang", 5);
+            Core.HuntMonster("hydra", "Fire Imp", "Imp Flame", 3);
+            Core.HuntMonster("battleunderc", "Crystalized Jellyfish", "Aquamarine of Nulgath", 3, false);
+
+            Bot.Drops.Pickup(bagDrops);
+        }
+        Core.CancelRegisteredQuests();
     }
 
     /// <summary>
@@ -881,6 +914,7 @@ public class CoreNation
             while (!Bot.ShouldExit && !Core.CheckInventory("Unidentified 13", quant))
                 DiamondExchange();
         NewWorldsNewOpportunities("Unidentified 13", quant);
+        VoidKightSwordQuest("Unidentified 13", quant);
         NulgathLarvae("Unidentified 13", quant);
     }
 
@@ -912,6 +946,7 @@ public class CoreNation
         if (Bot.Player.Gold > 30000000)
             TheAssistant("Gem of Nulgath", quant);
         NewWorldsNewOpportunities("Dark Crystal Shard", quant);
+        VoidKightSwordQuest("Dark Crystal Shard", quant);
         Supplies("Dark Crystal Shard", quant);
         EssenceofDefeatReagent(quant);
     }
@@ -928,6 +963,7 @@ public class CoreNation
         Core.AddDrop("Diamond of Nulgath");
 
         NewWorldsNewOpportunities("Diamond of Nulgath", quant);
+        VoidKightSwordQuest("Diamond of Nulgath", quant);
         Supplies("Diamond of Nulgath", quant);
         DiamondEvilWar(quant);
     }
@@ -938,6 +974,7 @@ public class CoreNation
             return;
 
         NewWorldsNewOpportunities("Fiend Token", quant);
+        VoidKightSwordQuest("Fiend Token", quant);
         AssistingDrudgen("Fiend Token", quant);
     }
 
@@ -955,6 +992,7 @@ public class CoreNation
         if (Bot.Player.Gold > 30000000)
             TheAssistant("Gem of Nulgath", quant);
         NewWorldsNewOpportunities("Gem of Nulgath", quant);
+        VoidKightSwordQuest("Gem of Nulgath", quant);
         while (!Bot.ShouldExit && !Core.CheckInventory("Gem of Nulgath", quant))
             VoucherItemTotemofNulgath(ChooseReward.GemofNulgath);
     }
@@ -974,6 +1012,7 @@ public class CoreNation
             while (!Bot.ShouldExit && !Core.CheckInventory("Blood Gem of the Archfiend", quant))
                 ContractExchange(ChooseReward.BloodGemoftheArchfiend);
         NewWorldsNewOpportunities("Blood Gem of the Archfiend", quant);
+        VoidKightSwordQuest("Blood Gem of the Archfiend", quant);
         BloodyChaos(quant, true);
         KisstheVoid(quant);
     }
@@ -1038,6 +1077,7 @@ public class CoreNation
         Core.AddDrop("Totem of Nulgath");
 
         NewWorldsNewOpportunities("Totem of Nulgath", quant);
+        VoidKightSwordQuest("Totem of Nulgath", quant);
         while (!Bot.ShouldExit && !Core.CheckInventory("Totem of Nulgath", quant))
             VoucherItemTotemofNulgath(ChooseReward.TotemofNulgath);
         if (Bot.Inventory.IsMaxStack("Totem of Nulgath"))
@@ -1058,6 +1098,7 @@ public class CoreNation
 
         BambloozevsDrudgen(member ? "Voucher of Nulgath" : "Voucher of Nulgath (non-mem)");
         NewWorldsNewOpportunities(member ? "Voucher of Nulgath" : "Voucher of Nulgath (non-mem)");
+        VoidKightSwordQuest(member ? "Voucher of Nulgath" : "Voucher of Nulgath (non-mem)");
         Supplies(member ? "Voucher of Nulgath" : "Voucher of Nulgath (non-mem)");
     }
 

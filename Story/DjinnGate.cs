@@ -24,7 +24,7 @@ public class DjinnGateStory
 
     public void DjinnGate()
     {
-        if (Core.isCompletedBefore(7312))
+        if (Core.isCompletedBefore(7312) && Core.isCompletedBefore(6161))
             return;
 
         Story.PreLoad(this);
@@ -95,17 +95,16 @@ public class DjinnGateStory
         {
             Core.EnsureAccept(6158);
             Core.EquipClass(ClassType.Solo);
-            Core.KillMonster("doomkitten", "Enter", "Spawn", "*", "Potent DoomKitten Mana", publicRoom: true);
+            Core.KillMonster("doomkitten", "Enter", "Spawn", "*", "Potent DoomKitten Mana");
             Core.KillMonster("bloodtitan", "Ultra", "Left", "*", "Potent Blood Titan Mana");
             Core.HuntMonster("trigoras", "Trigoras", "Potent Trigoras Mana");
             Core.KillMonster("phoenixrise", "r8", "Left", "*", "Potent CinderClaw Mana");
-            Core.KillMonster("thevoid", "r16", "Left", "*", "Potent Reaper Mana", publicRoom: true);
+            Core.KillMonster("thevoid", "r16", "Left", "*", "Potent Reaper Mana");
             Core.EnsureComplete(6158);
         }
 
         //Break the Seal 6159
         Story.MapItemQuest(6159, "djinngate", 5571, 5, false);
-
 
         if (!Story.QuestProgression(6160))
         {

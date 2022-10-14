@@ -4,7 +4,7 @@
 //cs_include Scripts/CoreDailies.cs
 //cs_include Scripts/CoreAdvanced.cs
 //cs_include Scripts/Story/7DeadlyDragons/Core7DD.cs
-//cs_include Scripts/Story/Table.cs
+//cs_include Scripts/Story/GiantTaleStory.cs
 //cs_include Scripts/Farm/BuyScrolls.cs
 //cs_include Scripts/Story/ShadowSlayerK.cs
 using Skua.Core.Interfaces;
@@ -53,9 +53,9 @@ public class ShadowslayerSummoningRitual
             {
                 Core.Logger($"Getting {item}. Rewards Left: {Rewards.Count() - count} more item" + ((Rewards.Count() - count) > 1 ? "s" : ""));
 
-                Scroll.BuyScroll(BuyScrolls.Scrolls.SpiritRend, 30);
-                Scroll.BuyScroll(BuyScrolls.Scrolls.Eclipse, 15);
-                Scroll.BuyScroll(BuyScrolls.Scrolls.BlessedShard, 30);
+                Scroll.BuyScroll(Scrolls.SpiritRend, 30);
+                Scroll.BuyScroll(Scrolls.Eclipse, 15);
+                Scroll.BuyScroll(Scrolls.BlessedShard, 30);
                 if (!Core.CheckInventory("Meat Ration"))
                 {
                     Core.AddDrop("Meat Ration");

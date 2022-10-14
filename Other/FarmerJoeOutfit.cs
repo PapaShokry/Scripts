@@ -30,7 +30,7 @@
 //cs_include Scripts/Other/Classes/REP-based/StoneCrusher.cs
 //cs_include Scripts/Other/Classes/REP-based/EternalInversionist.cs
 //cs_include Scripts/Good/Paladin.cs
-
+//cs_include Scripts/Other\Weapons\EnchantedVictoryBladeWeapons.cs
 using Skua.Core.Interfaces;
 using Skua.Core.Options;
 
@@ -56,12 +56,13 @@ public class FarmerJoeStartingTheAcc
     public EvolvedShaman ES = new();
     public GlacialBerserker GB = new();
     public StoneCrusher SC = new();
+    public EnchantedVictoryBladeWeapons EVBW = new();
 
     public string OptionsStorage = "FarmerJoePet";
     public bool DontPreconfigure = true;
     public List<IOption> Options = new List<IOption>()
     {
-        new Option<bool>("SkipOption", "Skip this window next time", "You will be able to return to this screen via [Options] -> [Script Options] if you wish to change anything.", false),
+        CoreBots.Instance.SkipOptions,
         new Option<bool>("OutFit", "Get a Pre-Made Outfit, Curtious of the Community", "We are farmers, bum ba dum bum bum bum bum", false),
         new Option<bool>("EquipOutfit", "Equip outfit at the end?", "Yay or Nay", false),
         new Option<PetChoice>("PetChoice", "Choose Your Pet", "Extra stuff to choose, if you have any suggestions -form in disc, and put it under request. or dm Tato(the retarded one on disc)", PetChoice.None),
@@ -79,19 +80,16 @@ public class FarmerJoeStartingTheAcc
 
     public void StartingTheAcc()
     {
-        if (!Bot.Config.Get<bool>("SkipOption"))
-            Bot.Config.Configure();
-
         #region starting out the acc
         Core.BuyItem("classhalla", 176, "Healer");
         Farm.Experience(30);
 
         #endregion starting out the acc
 
-        #region Obtain the Silver Victory Blade
+        #region Obtain the Enchanted Victory Blade
 
-        Core.BuyItem("river", 1213, "Silver Victory Blade");
-        Core.Equip("Silver Victory Blade");
+        EVBW.EnchantedVictoryBlade();
+        Core.Equip("Enchanted Victory Blade");
         InvEn.EnhanceInventory();
         #endregion Obtain the Silver Victory Blade
 
@@ -101,7 +99,7 @@ public class FarmerJoeStartingTheAcc
 
         #region Prepare for Lvl100
         //step 1 Farming Class:
-        LOC.Complete13LOC();
+        LOC.Complete13LOC(true);
         Farm.ChaosREP();
         Adv.BuyItem("Confrontation", 891, "Chaos Slayer Berserker", shopItemID: 24359);
         AP.GetAP();
@@ -139,8 +137,8 @@ public class FarmerJoeStartingTheAcc
         #region Ending & Extras 
         //Pre-Farm Enh
         Adv.EnhanceEquipped(EnhancementType.Lucky);
-        InvEn.EnhanceInventory();
         Scythe.GetHBReapersScythe();
+        InvEn.EnhanceInventory();
         #endregion Ending & Extras
 
         if (Bot.Config.Get<bool>("OutFit"))
@@ -174,7 +172,7 @@ public class FarmerJoeStartingTheAcc
             Core.Equip(new[] { "Peasant Rags", "Scarecrow Hat", "The Server is Down", "Hollowborn Reaper's Scythe" });
             Core.Equip(Bot.Config.Get<PetChoice>("PetChoice").ToString());
         }
-        
+
         Core.Logger("We are farmers, bum ba dum bum bum bum bum");
     }
 

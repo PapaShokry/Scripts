@@ -31,7 +31,7 @@ public class CoreAdvanced
     /// <param name="quant">Desired quantity</param>
     /// <param name="shopQuant">How many items you get for 1 buy</param>
     /// <param name="shopItemID">Use this for Merge shops that has 2 or more of the item with the same name and you need the second/third/etc., be aware that it will re-log you after to prevent ghost buy. To get the ShopItemID use the built in loader of Skua</param>
-    public void BuyItem(string map, int shopID, string itemName, int quant = 1, int shopQuant = 1, int shopItemID = 0)
+    public void BuyItem(string map, int shopID, string itemName, int quant = 1, int shopItemID = 0)
     {
         if (Core.CheckInventory(itemName, quant))
             return;
@@ -40,7 +40,7 @@ public class CoreAdvanced
         if (item == null)
             return;
 
-        _BuyItem(map, shopID, item, quant, shopQuant, shopItemID);
+        _BuyItem(map, shopID, item, quant, shopItemID);
     }
 
     /// <summary>
@@ -61,10 +61,10 @@ public class CoreAdvanced
         if (item == null)
             return;
 
-        _BuyItem(map, shopID, item, quant, shopQuant, shopItemID);
+        _BuyItem(map, shopID, item, quant, shopItemID);
     }
 
-    private void _BuyItem(string map, int shopID, ShopItem item, int quant = 1, int shopQuant = 1, int shopItemID = 0)
+    private void _BuyItem(string map, int shopID, ShopItem item, int quant = 1, int shopItemID = 0)
     {
         GetItemReq(item);
 
@@ -80,8 +80,7 @@ public class CoreAdvanced
             }
         }
 
-        if (canBuy(new List<ShopItem>() { item }, shopID, item.Name))
-            Core.BuyItem(map, shopID, item.Name, quant, shopQuant, shopItemID);
+        Core.BuyItem(map, shopID, item.Name, quant, shopItemID);
     }
 
     /// <summary>
@@ -213,7 +212,7 @@ public class CoreAdvanced
                             Bot.Sleep(Core.ActionDelay);
 
                             if (!matsOnly)
-                                BuyItem(map, shopID, selectedItem.ID, (Bot.Inventory.GetQuantity(selectedItem.ID) + selectedItem.Quantity), selectedItem.Quantity);
+                                BuyItem(map, shopID, selectedItem.ID, (Bot.Inventory.GetQuantity(selectedItem.ID) + selectedItem.Quantity));
                             else break;
                         }
                     }
@@ -244,114 +243,13 @@ public class CoreAdvanced
     public List<string> AltFarmItems = new();
 
     /// <summary>
-    /// Checks if everything needed to buy the item is present, if not, it will log and return false
-    /// </summary>
-    /// <param name="map">The map where the shop can be loaded from</param>
-    /// <param name="shopID">The shop ID to load the shopdata</param>
-    /// <param name="itemName">The name of the item you're gonna check</param>
-    public bool canBuy(string map, int shopID, string itemName)
-    {
-        List<ShopItem> shopItem = Core.GetShopItems(map, shopID).Where(x => x.Name == itemName).ToList();
-        return canBuy(shopItem, shopID, itemName);
-    }
-
-    /// <summary>
-    /// Checks if everything needed to buy the item is present, if not, it will log and return false
-    /// </summary>
-    /// <param name="map">The map where the shop can be loaded from</param>
-    /// <param name="shopID">The shop ID to load the shopdata</param>
-    /// <param name="itemID">The ID of the item you're gonna check</param>
-    public bool canBuy(string map, int shopID, int itemID)
-    {
-        List<ShopItem> shopItem = Core.GetShopItems(map, shopID).Where(x => x.ID == itemID).ToList();
-        return canBuy(shopItem, shopID, itemID.ToString());
-    }
-
-    private bool canBuy(List<ShopItem> shopItem, int shopID, string itemNameID = "")
-    {
-        ShopItem item = Core.parseShopItem(shopItem, shopID, itemNameID);
-        if (item == null)
-            return false;
-
-        //Achievement Check
-        int achievementID = Bot.Flash.GetGameObject<int>("world.shopinfo.iIndex");
-        string io = Bot.Flash.GetGameObject<string>("world.shopinfo.sField");
-        if (achievementID > 0 && io != null && !Core.HasAchievement(achievementID, io))
-        {
-            Core.Logger($"Cannot buy {item.Name} from {shopID} because you dont have achievement {achievementID} of category {io}.");
-            return false;
-        }
-
-        //Member Check
-        if (item.Upgrade && !Core.IsMember)
-        {
-            Core.Logger($"Cannot buy {item.Name} from {shopID} because you aren't a member.");
-            return false;
-        }
-
-        //Requiered-Item Check
-        int reqItemID = Bot.Flash.GetGameObject<int>("world.shopinfo.reqItems");
-        if (reqItemID > 0 && !Core.CheckInventory(reqItemID))
-        {
-            Core.Logger($"Cannot buy {item.Name} from {shopID} because you dont have the requiered item needed to buy stuff from the shop, itemID: {reqItemID}");
-            return false;
-        }
-
-        //Quest Check
-        //string questName = Bot.Flash.GetGameObject<string>($"world.shopinfo.items[{item.ID}].sQuest");
-        //List<QuestData> cache = Bot.Quests.Cached;
-        //Bot.Quests.Cached.Count;
-
-        //Rep check
-        if (!String.IsNullOrEmpty(item.Faction) && item.Faction != "None")
-        {
-            int reqRank = RepCPLevel.First(x => x.Key == item.RequiredReputation).Value;
-            if (reqRank > Farm.FactionRank(item.Faction))
-            {
-                Core.Logger($"Cannot buy {item.Name} from {shopID} because you dont have rank {reqRank} {item.Faction}.");
-                return false;
-            }
-        }
-
-        //Merge item check
-        if (item.Requirements != null)
-        {
-            foreach (ItemBase req in item.Requirements)
-            {
-                Bot.Drops.Pickup(req.ID);
-                Bot.Wait.ForPickup(req.ID);
-
-                if (!Core.CheckInventory(req.ID, req.Quantity))
-                {
-                    if (Core.CheckInventory(req.ID))
-                    {
-                        Core.Logger($"Cannot buy {item.Name} from {shopID}. You own {Bot.Inventory.GetQuantity(req.ID)}x {req.Name} but need {req.Quantity} .");
-                        return false;
-                    }
-                    Core.Logger($"Cannot buy {item.Name} from {shopID} because {req.Name} is missing.");
-                    return false;
-                }
-            }
-        }
-
-        //Gold check
-        if (item.Cost > Bot.Player.Gold)
-        {
-            Core.Logger($"Cannot buy {item.Name} from {shopID} because you are missing {item.Cost - Bot.Player.Gold} gold.");
-            return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
     /// Will make sure you have every requierment (XP, Rep and Gold) to buy the item.
     /// </summary>
     /// <param name="item">The ShopItem object containing all the information</param>
     public void GetItemReq(ShopItem item)
     {
         if (item.Faction != null && item.Faction != "None" && item.RequiredReputation > 0)
-            runRep(item.Faction, RepCPLevel.First(x => x.Key == item.RequiredReputation).Value);
+            runRep(item.Faction, Core.RepCPLevel.First(x => x.Key == item.RequiredReputation).Value);
         Farm.Experience(item.Level);
         Farm.Gold(item.Cost);
     }
@@ -388,20 +286,6 @@ public class CoreAdvanced
             Core.Logger($"Faction {faction} has invalid paramaters, please report", messageBox: true, stopBot: true);
         }
     }
-
-    private Dictionary<int, int> RepCPLevel = new()
-    {
-        { 0, 1 },
-        { 900, 2 },
-        { 3600, 3 },
-        { 10000, 4 },
-        { 22500, 5 },
-        { 44100, 6 },
-        { 78400, 7 },
-        { 129600, 8 },
-        { 202500, 9 },
-        { 302500, 10 }
-    };
 
     /// <summary>
     /// The list of ScriptOptions for any merge script.
@@ -858,7 +742,7 @@ public class CoreAdvanced
                 ReHEnhanceAfter = CurrentHelmSpecial();
             ReWEnhanceAfter = CurrentWeaponSpecial();
         }
-        else
+        else if (ReEquippedItems.Count() > 0)
         {
             Core.Equip(ReEquippedItems.ToArray());
             EnhanceEquipped(ReEnhanceAfter, ReCEnhanceAfter, ReHEnhanceAfter, ReWEnhanceAfter);
@@ -911,7 +795,7 @@ public class CoreAdvanced
             return;
         EnhanceItem(_BestGear, CurrentClassEnh(), CurrentCapeSpecial(), CurrentHelmSpecial(), CurrentWeaponSpecial());
         Core.Equip(_BestGear);
-        EnhanceEquipped(CurrentClassEnh(), CurrentCapeSpecial(), CurrentHelmSpecial(), CurrentWeaponSpecial());
+        //EnhanceEquipped(CurrentClassEnh(), CurrentCapeSpecial(), CurrentHelmSpecial(), CurrentWeaponSpecial());
         Core.Join(Map);
     }
 
@@ -933,7 +817,7 @@ public class CoreAdvanced
             return;
         EnhanceItem(_BestGear, CurrentClassEnh(), CurrentCapeSpecial(), CurrentHelmSpecial(), CurrentWeaponSpecial());
         Core.Equip(_BestGear);
-        EnhanceEquipped(CurrentClassEnh(), CurrentCapeSpecial(), CurrentHelmSpecial(), CurrentWeaponSpecial());
+        //EnhanceEquipped(CurrentClassEnh(), CurrentCapeSpecial(), CurrentHelmSpecial(), CurrentWeaponSpecial());
         Core.Join(Map);
     }
 
@@ -1660,6 +1544,7 @@ public class CoreAdvanced
             #endregion
 
             #region Lucky - Vainglory - Valiance
+            case "archmage":
             case "archfiend":
                 if (!uVainglory() || !uValiance())
                     goto default;
@@ -1670,6 +1555,19 @@ public class CoreAdvanced
                 break;
             #endregion
 
+            #region Lucky - Vainglory - Valiance - Vim
+            case "continuum chronomancer":
+            case "quantum chronomancer":
+                if (!uVainglory() || !uValiance() || !uVim())
+                    goto default;
+
+                type = EnhancementType.Lucky;
+                cSpecial = CapeSpecial.Vainglory;
+                wSpecial = WeaponSpecial.Valiance;
+                hSpecial = HelmSpecial.Vim;
+                break;
+
+            #endregion
             #endregion
             #region Awe Enhancement Library
             default:
@@ -1681,6 +1579,7 @@ public class CoreAdvanced
                     case "archpaladin":
                     case "artifact hunter":
                     case "assassin":
+                    case "archmage":
                     case "beastmaster":
                     case "berserker":
                     case "beta berserker":

@@ -20,7 +20,7 @@ public class NecroDungeon
 
     public void NecrodungeonStoryLine()
     {
-        if (Core.isCompletedBefore(2061))
+        if (Core.isCompletedBefore(2077))
         {
             Core.Logger($"Story: Necro Dungeon - Complete");
             return;
@@ -33,8 +33,8 @@ public class NecroDungeon
         if (!Story.QuestProgression(2044))
         {
             Core.EnsureAccept(2044);
-            Core.HuntMonsterMapID("necrodungeon", 10 | 11, "F1 Floor Descended", 10);
-            Core.KillMonster("necrodungeon", "r6", "Down", "Bellhop", "1 Floor Descended", 10);
+            Core.JumpWait();
+            Core.KillMonster("necrodungeon", "r6", "Down", "*", "1 Floor Descended", 10);
             Core.EnsureComplete(2044);
         }
 
@@ -58,7 +58,8 @@ public class NecroDungeon
         if (!Story.QuestProgression(2049))
         {
             Core.EnsureAccept(2049);
-            Core.HuntMonsterMapID("necrodungeon", 24 | 25, "F1 Floor Descended", 10);
+            Core.KillMonster("necrodungeon", "r11", "Down", "*", "1 Floor Descended", 10);
+            Core.JumpWait();
             Core.EnsureComplete(2049);
         }
 
@@ -92,7 +93,8 @@ public class NecroDungeon
         if (!Story.QuestProgression(2056))
         {
             Core.EnsureAccept(2056);
-            Core.HuntMonsterMapID("necrodungeon", 36 | 37, "F1 Floor Descended", 10);
+            Core.JumpWait();
+            Core.KillMonster("necrodungeon", "r18", "Down", "*", "1 Floor Descended", 10);
             Core.EnsureComplete(2056);
         }
 
@@ -122,5 +124,34 @@ public class NecroDungeon
 
         //the past will haunt you - 2061
         Story.MapItemQuest(2061, "necrodungeon", 1020);
+
+        // [[[ Necrocavern Map]]]
+
+        //Thou Shalt Not Pass 2070
+        Story.KillQuest(2070, "necrocavern", "Shadowstone Elemental");
+
+        //Blinded by the Darkness 2071
+        Story.MapItemQuest(2071, "necrocavern", 1042, 6);
+        Story.KillQuest(2071, "necrocavern", "Shadow Imp");
+
+        //The Tale Never Dies 2072
+        Story.MapItemQuest(2072, "necrocavern", 1044);
+        Story.MapItemQuest(2072, "necrocavern", 1045, 3);
+        Story.KillQuest(2072, "necrocavern", new[] { "Shadowstone Elemental", "Shadow Imp" });
+
+        //Doom Outside the Dome 2073
+        Story.KillQuest(2073, "necrocavern", "Shadowstone Elemental");
+
+        //Last Bastion of Light 2074
+        Story.KillQuest(2074, "necrocavern", new[] { "Shadowstone Elemental", "Shadow Imp" });
+
+        //Shadowy Corruption 2075
+        Story.MapItemQuest(2075, "necrocavern", 1043, 5);
+
+        //Strength of the Darkness 2076
+        Story.KillQuest(2076, "necrocavern", "Shadow Dragon");
+
+        //Bring Down the Necropolis 2077
+        Story.KillQuest(2077, "necrocavern", "Shadowstone Support");
     }
 }

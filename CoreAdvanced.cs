@@ -481,7 +481,6 @@ public class CoreAdvanced
 
         Farm.IcestormArena(Bot.Player.Level, true);
         Core.Logger($"\"{itemInv.Name}\" is now Rank 10");
-
         if (GearRestore)
             GearStore(true);
     }
@@ -612,6 +611,11 @@ public class CoreAdvanced
             else foreach (InventoryItem iAll in AllDMGallItems)
                     BestGearData.Add(new("", iAll.Name, getBoostFloat(iAll, "dmgAll")));
 
+            if (BestGearData.Count == 0)
+            {
+                Core.Logger("Best gear " + (isRacial() ? "against " : "for ") + $"{BoostType.ToString()} wasnt found!");
+                return new[] { "" };
+            }
             BestGearData FinalCombo = BestGearData.MaxBy(x => x.BoostValue) ?? new("", "", 0);
             TotalBoostValue = FinalCombo.BoostValue;
             string BestRace = FinalCombo.iRace ?? "";
@@ -921,7 +925,7 @@ public class CoreAdvanced
     /// <returns>Returns the equipped Enhancement Type</returns>
     public EnhancementType CurrentClassEnh()
     {
-        int? EnhPatternID = Bot.Player.CurrentClass?.EnhancementPatternID;
+        int? EnhPatternID = getEnhPatternID(Bot.Player.CurrentClass!);
         if (EnhPatternID == 1 || EnhPatternID == 23 || EnhPatternID == null)
             EnhPatternID = 9;
         return (EnhancementType)EnhPatternID;
@@ -936,7 +940,7 @@ public class CoreAdvanced
         InventoryItem? EquippedCape = Bot.Inventory.Items.Find(i => i.Equipped && i.Category == ItemCategory.Cape);
         if (EquippedCape == null)
             return CapeSpecial.None;
-        return (CapeSpecial)EquippedCape.EnhancementPatternID;
+        return (CapeSpecial)getEnhPatternID(EquippedCape);
     }
 
     /// <summary>
@@ -948,7 +952,7 @@ public class CoreAdvanced
         InventoryItem? EquippedHelm = Bot.Inventory.Items.Find(i => i.Equipped && i.Category == ItemCategory.Helm);
         if (EquippedHelm == null)
             return HelmSpecial.None;
-        return (HelmSpecial)EquippedHelm.EnhancementPatternID;
+        return (HelmSpecial)getEnhPatternID(EquippedHelm);
     }
 
     /// <summary>
@@ -960,7 +964,7 @@ public class CoreAdvanced
         InventoryItem? EquippedWeapon = Bot.Inventory.Items.Find(i => i.Equipped && WeaponCatagories.Contains(i.Category));
         if (EquippedWeapon == null)
             return WeaponSpecial.None;
-        return (WeaponSpecial)Bot.Flash.GetGameObject<int>($"world.invTree.{EquippedWeapon.ID}.ProcID");
+        return (WeaponSpecial)getProcID(EquippedWeapon);
     }
 
     private static ItemCategory[] EnhanceableCatagories =
@@ -1059,6 +1063,9 @@ public class CoreAdvanced
                 case EnhancementType.Lucky:
                     shopID = Bot.Player.Level >= 50 ? 763 : 147;
                     break;
+                default:
+                    Core.Logger($"Enhancement Failed: Invalid EnhancementType given, received {(int)type} | {type}");
+                    return;
             }
 
             // Enhancing the remaining items
@@ -1105,6 +1112,9 @@ public class CoreAdvanced
                     if (!uLament())
                         Fail();
                     break;
+                default:
+                    Core.Logger($"Enhancement Failed: Invalid CapeSpecial given, received {(int)cSpecial} | {cSpecial}");
+                    return;
 
                     void Fail()
                     {
@@ -1142,6 +1152,9 @@ public class CoreAdvanced
                     if (!uPneuma())
                         Fail();
                     break;
+                default:
+                    Core.Logger($"Enhancement Failed: Invalid HelmSpecial given, received {(int)hSpecial} | {hSpecial}");
+                    return;
 
                     void Fail()
                     {
@@ -1187,6 +1200,9 @@ public class CoreAdvanced
                     case EnhancementType.Lucky:
                         shopID = 639;
                         break;
+                    default:
+                        Core.Logger($"Enhancement Failed: Invalid EnhancementType given, received {(int)wSpecial} | {wSpecial}");
+                        return;
                 }
             }
             else
@@ -1228,6 +1244,9 @@ public class CoreAdvanced
                         if (!uArchon())
                             Fail();
                         break;
+                    default:
+                        Core.Logger($"Enhancement Failed: Invalid WeaponSpecial given, received {(int)wSpecial} | {wSpecial}");
+                        return;
 
                         void Fail()
                         {
@@ -1484,10 +1503,10 @@ public class CoreAdvanced
             case "shadowwalker of time":
             case "shadowstalker of time":
             case "shadowweaver of time":
-            case "yami no ronin":
             case "legendary elemental warrior":
             case "ultra elemental warrior":
             case "chaos avenger":
+            case "yami no ronin":
                 if (!uForgeCape())
                     goto default;
 
@@ -1665,6 +1684,7 @@ public class CoreAdvanced
                     case "unlucky leperchaun":
                     case "void highlord":
                     case "void highlord (ioda)":
+
                         type = EnhancementType.Lucky;
                         wSpecial = WeaponSpecial.Spiral_Carve;
                         break;
@@ -1863,6 +1883,7 @@ public class CoreAdvanced
                         wSpecial = WeaponSpecial.Health_Vamp;
                         break;
                     #endregion
+
                     default:
                         Core.Logger($"Class: \"{Class}\" is not found in the Smart Enhance Library, please report to Lord Exelot#9674", messageBox: true);
                         return;

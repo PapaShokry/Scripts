@@ -285,11 +285,11 @@ public class CoreArmyLite
         string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         string combinedDigits = "";
 
-        foreach (char c in (Core.AppPath ?? "").ToUpper())
+        foreach (char c in (Core.AppPath ?? Bot.Config!.Get<string>(player1)!).ToUpper())
         {
             if (char.IsDigit(c))
                 combinedDigits += c;
-            else if (char.IsLetter(c))
+            else if (char.IsLetter(c) && Alphabet.Contains(c))
                 combinedDigits += Alphabet.IndexOf(c);
 
             if (combinedDigits.Length >= 36)

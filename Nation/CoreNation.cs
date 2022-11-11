@@ -185,7 +185,7 @@ public class CoreNation
             if (!Core.CheckInventory("Slugfit Horn", 5) || !Core.CheckInventory("Cyclops Horn", 3))
             {
                 Core.JoinSWF("mobius", "ChiralValley/town-Mobius-21Feb14.swf");
-                Core.HuntMonsterMapID("mobius", 10, "Slugfit Horn", 5, log: false);
+                Core.HuntMonster("mobius", "Slugfit", "Slugfit Horn", 5, log: false);
                 Core.HuntMonster("mobius", "Cyclops Warlord", "Cyclops Horn", 3, log: false);
             }
             Core.KillMonster("tercessuinotlim", "m2", "Bottom", "Dark Makai", "Makai Fang", 5, log: false);
@@ -1120,7 +1120,7 @@ public class CoreNation
             Core.EquipClass(ClassType.Solo);
             Core.KillEscherion("Escherion's Helm", isTemp: false);
             Core.KillVath("Shattered Legendary Sword of Dragon Control", isTemp: false);
-            Core.EquipClass(ClassType.Farm);
+            Core.EquipClass(ClassType.Solo);
             Core.HuntMonster("hydrachallenge", "Hydra Head 85", "Hydra Scale Piece", 200, false);
         }
         Core.CancelRegisteredQuests();
@@ -1440,6 +1440,22 @@ public class CoreNation
         Core.HuntMonster("underworld", "Undead Legend", "Undead Legend Rune", log: false);
         Core.EnsureComplete(867);
         Bot.Wait.ForPickup("Nulgath Larvae");
+    }
+
+
+    public void SwindlesBilk(string item, int quantity)
+    {
+
+        string Uni(int nr)
+            => $"Unidentified {nr}";
+
+        string[] rPDSuni = new[] { Uni(1), Uni(6), Uni(9), Uni(16), Uni(20) };
+        Core.AddDrop(rPDSuni);
+        Core.AddDrop("Blood Gem of Nulgath");
+
+
+
+
     }
 }
 public enum ChooseReward

@@ -87,8 +87,13 @@ public class Core13LoC
         Story.KillQuest(196, "chaoscrypt", "Chaorrupted Armor");
 
         //Unlife Insurance
-        Story.MapItemQuest(6216, "prison", 39, 5);
-        Story.BuyQuest(6216, "prison", 1559, "Unlife Insurance Bond");
+        if (!Story.QuestProgression(6216))
+        {
+            Core.EnsureAccept(6216);
+            Core.GetMapItem(39, 5, "prison");
+            Adv.BuyItem("prison", 1559, 42993);
+            Core.EnsureComplete(6216);
+        }
 
         //Enter the Crypt
         Story.MapItemQuest(6217, "chaoscrypt", 5662);
@@ -1571,6 +1576,18 @@ public class Core13LoC
                 Core.HuntMonster("mqlesson", "Dragonoid", "Dragonoid of Hours", isTemp: false);
             Story.KillQuest(2519, "timespace", "Chaos Lord Iadoa");
         }
+
+        if (Core.IsMember)
+        {
+            //Defeat Ultra Kathool 2520
+            Story.KillQuest(2520, "ultravoid", "Ultra Kathool");
+
+            //Defeat Ultra Iadoa 2521 (Badge)
+            Story.KillQuest(2521, "ultracarnax", "Ultra Iadoa");
+
+            // Ultra Carnax Challenge Fight! 2388  (Not in Story Slo but Badge relevant to thi)
+            Story.KillQuest(2388, "ultracarnax", "Ultra-Carnax");
+        }
     }
 
     public void Lionfang()
@@ -1894,11 +1911,11 @@ public class Core13LoC
         Story.MapItemQuest(3183, "battleontown", 2203);
 
 
-        Core.AddDrop("Perfect Prism", "Unchaorrupted Sample", "Harpy Feather");
 
         //Reflect the Damage
-        if (!Story.QuestProgression(3184))
+        if (!Story.QuestProgression(3184) || (Core.isCompletedBefore(3188) ? false : !Core.CheckInventory("Perfect Prism")) )
         {
+            Core.AddDrop("Perfect Prism");
             Core.EnsureAccept(3184);
             Core.HuntMonster("earthstorm", "Shard Spinner", "Reflective Fragment", 5);
             Core.EnsureComplete(3184);
@@ -1906,8 +1923,9 @@ public class Core13LoC
         }
 
         //Pure Chaos
-        if (!Story.QuestProgression(3185))
+        if (!Story.QuestProgression(3185) || (Core.isCompletedBefore(3188) ? false : !Core.CheckInventory("Unchaorrupted Sample")) )
         {
+            Core.AddDrop("Unchaorrupted Sample");
             Core.EnsureAccept(3185);
             Core.HuntMonster("bloodtuskwar", "Chaotic Horcboar", "Vials of Blood", 5);
             Core.EnsureComplete(3185);
@@ -1915,8 +1933,9 @@ public class Core13LoC
         }
 
         //Enemies of a Feather Flock Together
-        if (!Story.QuestProgression(3186))
+        if (!Story.QuestProgression(3186) || (Core.isCompletedBefore(3188) ? false : !Core.CheckInventory("Harpy Feather")) )
         {
+            Core.AddDrop("Harpy Feather");
             Core.EnsureAccept(3186);
             Core.HuntMonster("bloodtuskwar", "Chaos Tigriff", "Feathers", 5);
             Core.EnsureComplete(3186);
@@ -1924,25 +1943,10 @@ public class Core13LoC
         }
 
         //Ward Off the Beast
-        if (!Story.QuestProgression(3187))
-        {
-            Core.AddDrop("Perfect Prism", "Unchaorrupted Sample", "Harpy Feather");
-            Core.EnsureAccept(3187);
+        Core.Join("mirrorportal");
+        Bot.Wait.ForMapLoad("mirrorportal");
+        Story.ChainQuest(3187);
 
-            if (!Core.CheckInventory(new[] { "Perfect Prism", "Unchaorrupted Sample", "Harpy Feather" }))
-            {
-                Core.EnsureAccept(new[] { 3184, 3185, 3186 });
-                Core.HuntMonster("earthstorm", "Shard Spinner", "Reflective Fragment", 5);
-                Core.HuntMonster("bloodtuskwar", "Chaotic Horcboar", "Vials of Blood", 5);
-                Core.HuntMonster("bloodtuskwar", "Chaos Tigriff", "Feathers", 5);
-                Core.EnsureComplete(new[] { 3184, 3185, 3186 });
-                Core.Join("mirrorportal");
-                Bot.Wait.ForPickup("Perfect Prism");
-                Bot.Wait.ForPickup("Unchaorrupted Sample");
-                Bot.Wait.ForPickup("Harpy Feather");
-            }
-            Core.EnsureComplete(3187);
-        }
 
         //Horror Takes Flight
         Story.KillQuest(3188, "mirrorportal", "Chaos Harpy");

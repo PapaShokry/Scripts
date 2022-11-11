@@ -46,6 +46,7 @@ public class CoreToD
         //Sekt - The Eternal
         ShiftingPyramid();
         FourthDimensionalPyramid();
+        Yasaris();
 
         //Scarletta - The Sorceress
         ShatterGlassMaze();
@@ -547,6 +548,50 @@ public class CoreToD
 
         // Ziri Is Also Tough
         Story.KillQuest(5120, "baconcatlair", "Cloud Shark");
+
+        if (Core.IsMember)
+        {
+            //Robo Sharks! 5121
+            Story.KillQuest(5121, "baconcatlair", "Robo Shark");
+
+            //Beat the Bushes 5122
+            Story.MapItemQuest(5122, "baconcatlair", 4477, 4);
+
+            //Sharks Should Not Walk 5123
+            Story.KillQuest(5123, "baconcatlair", new[] { "Robo Shark", "Robo Shark" });
+
+            //Grab those Quarters 5124
+            Story.KillQuest(5124, "baconcatlair", "Robo Shark");
+
+            //Shark Invaders! 5125
+            Story.KillQuest(5125, "baconcatlair", new[] { "Shark Invader", "Shark Invader" });
+
+            //Sharks like Honey? 5126
+            Story.MapItemQuest(5126, "baconcatlair", 4480, 6);
+            Story.KillQuest(5124, "baconcatlair", "Robo Shark");
+
+            //At Least They Like to Party 5127
+            Story.MapItemQuest(5127, "baconcatlair", 4479, 6);
+            Story.KillQuest(5127, "baconcatlair", new[] { "Party Shark", "Party Shark" });
+
+            //Remora Brigade 5128
+            Story.KillQuest(5128, "baconcatlair", "Laser Remora");
+
+            //Into the Whirlpool 5129
+            Story.MapItemQuest(5129, "baconcatlair", 4478);
+
+            //Giant, Huge Cyborg Shark! 5130
+            Story.KillQuest(5130, "baconcatlair", "Cyborg Laser Shark");
+
+
+            //Wheel of Bacon 5131
+            if (!Story.QuestProgression(5131))
+            {
+                Core.EnsureAccept(5131);
+                Core.HuntMonster("baconcatlair", "Robo Shark", "Wheel of Bacon Token", 5, isTemp: false);
+                Core.EnsureComplete(5131);
+            }
+        }
     }
 
     #endregion
@@ -920,7 +965,155 @@ public class CoreToD
         // The Hero's Doom
         Story.MapItemQuest(5212, "fourdpyramid", 4574, 1);
     }
+    public void Yasaris()
+    {
+        if (Core.isCompletedBefore(5239))
+            return;
 
+        Story.PreLoad(this);
+
+        //Serepthys, Please 5213
+        Story.MapItemQuest(5213, "yasaris", 4590);
+
+        //The Hall of the Falcon 5214
+        Story.MapItemQuest(5214, "yasaris", 4576);
+
+        //Secrets and Whispers 5215
+        Story.KillQuest(5215, "yasaris", "Vortex Hawk");
+
+        //The Venom is the Key 5216
+        Story.KillQuest(5216, "yasaris", "Sacred Serpent");
+
+        //The Venom Is Your Wine 5217
+        Story.MapItemQuest(5217, "yasaris", 4577);
+
+        //Another Interpretation 5218
+        Story.MapItemQuest(5218, "yasaris", 4578);
+
+        //Well, Go Get the Sac, Then! 5219
+        if (!Story.QuestProgression(5219) || !Core.CheckInventory("Preserved Venom Sac of Mehensi"))
+        {
+            Core.AddDrop("Preserved Venom", "Preserved Venom Sac of Mehensi");
+            Core.EnsureAccept(5219);
+            Core.GetMapItem(4579, 1, "yasaris");
+            Bot.Wait.ForPickup("Preserved Venom");
+            Bot.Wait.ForPickup("Preserved Venom Sac of Mehensi");
+            Core.EnsureComplete(5219);
+        }
+
+        //An Offering to the Falcon Guardian 5240
+        if (!Story.QuestProgression(5240))
+        {
+            Core.EnsureAccept(5240);
+            Core.EnsureComplete(5240);
+        }
+
+        //The Hall of the Jackal 5220
+        Story.MapItemQuest(5220, "yasaris", 4591);
+
+        //Cross the Chasm 5221
+        Story.KillQuest(5221, "yasaris", new[] { "Avatar of Anubyx", "Inverted Avatar" });
+
+        //Enter the Code 5222
+        Story.MapItemQuest(5222, "yasaris", 4580);
+
+        //Look for the Offering 5223
+        Story.MapItemQuest(5223, "yasaris", 4581);
+
+        //Needs More Energy 5224
+        Story.KillQuest(5224, "yasaris", new[] { "Avatar of Anubyx", "Negastri Hound" });
+
+        //Charge the Spear 5225
+        Story.MapItemQuest(5225, "yasaris", 4582);
+
+        //Take the Offering 5226
+        if (!Story.QuestProgression(5226) || !Core.CheckInventory("Charged Spear of Anubyx"))
+        {
+            Core.AddDrop("Get Charged Spear of Anubyx", "Charged Spear of Anubyx");
+            Core.EnsureAccept(5226);
+            Core.GetMapItem(4583, 1, "yasaris");
+            Bot.Wait.ForPickup("Get Charged Spear of Anubyx");
+            Bot.Wait.ForPickup("Charged Spear of Anubyx");
+            Core.EnsureComplete(5226);
+        }
+
+        //An Offering to the Jackal Guardian 5241
+        if (!Story.QuestProgression(5241) && Core.CheckInventory("Charged Spear of Anubyx"))
+        {
+            Core.EnsureAccept(5241);
+            Core.EnsureComplete(5241);
+        }
+
+        //The Hall of the Baboon 5227
+        Story.MapItemQuest(5227, "yasaris", 4592);
+
+        //Phase In 5228
+        Story.KillQuest(5228, "yasaris", "Dimensional Crystal");
+
+        //What Will the Crystals do? 5229
+        Story.MapItemQuest(5229, "yasaris", 4584);
+
+        //Charge those Platforms 5230
+        Story.MapItemQuest(5230, "yasaris", 4585);
+        Story.KillQuest(5230, "yasaris", "Tesseract Sprite");
+
+        //Explore the Secret Room 5231
+        Story.MapItemQuest(5231, "yasaris", 4593);
+
+        //Get More Crystals 5232
+        Story.KillQuest(5232, "yasaris", "Dimensional Crystal");
+
+        //Charge the Pedestal 5233
+        if (!Story.QuestProgression(5233) || !Core.CheckInventory("Crystal of Hatoth"))
+        {
+            Core.AddDrop("Crystal of Hatoth");
+            Core.EnsureAccept(5233);
+            Core.GetMapItem(4595, 1, "yasaris");
+            Core.GetMapItem(4586, 1, "yasaris");
+            Bot.Wait.ForPickup("Crystal of Hatoth");
+            Core.EnsureComplete(5233);
+        }
+
+        //An Offering to the Baboon Guardian 5242
+        if (!Story.QuestProgression(5242) && Core.CheckInventory("Crystal of Hatoth"))
+        {
+            Core.EnsureAccept(5242);
+            Core.EnsureComplete(5242);
+        }
+
+        //The Hall of Humanity 5234
+        Story.MapItemQuest(5234, "yasaris", 4594);
+
+        //Activate the Levers 5235
+        Story.MapItemQuest(5235, "yasaris", 4587, 4);
+        Story.KillQuest(5235, "yasaris", "Avatar of Serepthys");
+
+        //Pull the Levers 5236
+        Story.MapItemQuest(5236, "yasaris", 4588, 4);
+
+        //Reveal the Paths 5237
+        Story.KillQuest(5237, "yasaris", "Spirit of Ptahmun");
+
+        //Find the Spirit Knife 5238
+        if (!Story.QuestProgression(5238) || !Core.CheckInventory("Heart of Ptahmun"))
+        {
+            Core.AddDrop("Heart of Ptahmun");
+            Core.EnsureAccept(5238);
+            Core.GetMapItem(4589, 1, "yasaris");
+            Bot.Wait.ForPickup("Heart of Ptahmun");
+            Core.EnsureComplete(5238);
+        }
+
+        //An Offering to the Human Guardian 5243
+        if (!Story.QuestProgression(5243) && Core.CheckInventory("Heart of Ptahmun"))
+        {
+            Core.EnsureAccept(5243);
+            Core.EnsureComplete(5243);
+        }
+
+        //Battle Serepthys 5239
+        Story.KillQuest(5239, "yasaris", "Serepthys");
+    }
     #endregion
 
     #region Scarletta - The Sorceress

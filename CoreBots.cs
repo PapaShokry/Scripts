@@ -400,6 +400,7 @@ public class CoreBots
         ItemBase? itemTempInv = Bot.TempInv.Items.Find(i => i.ID == itemID);
         InventoryItem? itemInv = Bot.Inventory.Items.Find(i => i.ID == itemID);
         InventoryItem? itemBank = Bot.Bank.Items.Find(i => i.ID == itemID);
+        InventoryItem? itemHouse = Bot.House.Items.Find(i => i.ID == itemID);
 
         if (itemTempInv == null && itemInv == null && itemBank == null)
             return false;
@@ -408,6 +409,9 @@ public class CoreBots
             return true;
 
         if (itemInv != null && Bot.Inventory.Contains(itemInv.Name, quant))
+            return true;
+
+        if (itemHouse != null && Bot.House.Contains(itemHouse.Name, quant))
             return true;
 
         if (itemBank != null && Bot.Bank.Contains(itemBank.Name))
@@ -485,9 +489,13 @@ public class CoreBots
     {
         if (items == null)
             return;
+
+        ToggleAggro(false);
         JumpWait();
+
         if (Bot.Flash.GetGameObject("ui.mcPopup.currentLabel") != "Bank")
             Bot.Bank.Open();
+
         foreach (string item in items)
         {
             if (Bot.Bank.Contains(item))
@@ -504,6 +512,7 @@ public class CoreBots
                 Logger($"{item} moved from bank");
             }
         }
+        ToggleAggro(true);
     }
 
     /// <summary>
@@ -515,9 +524,12 @@ public class CoreBots
         if (items == null)
             return;
 
+        ToggleAggro(false);
         JumpWait();
+
         if (Bot.Flash.GetGameObject("ui.mcPopup.currentLabel") != "Bank")
             Bot.Bank.Open();
+
         foreach (string item in items)
         {
             if (Bot.Inventory.IsEquipped(item))
@@ -535,6 +547,7 @@ public class CoreBots
                 Logger($"{item} moved to bank");
             }
         }
+        ToggleAggro(true);
     }
 
     /// <summary>
@@ -551,7 +564,7 @@ public class CoreBots
         if (CheckInventory(itemName, quant))
             return;
 
-        ShopItem item = parseShopItem(GetShopItems(map, shopID).Where(x => shopItemID == 0 ? x.Name == itemName : x.ShopItemID == shopItemID).ToList(), shopID, itemName, shopItemID);
+        ShopItem? item = parseShopItem(GetShopItems(map, shopID).Where(x => shopItemID == 0 ? x.Name == itemName : x.ShopItemID == shopItemID).ToList(), shopID, itemName, shopItemID);
         _BuyItem(map, shopID, item, quant);
     }
 
@@ -569,29 +582,19 @@ public class CoreBots
         if (CheckInventory(itemID, quant))
             return;
 
-        ShopItem item = parseShopItem(GetShopItems(map, shopID).Where(x => shopItemID == 0 ? x.ID == itemID : x.ShopItemID == shopItemID).ToList(), shopID, itemID.ToString(), shopItemID);
+        ShopItem? item = parseShopItem(GetShopItems(map, shopID).Where(x => shopItemID == 0 ? x.ID == itemID : x.ShopItemID == shopItemID).ToList(), shopID, itemID.ToString(), shopItemID);
         _BuyItem(map, shopID, item, quant);
     }
 
-    private void _BuyItem(string map, int shopID, ShopItem item, int quant)
+    private void _BuyItem(string map, int shopID, ShopItem? item, int quant)
     {
-        if (item == null || !_canBuy(shopID, item))
-            return;
-
-        int logQuant = _CalcBuyQuantity(item, quant, true);
-        quant = _CalcBuyQuantity(item, quant);
-        if (quant <= 0)
+        int buy_quant;
+        if (item == null || (buy_quant = _CalcBuyQuantity(item, quant)) == 0 || !_canBuy(shopID, item, buy_quant))
             return;
 
         Join(map);
-
-        bool AggroMonsters = false;
-        if (Bot.Options.AggroMonsters)
-        {
-            AggroMonsters = true;
-            Bot.Options.AggroMonsters = false;
-        }
-
+        ToggleAggro(false);
+        Bot.Wait.ForMapLoad(map);
         JumpWait();
         Bot.Events.ExtensionPacketReceived += RelogRequieredListener;
 
@@ -599,9 +602,11 @@ public class CoreBots
         dynamic objData = getData(item.ID, item.ShopItemID);
         sItem = objData;
         sItem.iSel = objData;
-        sItem.iQty = quant;
-        sItem.iSel.iQty = quant;
+        sItem.iQty = buy_quant;
+        sItem.iSel.iQty = buy_quant;
         sItem.accept = 1;
+
+        Bot.Sleep(ActionDelay);
 
         if (Bot.Options.SafeTimings)
             Bot.Wait.ForActionCooldown(GameActions.BuyItem);
@@ -613,11 +618,10 @@ public class CoreBots
         Bot.Events.ExtensionPacketReceived -= RelogRequieredListener;
 
         if (CheckInventory(item.Name, quant))
-            Logger($"Bought {logQuant}x{item.Quantity} {item.Name}");
-        else Logger($"Failed at buying {logQuant}x{item.Quantity} {item.Name}");
+            Logger($"Bought {buy_quant} {item.Name}, now at {quant} {item.Name}");
+        else Logger($"Failed at buying {buy_quant}/{quant} {item.Name}");
 
-        if (AggroMonsters)
-            Bot.Options.AggroMonsters = true;
+        ToggleAggro(true);
 
         void RelogRequieredListener(dynamic packet)
         {
@@ -653,50 +657,25 @@ public class CoreBots
 
     private int _CalcBuyQuantity(ShopItem item, int requestedQuant, bool old = false)
     {
-        if (Bot.Inventory.GetQuantity(item.Name) + item.Quantity > item.MaxStack)
+        if (requestedQuant > item.MaxStack)
         {
-            Logger("Can't buy merge item past its max stack, skipping");
-            return 0;
+            Logger($"Attempting to buy more than {item.MaxStack} of {item.Name}. The developer needs to fix the calling script.");
+            Bot.Stop();
         }
-        int quantB = requestedQuant - Bot.Inventory.GetQuantity(item.Name);
-        if (quantB < 0)
-            return 0;
 
-        decimal quantF = (decimal)quantB / (decimal)item.Quantity;
-        int quantC = (int)Math.Ceiling(quantF);
-
-        if (old)
-            return quantC;
-
-        for (int i = 0; i < item.Quantity; i++)
+        // requestQuant <= max stack.
+        // No clamp checks needed, as Buys already asserts current quantity is less.
+        int buy_quant;
+        if ((buy_quant = requestedQuant - Bot.Inventory.GetQuantity(item.Name)) % item.Quantity != 0)
         {
-            if ((quantC + i) % item.Quantity == 0)
-                return quantC + i;
+            int diff = item.Quantity - (buy_quant % item.Quantity);
+            SellItem(item.Name, Bot.Inventory.GetQuantity(item.Name) - diff);
+            buy_quant += diff;
         }
-        return quantC;
+        return buy_quant;
     }
 
-    /// <summary>
-    /// Checks if everything needed to buy the item is present, if not, it will log and return false
-    /// </summary>
-    /// <param name="map">The map where the shop can be loaded from</param>
-    /// <param name="shopID">The shop ID to load the shopdata</param>
-    /// <param name="itemName">The name of the item you're gonna check</param>
-    public bool canBuy(string map, int shopID, string itemName, int shopItemID = 0)
-        => _canBuy(shopID, parseShopItem(GetShopItems(map, shopID).Where(x => shopItemID == 0 ? x.Name == itemName : x.ShopItemID == shopItemID).ToList(),
-                            shopID, itemName, shopItemID));
-
-    /// <summary>
-    /// Checks if everything needed to buy the item is present, if not, it will log and return false
-    /// </summary>
-    /// <param name="map">The map where the shop can be loaded from</param>
-    /// <param name="shopID">The shop ID to load the shopdata</param>
-    /// <param name="itemID">The ID of the item you're gonna check</param>
-    public bool canBuy(string map, int shopID, int itemID, int shopItemID = 0)
-        => _canBuy(shopID, parseShopItem(GetShopItems(map, shopID).Where(x => shopItemID == 0 ? x.ID == itemID : x.ShopItemID == shopItemID).ToList(),
-                            shopID, itemID.ToString(), shopItemID));
-
-    private bool _canBuy(int shopID, ShopItem item)
+    private bool _canBuy(int shopID, ShopItem? item, int buy_quant)
     {
         if (item == null)
             return false;
@@ -706,22 +685,22 @@ public class CoreBots
         string? io = Bot.Flash.GetGameObject<string>("world.shopinfo.sField");
         if (achievementID > 0 && io != null && !HasAchievement(achievementID, io))
         {
-            Logger($"Cannot buy {item.Name} from {shopID} because you dont have achievement {achievementID} of category {io}.");
+            Logger($"Cannot buy {item.Name} from {shopID} because you dont have achievement {achievementID} of category {io}.", "CanBuy");
             return false;
         }
 
         //Member Check
         if (item.Upgrade && !IsMember)
         {
-            Logger($"Cannot buy {item.Name} from {shopID} because you aren't a member.");
+            Logger($"Cannot buy {item.Name} from {shopID} because you aren't a member.", "CanBuy");
             return false;
         }
 
-        //Requiered-Item Check
+        //Required-Item Check
         int reqItemID = Bot.Flash.GetGameObject<int>("world.shopinfo.reqItems");
         if (reqItemID > 0 && !CheckInventory(reqItemID))
         {
-            Logger($"Cannot buy {item.Name} from {shopID} because you dont have the requiered item needed to buy stuff from the shop, itemID: {reqItemID}");
+            Logger($"Cannot buy {item.Name} from {shopID} because you dont have the requiered item needed to buy stuff from the shop, itemID: {reqItemID}", "CanBuy");
             return false;
         }
 
@@ -736,12 +715,14 @@ public class CoreBots
             int reqRank = RepCPLevel.First(x => x.Key == item.RequiredReputation).Value;
             if (reqRank > Bot.Reputation.GetRank(item.Faction))
             {
-                Logger($"Cannot buy {item.Name} from {shopID} because you dont have rank {reqRank} {item.Faction}.");
+                Logger($"Cannot buy {item.Name} from {shopID} because you dont have rank {reqRank} {item.Faction}.", "CanBuy");
                 return false;
             }
         }
 
         //Merge item check
+        int itemCount = item.Quantity == 0 ? 1 : item.Quantity;
+        int buy_count = (int)Math.Ceiling((decimal)buy_quant / (decimal)(itemCount));
         if (item.Requirements != null)
         {
             foreach (ItemBase req in item.Requirements)
@@ -749,41 +730,57 @@ public class CoreBots
                 Bot.Drops.Pickup(req.ID);
                 Bot.Wait.ForPickup(req.ID);
 
-                if (!CheckInventory(req.ID, req.Quantity))
+                int total_quant = buy_count * req.Quantity;
+                if (!CheckInventory(req.ID, total_quant))
                 {
                     if (CheckInventory(req.ID))
                     {
-                        Logger($"Cannot buy {item.Name} from {shopID}. You own {Bot.Inventory.GetQuantity(req.ID)}x {req.Name} but need {req.Quantity} .");
+                        Logger($"Cannot buy {item.Name} from {shopID}.", "CanBuy");
+                        Logger($"You own {Bot.Inventory.GetQuantity(req.ID)}x {req.Name}.", "CanBuy");
+                        Logger($"You need {total_quant}.", "CanBuy");
+
                         return false;
                     }
-                    Logger($"Cannot buy {item.Name} from {shopID} because {req.Name} is missing.");
+                    Logger($"Cannot buy {item.Name} from {shopID} because {req.Name} is missing.", "CanBuy");
                     return false;
                 }
             }
         }
 
         //Gold check
-        if (item.Cost > Bot.Player.Gold)
+        if (!item.Coins && item.Cost > 0)
         {
-            Logger($"Cannot buy {item.Name} from {shopID} because you are missing {item.Cost - Bot.Player.Gold} gold.");
-            return false;
+            int total_gold_cost = buy_count * item.Cost;
+            if (total_gold_cost > 100000000)
+            {
+                Logger($"Cannot buy more than 100 mil worth of items.", "CanBuy");
+                return false;
+            }
+            else if (total_gold_cost > Bot.Player.Gold)
+            {
+                Logger($"Cannot buy {item.Name} from {shopID}.", "CanBuy");
+                Logger($"You own {Bot.Inventory.GetQuantity(item.ID)}x {item.Name}.", "CanBuy");
+                Logger($"You need {Bot.Inventory.GetQuantity(item.ID) + buy_count}.", "CanBuy");
+                Logger($"You are missing {total_gold_cost - Bot.Player.Gold} gold to buy enough.", "CanBuy");
+                return false;
+            }
         }
 
         //AC costing check
         if (item.Coins && item.Cost > 0)
         {
+            int total_ac_cost = buy_count * item.Cost;
             if (Bot.ShowMessageBox(
-                    $"The bot is about to buy \"{item.Name}\", which costs {item.Cost} AC, do you accept this?",
+                    $"The bot is about to buy \"{item.Name}\" {buy_count} times, which costs {total_ac_cost} AC, do you accept this?",
                     "Warning: Costs AC!", true)
                     != true)
-                Logger($"The bot cannot continue without buying \"{item.Name}\", stopping the bot.", messageBox: true, stopBot: true);
-            else if (Bot.Flash.GetGameObject<int>("world.myAvatar.objData.intCoins") < item.Cost)
-                Logger($"You don't have enough AC to buy \"{item.Name}\", the bot cannot continue.", messageBox: true, stopBot: true);
+                Logger($"The bot cannot continue without buying \"{item.Name}\", stopping the bot.", "CanBuy", messageBox: true, stopBot: true);
+            else if (Bot.Flash.GetGameObject<int>("world.myAvatar.objData.intCoins") < total_ac_cost)
+                Logger($"You don't have enough AC to buy \"{item.Name}\" {buy_count} times, the bot cannot continue.", "CanBuy", messageBox: true, stopBot: true);
         }
 
         return true;
     }
-
     public Dictionary<int, int> RepCPLevel = new()
     {
         { 0, 1 },
@@ -806,15 +803,16 @@ public class CoreBots
     /// <param name="all">Set to true if you wish to sell all the items</param>
     public void SellItem(string itemName, int quant = 0, bool all = false)
     {
-        if (!CheckInventory(itemName) || Bot.Inventory.TryGetItem(itemName, out var item))
+        if (!(quant > 0 ? CheckInventory(itemName, quant) : CheckInventory(itemName)) || !Bot.Inventory.TryGetItem(itemName, out var item))
             return;
         JumpWait();
 
         if (!all)
         {
+            // Inv quant >= current quantity.
             if (Bot.Options.SafeTimings)
                 Bot.Wait.ForActionCooldown(GameActions.SellItem);
-            Bot.Send.Packet($"%xt%zm%sellItem%{Bot.Map.RoomID}%{item!.ID}%{(quant > item!.Quantity ? quant : item!.Quantity)}%{item!.CharItemID}%");
+            Bot.Send.Packet($"%xt%zm%sellItem%{Bot.Map.RoomID}%{item!.ID}%{item!.Quantity - quant}%{item!.CharItemID}%");
             if (Bot.Options.SafeTimings)
                 Bot.Wait.ForItemSell();
 
@@ -844,12 +842,12 @@ public class CoreBots
         return Bot.Shops.Items;
     }
 
-    public ShopItem parseShopItem(List<ShopItem> shopItem, int shopID, string itemNameID, int shopItemID = 0)
+    public ShopItem? parseShopItem(List<ShopItem> shopItem, int shopID, string itemNameID, int shopItemID = 0)
     {
         if (shopItem.Count == 0)
         {
             Logger($"Item {itemNameID} not found in shop {shopID}.");
-            return new();
+            return null;
         }
         else if (shopItem.Count > 1)
         {
@@ -857,13 +855,13 @@ public class CoreBots
             {
                 if (!shopItem.Any(x => x.ShopItemID == shopItemID))
                 {
-                    Logger($"Item {itemNameID} with ShopItemID {shopItemID} was not in {shopID}. The developer needs to correc the Shop Item ID");
-                    return new();
+                    Logger($"Item {itemNameID} with ShopItemID {shopItemID} was not in {shopID}. The developer needs to correct the Shop Item ID.");
+                    return null;
                 }
                 return shopItem.First(x => x.ShopItemID == shopItemID);
             }
-            Logger($"Multiple items found with the name {shopItem.First().Name} in shop {shopID}. The developer needs to specify the Shop Item ID.");
-            return new();
+            Logger($"Multiple items found with the name {itemNameID} in shop {shopID}. The developer needs to specify the Shop Item ID.");
+            return null;
         }
 
         return shopItem.First();
@@ -875,6 +873,8 @@ public class CoreBots
     /// </summary>
     public void TrashCan(params string[] items)
     {
+        ToggleAggro(false);
+        JumpWait();
         foreach (string item in items)
         {
             if (!Bot.Inventory.TryGetItem(item, out var TrashItem) || TrashItem == null)
@@ -887,6 +887,7 @@ public class CoreBots
             }
             else ToBank(item);
         }
+        ToggleAggro(true);
     }
 
     #endregion
@@ -1724,6 +1725,21 @@ public class CoreBots
         Bot.Handlers.RegisterOnce(1, (Bot) => Bot.ShowMessageBox(message, caption));
     }
 
+    public void ToggleAggro(bool enable)
+    {
+        if (enable && AggroMonsters)
+        {
+            AggroMonsters = false;
+            Bot.Options.AggroMonsters = true;
+        }
+        else if (Bot.Options.AggroMonsters)
+        {
+            AggroMonsters = true;
+            Bot.Options.AggroMonsters = false;
+        }
+    }
+    private bool AggroMonsters = false;
+
     /// <summary>
     /// Send a packet to the server the desired amount of times
     /// </summary>
@@ -1768,7 +1784,7 @@ public class CoreBots
             return;
 
         if (Bot.ShowMessageBox($"This script requires Skua {targetVersion} or above, " +
-        "click OK to open the download page of the latest release", "Outdated Skua detected") == true)
+        "click OK to open the download page of the latest release", "Outdated Skua detected", "OK").Text == "OK")
             Process.Start("explorer", "https://github.com/BrenoHenrike/Skua/releases/latest");
         Logger($"This script requires Skua {targetVersion} or above. Stopping the script", messageBox: true, stopBot: true);
     }
@@ -1784,15 +1800,6 @@ public class CoreBots
     {
         if (currentClass == classToUse && Bot.Skills.TimerRunning)
             return;
-
-        bool AggroMonsters = false;
-        if (Bot.Options.AggroMonsters)
-        {
-            AggroMonsters = true;
-            Bot.Options.AggroMonsters = false;
-        }
-
-        JumpWait();
 
         switch (classToUse)
         {
@@ -1829,8 +1836,6 @@ public class CoreBots
                 Bot.Skills.StartAdvanced(Bot.Player.CurrentClass?.Name ?? "generic", false);
                 break;
         }
-        if (AggroMonsters)
-            Bot.Options.AggroMonsters = true;
         currentClass = classToUse;
     }
     private bool logEquip = true;
@@ -1840,13 +1845,7 @@ public class CoreBots
         if (gear == null)
             return;
 
-        bool AggroMonsters = false;
-        if (Bot.Options.AggroMonsters)
-        {
-            AggroMonsters = true;
-            Bot.Options.AggroMonsters = false;
-        }
-
+        ToggleAggro(false);
         JumpWait();
 
         foreach (string Item in gear)
@@ -1860,8 +1859,7 @@ public class CoreBots
             }
         }
 
-        if (AggroMonsters)
-            Bot.Options.AggroMonsters = true;
+        ToggleAggro(true);
     }
 
     /// <summary>
@@ -2089,12 +2087,7 @@ public class CoreBots
         if (Bot.Map.Name != null && Bot.Map.Name.ToLower() == strippedMap && !ignoreCheck)
             return;
 
-        bool AggroMonsters = false;
-        if (Bot.Options.AggroMonsters)
-        {
-            AggroMonsters = true;
-            Bot.Options.AggroMonsters = false;
-        }
+        ToggleAggro(false);
 
         switch (strippedMap)
         {
@@ -2145,6 +2138,31 @@ public class CoreBots
                 tryJoin();
                 Bot.Send.ClientPacket("{\"t\":\"xt\",\"b\":{\"r\":-1,\"o\":{\"cmd\":\"levelUp\",\"intExpToLevel\":\"0\",\"intLevel\":100}}}");
                 break;
+
+            case "celestialarenad":
+                JumpWait();
+                Bot.Quests.UpdateQuest(6032);
+                Bot.Map.Join("celestialarenad-9999999");
+                break;
+
+            case "towerofdoom1":
+            case "towerofdoom2":
+            case "towerofdoom3":
+            case "towerofdoom4":
+            case "towerofdoom5":
+            case "towerofdoom6":
+            case "towerofdoom7":
+            case "towerofdoom8":
+            case "towerofdoom9":
+            case "towerofdoom10":
+                JumpWait();
+                Bot.Quests.UpdateQuest(3484);
+                tryJoin();
+                break;
+
+                // case "fearhouse":
+                //     SendPackets($"%xt%zm%cmd%{Bot.Map.RoomID}%tfer%{Bot.Player.Username}%fearhouse%{999999}&Enter%Spawn%");
+                //     break;
         }
 
         if (Bot.Map.Name != null && strippedMap == Bot.Map.Name.ToLower())
@@ -2173,7 +2191,9 @@ public class CoreBots
                     "willowcreek",
                     "shadowlordpast",
                     "binky",
-                    "superlowe"
+                    "superlowe",
+                    "voidflibbi",
+                    "voidnightbane"
                 };
                 if (lockedMaps.Contains(strippedMap))
                     File.WriteAllText($"options/Butler/{Bot.Player.Username.ToLower()}.txt", Bot.Map.FullName);
@@ -2184,8 +2204,7 @@ public class CoreBots
             Bot.Sleep(200);
         }
 
-        if (AggroMonsters)
-            Bot.Options.AggroMonsters = true;
+        ToggleAggro(true);
 
         void tryJoin()
         {
@@ -2227,10 +2246,14 @@ public class CoreBots
     {
         if (map != null)
             Join(map);
+
+        ToggleAggro(false);
+        JumpWait();
         Bot.Sleep(ActionDelay);
         List<ItemBase> tempItems = Bot.TempInv.Items;
         ItemBase? newItem = null;
         bool found = false;
+
         for (int i = 0; i < quant; i++)
         {
             Bot.Map.GetMapItem(itemID);
@@ -2256,6 +2279,7 @@ public class CoreBots
                     break;
             }
         }
+        ToggleAggro(true);
 
         Logger($"Map item {itemID}({quant}) acquired");
     }
@@ -2297,12 +2321,8 @@ public class CoreBots
         map = map.ToLower().Replace(" ", "");
         if (Bot.Map.Name != null && Bot.Map.Name.ToLower() == map)
             return true;
-        bool AggroMonsters = false;
-        if (Bot.Options.AggroMonsters)
-        {
-            AggroMonsters = true;
-            Bot.Options.AggroMonsters = false;
-        }
+
+        ToggleAggro(false);
 
         JumpWait();
         Bot.Events.ExtensionPacketReceived += MapIsNotAvailableListener;
@@ -2327,8 +2347,7 @@ public class CoreBots
                 Logger($"Failed to join {map}");
         }
 
-        if (AggroMonsters)
-            Bot.Options.AggroMonsters = true;
+        ToggleAggro(true);
 
         Bot.Events.ExtensionPacketReceived -= MapIsNotAvailableListener;
 
@@ -2378,7 +2397,7 @@ public class CoreBots
             return;
 
         // Popup
-        bool? result = Bot.ShowMessageBox(
+        var result = Bot.ShowMessageBox(
             "Welcome to Skua's Master Bots!\n" +
             "These bots are a tad different from what you might be used to with Grimoire or other botting clients.\n\n" +
             "Its highly recommended to read the ReadMe.txt file if this is your first time running one of our bots, or if you just started.\n" +
@@ -2388,7 +2407,7 @@ public class CoreBots
             "If you do see it again at a later moment, there might have just been a update to the ReadMe, in which case you can ignore this message.\n\n" +
             "Click OK to open the ReadMe.txt",
 
-            "READ ME");
+            "READ ME", "OK");
 
         // Creating ReadMe.txt
         string[] ReadMe =
@@ -2476,7 +2495,7 @@ public class CoreBots
         File.WriteAllLines(readMePath, ReadMe);
 
         // Opening ReadMe.txt
-        if (result == true)
+        if (result.Text == "OK")
             Process.Start("explorer", readMePath);
     }
 

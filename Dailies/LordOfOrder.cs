@@ -22,7 +22,6 @@ public class LordOfOrder
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
-
         GetLoO();
 
         Core.SetOptions(false);
@@ -109,7 +108,7 @@ public class LordOfOrder
 
             Core.EquipClass(ClassType.Solo);
             Core.HuntMonster("gaiazor", "Gaiazor", "Gaiazor's Cornerstone", isTemp: false, publicRoom: true);
-            LD.LivingDungeonStory();
+            Bot.Quests.UpdateQuest(4361);
             Core.HuntMonster("treetitanbattle", "Dakka the Dire Dragon", "Dakka's Crystal", isTemp: false);
             Core.HuntMonster("andre", "Giant Necklace", "Andre's Necklace Fragment", isTemp: false);
             Core.HuntMonster("desolich", "Desolich", "Desolich's Skull", isTemp: false, publicRoom: true);

@@ -235,6 +235,9 @@ public class CoreFarms
 
         if (!rankUpClass)
             Core.EquipClass(ClassType.Farm);
+        if (rankUpClass)
+            ToggleBoost(BoostType.Class);
+        Core.ToggleAggro(true);
 
         bool OptionRestore = Bot.Options.AggroMonsters;
         Bot.Options.AggroMonsters = true;
@@ -292,6 +295,7 @@ public class CoreFarms
 
         Bot.Options.AggroMonsters = OptionRestore;
         Core.SavedState(false);
+        Core.ToggleAggro(false);
 
         bool NotYetLevel(int _level)
         {
@@ -423,18 +427,19 @@ public class CoreFarms
             return;
 
         if (Core.CBOBool("PVP_SoloPvPBoss", out bool _canSoloBoss))
-            canSoloBoss = _canSoloBoss;
+            canSoloBoss = !_canSoloBoss;
 
         Core.AddDrop(item);
 
         Core.EquipClass(ClassType.Solo);
         Core.Logger($"Farming {quant} {item}. SoloBoss = {canSoloBoss}");
 
+
         while (!Bot.ShouldExit && !Core.CheckInventory(item, quant))
         {
             Core.AddDrop(item);
-            Core.Join("bludrutbrawl", "Enter0", "Spawn");
-
+            Core.Join("bludrutbrawl-99999999", "Enter0", "Spawn");
+            Bot.Options.AggroMonsters = false;
             Core.PvPMove(5, "Morale0C");
             Core.PvPMove(4, "Morale0B");
             Core.PvPMove(7, "Morale0A");
@@ -653,7 +658,10 @@ public class CoreFarms
         Luc = 11683, // Fate Tonic
         Int = 11635, // Sage Tonic
         SPw = 11745, // Potent Malevolence Elixir    
-        hOu = 11761 // Healer Elixer / Potent Guard Potion / Unstable Healer Elixer // rep spam with jerra
+        hOu = 11761, // Healer Elixer / Potent Guard Potion / Unstable Healer Elixer // rep spam with jerra
+        hRe = 11758, // Potent Revitalize Elixi
+        mRe = 12056, // Potent Destruction Elixir
+        End = 11647 // Body Tonic
         //more to be added by request
     };
 
@@ -661,14 +669,14 @@ public class CoreFarms
     {
         if (Core.CheckInventory("Dragon Runestone", quant))
             return;
-
+        Core.ToggleAggro(false);
         Core.FarmingLogger("Dragon Rune", quant);
-        Gold(100000 * quant);
         Core.FarmingLogger("Gold Voucher 100k", quant);
         if (!Core.CheckInventory("Dragon Runestone", quant))
         {
-            Core.BuyItem("alchemyacademy", 395, "Gold Voucher 100k", quant);
-            Core.BuyItem("alchemyacademy", 395, "Dragon Runestone", quant, 8844);
+            Gold(100000 * (quant - Bot.Inventory.GetQuantity("Dragon Runestone")));
+            Core.BuyItem("Alchemy", 395, "Gold Voucher 100k", quant);
+            Core.BuyItem("Alchemy", 395, "Dragon Runestone", quant, 8844);
         }
     }
 
@@ -880,7 +888,16 @@ public class CoreFarms
         Bot.Quests.UpdateQuest(3484);
         while (!Bot.ShouldExit && FactionRank("Blacksmithing") < rank && !UseGold)
         {
-            Core.HuntMonster("towerofdoom10", "Slugbutter", "Monster Trophy", 15, isTemp: false, log: false);
+            Core.Join("towerofdoom10", "r10", "Left", publicRoom: true);
+            Bot.Sleep(Core.ActionDelay);
+            Bot.Drops.Add("Monster Trophy");
+            while (!Bot.ShouldExit && Bot.Map.PlayerCount >= 4)
+            {
+                Bot.Combat.Attack("Slugbutter");
+                if (Bot.Map.PlayerCount < 4)
+                    break;
+            }
+            Core.KillMonster("towerofdoom10", "Enter", "Spawn", "*", "Monster Trophy", 15, isTemp: false, log: false);
             Core.HuntMonster("hydrachallenge", "Hydra Head 25", "Hydra Scale Piece", 75, isTemp: false, log: false);
             Core.HuntMonster("maul", "Creature Creation", "Creature Shard", isTemp: false, log: false);
         }
@@ -1752,7 +1769,7 @@ public class CoreFarms
                 Core.RegisterQuests(7505);
                 while (!Bot.ShouldExit && Core.IsMember ? FactionRank("Loremaster") < 10 : FactionRank("Loremaster") < rank)
                 {
-                    Core.HuntMonster("uppercity", "Drow Assassin", "Poisoned Dagger", 4, log: false);
+                    Core.HuntMonster("wardwarf", "Drow Assassin", "Poisoned Dagger", 4, log: false);
                     Core.HuntMonster("wardwarf", "D'wain Jonsen", "Scroll: Opportunity's Strike", log: false);
                 }
                 Core.CancelRegisteredQuests();

@@ -20,6 +20,8 @@ public class CoreHarvestDay
 
     public void DoAll()
     {
+        if (!Core.isSeasonalMapActive("harvest"))
+            return;
         Harvest();
         Turdraken();
         Float();
@@ -39,9 +41,7 @@ public class CoreHarvestDay
 
     public void Harvest()
     {
-        if (!Core.isSeasonalMapActive("harvest"))
-            return;
-        if (Core.isCompletedBefore(136))
+        if (!Core.isSeasonalMapActive("harvest") || Core.isCompletedBefore(136))
             return;
 
         Story.PreLoad(this);
@@ -62,7 +62,7 @@ public class CoreHarvestDay
         if (!Story.QuestProgression(132))
         {
             Core.EnsureAccept(132, 421);
-            Core.HuntMonster("harvest", "Corn Stalker", "Corn Stalker Ears", 8);
+            Core.HuntMonster("harvest", "Corn Stalker", "Corn Stalker Ears", 8, log: false);
             Core.EnsureComplete(421);
             Core.EnsureComplete(132);
         }
@@ -71,7 +71,7 @@ public class CoreHarvestDay
         if (!Story.QuestProgression(133))
         {
             Core.EnsureAccept(133, 422);
-            Core.HuntMonster("harvest", "Bad Apple", "Worm", 5);
+            Core.HuntMonster("harvest", "Bad Apple", "Worm", 5, log: false);
             Core.EnsureComplete(422);
             Core.EnsureComplete(133);
         }
@@ -80,7 +80,7 @@ public class CoreHarvestDay
         if (!Story.QuestProgression(134))
         {
             Core.EnsureAccept(134, 423);
-            Core.HuntMonster("harvest", "Grapes of Wrath", "Whine", 8);
+            Core.HuntMonster("harvest", "Grapes of Wrath", "Whine", 8, log: false);
             Core.EnsureComplete(423);
             Core.EnsureComplete(134);
         }
@@ -95,11 +95,14 @@ public class CoreHarvestDay
 
     public void Turdraken()
     {
+        if (!Core.IsMember)
+            return;
+
+        if (!Core.isSeasonalMapActive("turdraken") || Core.isCompletedBefore(430))
+            return;
+
         Harvest();
-        if (!Core.isSeasonalMapActive("turdraken"))
-            return;
-        if (Core.isCompletedBefore(430) && Core.IsMember)
-            return;
+
 
         Story.PreLoad(this);
 
@@ -119,17 +122,17 @@ public class CoreHarvestDay
         Story.KillQuest(143, "turdraken", "Cholesterious");
 
         //Turkey go Boom! 429
-        Story.ChainQuest(429);
+        Story.MapItemQuest(429, "turdraken", 75);
 
         //Cater To His Every Dish 430
         if (!Story.QuestProgression(430))
         {
             Core.EnsureAccept(430);
-            Core.HuntMonster("orctown", "Horc Warrior", "Pulled Horc Sandwich");
-            Core.HuntMonster("farm", "Mosquito", "French Flies");
-            Core.HuntMonster("GreenguardEast", "Spider", "Corn Cob Web");
-            Core.HuntMonster("sewer", "GreenRat", "Ratatouille");
-            Core.HuntMonster("uppercity", "Rhino Beetle", "Chocolate Covered Beetle");
+            Core.HuntMonster("orctown", "Horc Warrior", "Pulled Horc Sandwich", log: false);
+            Core.HuntMonster("farm", "Mosquito", "French Flies", log: false);
+            Core.HuntMonster("GreenguardEast", "Spider", "Corn Cob Web", log: false);
+            Core.HuntMonster("sewer", "GreenRat", "Ratatouille", log: false);
+            Core.HuntMonster("uppercity", "Rhino Beetle", "Chocolate Covered Beetle", log: false);
             Core.EnsureComplete(430);
         }
 
@@ -137,11 +140,13 @@ public class CoreHarvestDay
 
     public void Float()
     {
+        if (!Core.IsMember)
+            return;
+        if (!Core.isSeasonalMapActive("float") || Core.isCompletedBefore(897))
+            return;
+
         Turdraken();
-        if (!Core.isSeasonalMapActive("float"))
-            return;
-        if (Core.isCompletedBefore(897) && Core.IsMember)
-            return;
+
 
         Story.PreLoad(this);
 
@@ -164,11 +169,9 @@ public class CoreHarvestDay
 
     public void Banquet()
     {
-        Turdraken();
-        if (!Core.isSeasonalMapActive("banquet"))
+        if (!Core.isSeasonalMapActive("banquet") || Core.isCompletedBefore(1436))
             return;
-        if (Core.isCompletedBefore(1436))
-            return;
+
 
         Story.PreLoad(this);
 
@@ -188,11 +191,11 @@ public class CoreHarvestDay
 
     public void Grams()
     {
+        if (!Core.isSeasonalMapActive("grams") || Core.isCompletedBefore(1444))
+            return;
+
         Banquet();
-        if (!Core.isSeasonalMapActive("grams"))
-            return;
-        if (Core.isCompletedBefore(1444))
-            return;
+
 
         Story.PreLoad(this);
         //Bandits are Bad News 1441
@@ -210,11 +213,13 @@ public class CoreHarvestDay
 
     public void ArtixHome()
     {
+        if (!Core.IsMember)
+            return;
+        if (!Core.isSeasonalMapActive("artixhome") || Core.isCompletedBefore(1440))
+            return;
+
         Grams();
-        if (!Core.isSeasonalMapActive("artixhome"))
-            return;
-        if (Core.isCompletedBefore(1440) && Core.IsMember)
-            return;
+
 
         Story.PreLoad(this);
 
@@ -236,10 +241,11 @@ public class CoreHarvestDay
 
     public void FoulFarm()
     {
-        if (!Core.isSeasonalMapActive("foulfarm"))
+        if (!Core.isSeasonalMapActive("foulfarm") || (Core.isCompletedBefore(6090) && Core.CheckInventory("Muddy Soulflare")))
             return;
-        if (Core.isCompletedBefore(6090))
-            return;
+
+        ArtixHome();
+
 
         Story.PreLoad(this);
 
@@ -252,7 +258,7 @@ public class CoreHarvestDay
             //Cyser-Os! 6088
             Core.AddDrop("Soulflare");
             Core.EnsureAccept(6088);
-            Core.HuntMonster("battlefowl", "ChickenCow", "Box of Cyser-Os", 3);
+            Core.HuntMonster("battlefowl", "ChickenCow", "Box of Cyser-Os", 3, log: false);
             Bot.Wait.ForDrop("Soulflare");
             Core.EnsureComplete(6088);
         }
@@ -264,8 +270,9 @@ public class CoreHarvestDay
         // Cover the Shine 6089
         if (!Story.QuestProgression(6089) || !Core.CheckInventory("Muddy Soulflare"))
         {
+            Core.AddDrop("Muddy Soulflare");
             Core.EnsureAccept(6089);
-            Core.HuntMonster("brightoak", "Tainted Earth", "Sticky Mud", 8);
+            Core.HuntMonster("brightoak", "Tainted Earth", "Sticky Mud", 8, log: false);
             Bot.Wait.ForDrop("Muddy Soulflare");
             Core.EnsureComplete(6089);
         }
@@ -277,9 +284,7 @@ public class CoreHarvestDay
 
     public void KillerKitchen()
     {
-        if (!Core.isSeasonalMapActive("killerkitchen"))
-            return;
-        if (Core.isCompletedBefore(3214))
+        if (!Core.isSeasonalMapActive("killerkitchen") || Core.isCompletedBefore(3214))
             return;
 
         Story.PreLoad(this);
@@ -306,9 +311,7 @@ public class CoreHarvestDay
 
     public void FurbleFeast()
     {
-        if (!Core.isSeasonalMapActive("furblefeast"))
-            return;
-        if (Core.isCompletedBefore(7224))
+        if (!Core.isSeasonalMapActive("furblefeast") || Core.isCompletedBefore(7224))
             return;
 
         Story.PreLoad(this);
@@ -351,11 +354,11 @@ public class CoreHarvestDay
 
     public void FurborgShip()
     {
+        if (!Core.isSeasonalMapActive("furborgship") || Core.isCompletedBefore(7231))
+            return;
+
         FurbleFeast();
-        if (!Core.isSeasonalMapActive("furborgship"))
-            return;
-        if (Core.isCompletedBefore(7231))
-            return;
+
 
         Story.PreLoad(this);
 
@@ -384,9 +387,7 @@ public class CoreHarvestDay
 
     public void MeatLab()
     {
-        if (!Core.isSeasonalMapActive("meatlab"))
-            return;
-        if (Core.isCompletedBefore(7213))
+        if (!Core.isSeasonalMapActive("meatlab") || Core.isCompletedBefore(7213))
             return;
 
         Story.PreLoad(this);
@@ -398,7 +399,13 @@ public class CoreHarvestDay
         Story.MapItemQuest(7201, "meatlab", new[] { 6834, 6835 });
 
         // Spice it Up 7202
-        Story.KillQuest(7202, "firestorm", "Firestorm Hatchling");
+        if (!Story.QuestProgression(7202))
+        {
+            Core.EnsureAccept(7202);
+            Bot.Quests.UpdateQuest(1542);
+            Core.HuntMonster("firestorm", "Firestorm Hatchling", "Firestorm Sample", 8, log: false);
+            Core.EnsureComplete(7202);
+        }
 
         // Test Sample #2 7203
         Story.MapItemQuest(7203, "meatlab", new[] { 6836, 6837 });
@@ -425,11 +432,16 @@ public class CoreHarvestDay
         Story.KillQuest(7210, "meatlab", "Repair Drone");
 
         // So... Greasy 7211
-        Story.MapItemQuest(7211, "meatlab", 6841);
+        Story.MapItemQuest(7211, "meatlab", 6841, 6);
         Story.KillQuest(7211, "meatlab", "Meat Nubbin");
 
         // Shut it Down  7212
-        Story.MapItemQuest(7211, "meatlab", 6842);
+        if (!Story.QuestProgression(7212))
+        {
+            Core.EnsureAccept(7212);
+            Core.GetMapItem(6842, 1, "meatlab");
+            Core.EnsureComplete(7212);
+        }
 
         // Kill it with Fire 7213
         Story.KillQuest(7213, "meatlab", "Meatmongous");
@@ -438,9 +450,7 @@ public class CoreHarvestDay
 
     public void GothicDream()
     {
-        if (!Core.isSeasonalMapActive("gothicdream"))
-            return;
-        if (Core.isCompletedBefore(7795))
+        if (!Core.isSeasonalMapActive("gothicdream") || Core.isCompletedBefore(7795))
             return;
 
         Story.PreLoad(this);
@@ -486,11 +496,11 @@ public class CoreHarvestDay
 
     public void MemetNightmare()
     {
+        if (!Core.isSeasonalMapActive("memetnightmare") || Core.isCompletedBefore(7808))
+            return;
+
         GothicDream();
-        if (!Core.isSeasonalMapActive("memetnightmare"))
-            return;
-        if (Core.isCompletedBefore(7808))
-            return;
+
 
         Story.PreLoad(this);
 
@@ -504,7 +514,13 @@ public class CoreHarvestDay
         Story.KillQuest(7798, "memetnightmare", "Burning Ember");
 
         // Kibble for Nibbles 7799
-        Story.KillQuest(7799, "memetnightmare", "Nightmare Maw");
+        if (!Story.QuestProgression(7799))
+        {
+            Core.EnsureAccept(7799);
+            while (!Bot.ShouldExit && !Core.CheckInventory(57666, 8))
+                Core.HuntMonster("memetnightmare", "Nightmare Maw", log: false);
+            Core.EnsureComplete(7799);
+        }
 
         // Board up the Windows 7800
         Story.KillQuest(7800, "memetnightmare", new[] { "Fire Cyclone", "Fire Cyclone" });
@@ -538,11 +554,12 @@ public class CoreHarvestDay
 
     public void NightmareWar()
     {
+        if (!Core.isSeasonalMapActive("nightmarewar") || Core.isCompletedBefore(7813))
+            return;
+
         MemetNightmare();
-        if (!Core.isSeasonalMapActive("nightmarewar"))
-            return;
-        if (Core.isCompletedBefore(7813))
-            return;
+
+
         Story.PreLoad(this);
 
         // Murderbug Medal 7809
@@ -564,7 +581,7 @@ public class CoreHarvestDay
 
     public void EpilTakeOver()
     {
-        if (Core.isCompletedBefore(8953) && !Core.isSeasonalMapActive("EbilTakeOver"))
+        if (Core.isCompletedBefore(8953) || !Core.isSeasonalMapActive("EbilTakeOver"))
             return;
 
         Story.PreLoad(this);

@@ -55,11 +55,7 @@
 //cs_include Scripts/Story/QueenofMonsters/Extra/OrbHunt.cs
 //cs_include Scripts/Story/QueenofMonsters/Extra/QueenBattle.cs
 
-//cs_include Scripts/Story/SepulchureSaga/00CompleteSepulchureSaga.cs
-//cs_include Scripts/Story/SepulchureSaga/01SepulchurePrequelAlden.cs
-//cs_include Scripts/Story/SepulchureSaga/02SepulchurePrequelLynaria.cs
-//cs_include Scripts/Story/SepulchureSaga/03SepulchuresRise.cs
-//cs_include Scripts/Story/SepulchureSaga/04ShadowfallRise.cs
+//cs_include Scripts/Story/SepulchureSaga/CoreSepulchure.cs
 
 //cs_include Scripts/Story/ShadowsOfChaos/CoreSoC.cs
 
@@ -106,6 +102,9 @@
 //cs_include Scripts/Story/ExaltiaTower.cs
 
 //cs_include Scripts/Story/FrozenNorthlands.cs
+//cs_include Scripts/Story/FableForest.cs
+
+//cs_include Scripts/Story/HuntersMoon.cs
 
 //cs_include Scripts/Story/GameHaven.cs
 //cs_include Scripts/Story/GiantTaleStory.cs
@@ -142,6 +141,7 @@
 //cs_include Scripts/Story/ShadowSlayerK.cs
 //cs_include Scripts/Story/ShadowVault.cs
 //cs_include Scripts/Story/ShadowVoid.cs
+//cs_include Scripts/Story/Shattersword.cs
 //cs_include Scripts/Story/Shinkansen.cs
 //cs_include Scripts/Story/ShipWreck.cs
 //cs_include Scripts/Story/SkyGuardSaga.cs
@@ -241,7 +241,7 @@ public class AllStories
     public QueenBattle QueenBattle = new();
 
     // Sepulchure Saga
-    public CompleteSepulchureSaga SeppySaga = new();
+    public CoreSepulchure CoreSS = new();
 
     // Shadows of Chaos
     public CoreSoC CoreSoC = new();
@@ -298,11 +298,14 @@ public class AllStories
     public ExaltiaTower ExaltiaTower = new();
 
     public FrozenNorthlands FrozenNorthlands = new();
+    public FableForest FableForest = new();
 
     public Gamehaven Gamehaven = new();
     public GiantTaleStory GiantTaleStory = new();
     public GlaceraStory GlaceraStory = new();
     public Guru Guru = new();
+
+    public HuntersMoon HuntersMoon = new();
 
     public Lair Lair = new();
     public Lightguard Lightguard = new();
@@ -334,6 +337,7 @@ public class AllStories
     public ShadowSlayerK ShadowSlayerK = new();
     public ShadowVault ShadowVault = new();
     public ShadowVoid ShadowVoid = new();
+    public Shattersword Shattersword = new();
     public Shinkansen Shinkansen = new();
     public ShipWreck ShipWreck = new();
     public SkyGuardSaga SkyGuardSaga = new();
@@ -433,7 +437,7 @@ public class AllStories
         #endregion
 
         #region CoreFriday13th
-        CoreFriday13th.DoAll();
+        CoreFriday13th.CompleteFriday13th();
         Core.Logger($"Saga: Friday 13th - Complete");
         #endregion
 
@@ -511,8 +515,8 @@ public class AllStories
         Core.Logger($"Story: QueenBattle - Complete");
         #endregion
 
-        #region Seppy
-        SeppySaga.CompleteALL();
+        #region Sepulchure Saga
+        CoreSS.CompleteSS();
         Core.Logger($"Saga: Sepulchure - Complete");
         #endregion
 
@@ -572,7 +576,7 @@ public class AllStories
         Bludrut.StoryLine();
         Core.Logger($"Story: Bludrut - Complete");
 
-        Borgars.BorgarQuests();
+        Borgars.StoryLine();
         Core.Logger($"Story: Borgars - Complete");
 
 
@@ -634,7 +638,7 @@ public class AllStories
         }
 
 
-        DreamPalace.CompleteDreamPalace();
+        DreamPalace.StoryLine();
         Core.Logger($"Story: Dream Palace - Complete");
 
         Dwarfhold.DoAll();
@@ -644,7 +648,7 @@ public class AllStories
         Core.Logger($"Story: Dwarves Vs Giants - Complete");
 
 
-        Eden.EdenStoryline();
+        Eden.StoryLine();
         Core.Logger($"Story: Eden - Complete");
 
         EtherStormWastes.DoAll();
@@ -656,6 +660,13 @@ public class AllStories
 
         FrozenNorthlands.Storyline();
         Core.Logger($"Story: Frozen Northlands - Complete");
+
+        FableForest.StoryLine();
+        Core.Logger($"Story: FableForest - Complete");
+
+
+        HuntersMoon.StoryLine();
+        Core.Logger($"Story: Hunter's Moon - Complete");
 
 
         Gamehaven.Storyline();
@@ -757,6 +768,9 @@ public class AllStories
 
         ShadowVoid.ShadowVoidQuests();
         Core.Logger($"Story: ShadowVoid - Complete");
+
+        Shattersword.StoryLine();
+        Core.Logger($"Story: Shattersword - Complete");
 
         Shinkansen.Storyline();
         Core.Logger($"Story: Shinkansen - Complete");

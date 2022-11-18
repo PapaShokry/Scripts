@@ -1,22 +1,22 @@
 //cs_include Scripts/CoreBots.cs
+//cs_include Scripts/CoreStory.cs
+//cs_include Scripts/Story/SepulchureSaga/CoreSepulchure.cs
 using Skua.Core.Interfaces;
 
-public class ArtixWeddinMerge
+public class Alden
 {
     public IScriptInterface Bot => IScriptInterface.Instance;
     public CoreBots Core => CoreBots.Instance;
+    public CoreStory Story = new();
+    public CoreSepulchure CoreSS = new();
 
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
 
-        GetItems();
+        CoreSS.Alden();
 
         Core.SetOptions(false);
     }
 
-    public void GetItems()
-    {
-        Core.HuntMonster("grimskullannex", "Grim Mage", "Love Token", 1000, false);
-    }
 }

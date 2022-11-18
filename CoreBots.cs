@@ -592,8 +592,9 @@ public class CoreBots
         if (item == null || (buy_quant = _CalcBuyQuantity(item, quant)) == 0 || !_canBuy(shopID, item, buy_quant))
             return;
 
-        Join(map);
         ToggleAggro(false);
+
+        Join(map);
         Bot.Wait.ForMapLoad(map);
         JumpWait();
         Bot.Events.ExtensionPacketReceived += RelogRequieredListener;
@@ -617,9 +618,20 @@ public class CoreBots
 
         Bot.Events.ExtensionPacketReceived -= RelogRequieredListener;
 
-        if (CheckInventory(item.Name, quant))
+        if (buy_quant > quant && (CheckInventory(item.Name, buy_quant)))
+        {
+            // Sell spares
+            // This only occurs when you buy sth with stack limits, but want less then the stack limit.
+            int sell_quant = buy_quant - quant;
+            SellItem(item.Name, quant);
+            Logger($"Bought {buy_quant} {item.Name}, sold {sell_quant}, now at {quant} {item.Name}");
+        }
+        else if (CheckInventory(item.Name, quant))
+        {
             Logger($"Bought {buy_quant} {item.Name}, now at {quant} {item.Name}");
-        else Logger($"Failed at buying {buy_quant}/{quant} {item.Name}");
+        }
+        else
+            Logger($"Failed at buying {buy_quant}/{quant} {item.Name}");
 
         ToggleAggro(true);
 
@@ -1813,7 +1825,13 @@ public class CoreBots
                         Equip(FarmGear);
                         logEquip = true;
                     }
-                    Bot.Wait.ForItemEquip(FarmClass);
+
+                    int? class_id = Bot.Inventory.Items.Find(i => i.Name.ToLower().Trim() == FarmClass.ToLower().Trim() && i.Category == ItemCategory.Class)?.ID;
+                    if (class_id == null)
+                        Logger("Class not found", stopBot: true);
+                    ToggleAggro(false);
+                    Bot.Wait.ForItemEquip(class_id ?? 0);
+                    ToggleAggro(true);
                     Bot.Skills.StartAdvanced(FarmClass, true, FarmUseMode);
                     break;
                 }
@@ -1829,7 +1847,13 @@ public class CoreBots
                         Equip(SoloGear);
                         logEquip = true;
                     }
-                    Bot.Wait.ForItemEquip(SoloClass);
+                    int? class_id = Bot.Inventory.Items.Find(i => i.Name.ToLower().Trim() == SoloClass.ToLower().Trim() && i.Category == ItemCategory.Class)?.ID;
+                    if (class_id == null)
+                        Logger("Class not found", stopBot: true);
+                    ToggleAggro(false);
+                    Bot.Wait.ForItemEquip(class_id ?? 0);
+                    ToggleAggro(true);
+
                     Bot.Skills.StartAdvanced(SoloClass, true, SoloUseMode);
                     break;
                 }
@@ -1860,6 +1884,12 @@ public class CoreBots
         }
 
         ToggleAggro(true);
+    }
+
+    public void EquipCached()
+    {
+        if (EquipmentBeforeBot.Count() > 0)
+            Equip(EquipmentBeforeBot.ToArray());
     }
 
     /// <summary>
@@ -2088,6 +2118,7 @@ public class CoreBots
             return;
 
         ToggleAggro(false);
+        Bot.Sleep(ActionDelay);
 
         switch (strippedMap)
         {
@@ -2160,6 +2191,26 @@ public class CoreBots
                 tryJoin();
                 break;
 
+
+            case "shadowattack":
+                JumpWait();
+                Bot.Quests.UpdateQuest(3798);
+                tryJoin();
+                break;
+
+            case "confrontation":
+                JumpWait();
+                // Bot.Quests.UpdateQuest(3765);                
+                Bot.Quests.UpdateQuest(3799);
+                tryJoin();
+                break;
+
+            case "finalshowdown":
+                JumpWait();
+                Bot.Quests.UpdateQuest(3880);
+                tryJoin();
+                break;
+
                 // case "fearhouse":
                 //     SendPackets($"%xt%zm%cmd%{Bot.Map.RoomID}%tfer%{Bot.Player.Username}%fearhouse%{999999}&Enter%Spawn%");
                 //     break;
@@ -2204,10 +2255,12 @@ public class CoreBots
             Bot.Sleep(200);
         }
 
-        ToggleAggro(true);
+        // ToggleAggro(true);
+        //^ breaks shit
 
         void tryJoin()
         {
+            Bot.Events.ExtensionPacketReceived += MapIsMemberLocked;
             bool hasMapNumber = map.Contains('-') && Int32.TryParse(map.Split('-').Last(), out int result) && result >= 1000;
             for (int i = 0; i < 20; i++)
             {
@@ -2225,6 +2278,28 @@ public class CoreBots
                     Logger($"Failed to join {map}");
             }
         }
+        void MapIsMemberLocked(dynamic packet)
+        { //%xt%warning%-1%"artixhome" is an Membership-Only Map.%
+
+            string type = packet["params"].type;
+            dynamic data = packet["params"].dataObj;
+            if (type is not null and "str")
+            {
+                string cmd = data[0];
+                switch (cmd)
+                {
+                    case "warning":
+                        string b = Convert.ToString(packet);
+                        if (b.Contains("is an Membership-Only Map"))
+                        {
+                            Logger($" \"{map}\" Requires MemberShip to access it, Stopping the Bot.", stopBot: true);
+                            Bot.Events.ExtensionPacketReceived -= MapIsMemberLocked;
+                        }
+                        break;
+                }
+            }
+        }
+
     }
 
     public void JoinSWF(string map, string swfPath, string cell = "Enter", string pad = "Spawn", bool ignoreCheck = false)

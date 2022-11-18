@@ -52,6 +52,7 @@ public class Archmage
         Core.SetOptions();
 
         GetAM();
+        
         Core.SetOptions(false);
     }
 
@@ -137,7 +138,7 @@ public class Archmage
 
         Arcana();
         UnboundTomb(30);
-        
+
         BossItemCheck("Elemental Binding");
 
         Core.EquipClass(ClassType.Farm);
@@ -431,14 +432,25 @@ public class Archmage
 
         Core.FarmingLogger("Unbound Tome", quant);
 
-        MysticScribingKit(quant);
-        PrismaticEther(quant);
-        ArcaneLocus(quant);
+        MysticScribingKit(quant - Bot.Inventory.GetQuantity("Unbound Tome"));
+        PrismaticEther(quant - Bot.Inventory.GetQuantity("Unbound Tome"));
+        ArcaneLocus(quant - Bot.Inventory.GetQuantity("Unbound Tome"));
 
         while (!Bot.ShouldExit && !Core.CheckInventory("Unbound Tome", quant))
         {
             Core.EnsureAccept(8912);
-            Adv.BuyItem("alchemyacademy", 395, "Dragon Runestone", 30, 8844);
+            if (Bot.Config.Get<bool>("Voucher"))
+            {
+                // 500k * 2
+                Adv.BuyItem("alchemyacademy", 395, "Gold Voucher 500k", 6);
+                Adv.BuyItem("alchemyacademy", 395, "Dragon Runestone", 30, 8845);
+            }
+            else
+            {
+                // 100k
+                Adv.BuyItem("alchemyacademy", 395, "Gold Voucher 100k", 30);
+                Adv.BuyItem("alchemyacademy", 395, "Dragon Runestone", 30, 8844);
+            }
             Adv.BuyItem("darkthronehub", 1308, "Exalted Paladin Seal");
             Adv.BuyItem("shadowfall", 89, "Forsaken Doom Seal");
             Core.EnsureComplete(8912);
@@ -488,7 +500,7 @@ public class Archmage
 
                 case "Everlight Flame":
                     if (Bot.Config.Get<bool>("Armying?"))
-                        Core.HuntMonster("Fireavatar", "Tyndarius", item, isTemp: false);
+                        Core.HuntMonster("Fireavatar", "Avatar Tyndarius", item, isTemp: false);
                     if (!Core.CheckInventory(item))
                         Core.Logger($"{item} Not Found, Can Be Farmed (with an Army) from [Tyndarius] in [Fireavatar]", stopBot: true);
                     break;

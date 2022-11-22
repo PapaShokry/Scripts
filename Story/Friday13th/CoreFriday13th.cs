@@ -406,6 +406,9 @@ public class CoreFriday13th
 
     public void Battledoom()
     {
+        if (Core.isCompletedBefore(4656))
+            return;
+
         if (!Core.IsMember && !CalculateFriday13())
         {
             Core.Logger("You must be Member or wait until Friday13th to complete Battledoom.");
@@ -812,7 +815,7 @@ public class CoreFriday13th
         if (!Story.QuestProgression(8228))
         {
             Core.EnsureAccept(8228);
-            Core.HuntMonster("deadfly", "Skeletal Mage", "Fresh Soul", 8);
+            Core.HuntMonster("deadfly", "Skeletal Mage", "Fresh Soul", 8, log: false);
             Core.GetMapItem(8772, 1, "deadfly");
             Core.EnsureComplete(8228);
         }

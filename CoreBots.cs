@@ -1355,6 +1355,7 @@ public class CoreBots
             Bot.Sleep(ActionDelay);
             Rest();
         }
+
     }
 
     /// <summary>
@@ -1566,6 +1567,8 @@ public class CoreBots
             if (rejectElse)
                 Bot.Drops.RejectExcept(item);
         }
+        ToggleAggro(false);
+        Bot.Sleep(ActionDelay);
         Rest();
     }
 
@@ -1739,16 +1742,16 @@ public class CoreBots
 
     public void ToggleAggro(bool enable)
     {
-        if (enable && AggroMonsters)
-        {
-            AggroMonsters = false;
-            Bot.Options.AggroMonsters = true;
-        }
-        else if (Bot.Options.AggroMonsters)
-        {
-            AggroMonsters = true;
-            Bot.Options.AggroMonsters = false;
-        }
+        //if (enable && AggroMonsters)
+        //{
+        //    AggroMonsters = false;
+        //    Bot.Options.AggroMonsters = true;
+        //}
+        //else if (Bot.Options.AggroMonsters)
+        //{
+        //    AggroMonsters = true;
+        //    Bot.Options.AggroMonsters = false;
+        //}
     }
     private bool AggroMonsters = false;
 
@@ -2211,6 +2214,12 @@ public class CoreBots
                 tryJoin();
                 break;
 
+            case "Mummies":
+                JumpWait();
+                Bot.Quests.UpdateQuest(4616);
+                tryJoin();
+                break;
+
                 // case "fearhouse":
                 //     SendPackets($"%xt%zm%cmd%{Bot.Map.RoomID}%tfer%{Bot.Player.Username}%fearhouse%{999999}&Enter%Spawn%");
                 //     break;
@@ -2218,7 +2227,7 @@ public class CoreBots
 
         if (Bot.Map.Name != null && strippedMap == Bot.Map.Name.ToLower())
         {
-            if (Directory.Exists("options/Butler") &&
+            if (Directory.Exists("options/Butler") && Directory.GetFiles("options/Butler") != null &&
                 Directory.GetFiles("options/Butler").Any(x => x.Contains("~!") && x.Split("~!").Last() == Bot.Player.Username.ToLower() + ".txt"))
             {
                 string[] lockedMaps =
@@ -2609,7 +2618,7 @@ public class CoreBots
 
             string[] allowedPathStarters =
             {
-                "ArmyOnly",
+                "Army",
                 "Chaos",
                 "Dailies",
                 "Darkon",
@@ -2620,11 +2629,12 @@ public class CoreBots
                 "Hollowborn",
                 "Legion",
                 "Nation",
-                "Nulgath",
                 "Other",
                 "Prototypes",
                 "Seasonal",
                 "Story",
+                "Templates",
+                "Tools",
                 "WIP"
             };
 

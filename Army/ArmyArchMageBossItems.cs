@@ -31,6 +31,7 @@ public class ArchMageMatsArmy
         "The Divine Will",
         "Insatiable Hunger",
         "Void Essentia",
+        "Elemental Binding",
     };
 
     public void ScriptMain(IScriptInterface bot)
@@ -80,6 +81,7 @@ public class ArchMageMatsArmy
             else Core.Logger($"{item} Found.");
         }
 
+        Bot.Quests.UpdateQuest(8732);
         while (!Bot.ShouldExit && !Core.CheckInventory(Drops))
         {
             ArmyKillMonster("voidflibbi", "Enter", "Spawn", "Flibbitiestgibbet", "Void Essentia", log: false);
@@ -89,7 +91,8 @@ public class ArchMageMatsArmy
             ArmyKillMonster("tercessuinotlim", "Boss2", "Right", "Nulgath", "The Mortal Coil", log: false);
             ArmyKillMonster("theworld", "r9", "Left", "Encore Darkon", "Undying Resolve", log: false);
             ArmyKillMonster("celestialpast", "r11a", "Left", "Azalith", "drop", log: false);
-            ArmyKillMonster("darkCarnax", "Boss", "Right", "Nightmare Carnax", "Calamitous Ruin", log: false);
+            ArmyKillMonster("darkcarnax", "Boss", "Right", "Nightmare Carnax", "Calamitous Ruin", log: false);
+            ArmyKillMonster("archmage", "Boss", "Right", "Prismata", "Elemental Binding", 250, isTemp: false, log: false);
         }
         Core.Logger($"🖕");
     }

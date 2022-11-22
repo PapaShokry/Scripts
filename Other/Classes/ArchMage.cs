@@ -439,6 +439,7 @@ public class Archmage
         while (!Bot.ShouldExit && !Core.CheckInventory("Unbound Tome", quant))
         {
             Core.EnsureAccept(8912);
+            Farm.Gold(100000 * 30);
             if (Bot.Config.Get<bool>("Voucher"))
             {
                 // 500k * 2
@@ -539,6 +540,7 @@ public class Archmage
                     break;
 
                 case "Undying Resolve":
+                        Bot.Quests.UpdateQuest(8732);
                     if (Bot.Config.Get<bool>("Armying?"))
                         Core.HuntMonster("Theworld", "Encore Darkon", item, isTemp: false);
                     if (!Core.CheckInventory(item))

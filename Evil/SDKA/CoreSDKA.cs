@@ -18,7 +18,7 @@ public class CoreSDKA
     public bool DontPreconfigure = true;
     public List<IOption> Options = new()
     {
-        sCore.SkipOptions,
+        CoreBots.Instance.SkipOptions,
         new Option<SDKAQuest>("SelectedQuest", "Dark Spirit Orbs Quest",
             "Which quest should the bot use to farm Dark Spirit Orbs with?\nRecommended setting: A Penny for Your Foughts", SDKAQuest.APennyforYourFoughts),
     };
@@ -351,6 +351,11 @@ public class CoreSDKA
                     Core.HuntMonster("arcangrove", "Seed Spitter", "Deadly Knightshade", 16);
                     Core.EnsureComplete(2110);
                 }
+                int CSOQuantity = 105 - (Bot.Inventory.GetQuantity("Ominous Aura") * 50);
+                if ((CSOQuantity * 100) > Bot.Inventory.GetQuantity("Dark Spirit Orb"))
+                    FarmDSO(CSOQuantity * 100);
+                DoomMerge("Corrupt Spirit Orb", CSOQuantity);
+                DoomMerge("Ominous Aura", 2);
                 Core.BuyItem("dwarfhold", 434, "Accursed Arsenic of Doom");
             }
 

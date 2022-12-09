@@ -27,12 +27,11 @@
 //cs_include Scripts/Other/Classes/DragonslayerGeneral.cs
 //cs_include Scripts/Other/Weapons/GoldenBladeOfFate.cs
 //cs_include Scripts/Other/Weapons/PinkBladeofDestruction.cs
-//cs_include Scripts/Other/FireChampionsArmor.cs
+//cs_include Scripts/Other/Armor/FireChampionsArmor.cs
 //cs_include Scripts/Other/Classes/DragonOfTime.cs
 //cs_include Scripts/Prototypes/PrinceDarkonsPoleaxePreReqs.cs
 //cs_include Scripts/Story/ElegyofMadness(Darkon)/CoreAstravia.cs
-//cs_include Scripts/Story/Doomwood/DoomwoodPart3.cs
-//cs_include Scripts/Story/Doomwood/AQWZombies.cs
+//cs_include Scripts/Story/Doomwood/CoreDoomwood.cs
 //cs_include Scripts/Story/Legion/SevenCircles(War).cs
 //cs_include Scripts/Story/SepulchureSaga/CoreSepulchure.cs
 //cs_include Scripts/Story/Summer2015AdventureMap/CoreSummer.cs
@@ -109,7 +108,8 @@ public class UnlockForgeEnhancements
         new Option<ForgeQuestWeapon>("ForgeQuestWeapon", "Weapon Enhancement", "Forge Quests to unlock Weapon Enhancement, change to none to unselect", ForgeQuestWeapon.None),
         new Option<ForgeQuestCape>("ForgeQuestCape", "Cape Enhancement", "Forge Quests to unlock Cape Enhancement, change to none to unselect", ForgeQuestCape.None),
         new Option<ForgeQuestHelm>("ForgeQuestHelm", "Helm Enhancement", "Forge Quests to unlock Helm Enhancement, change to none to unselect", ForgeQuestHelm.None),
-        new Option<bool>("UseGold", "Use Gold", "Speed the BlacksmithingREP grind up with Gold?", false)
+        new Option<bool>("UseGold", "Use Gold", "Speed the BlacksmithingREP grind up with Gold?", false),
+        new Option<bool>("CanSolo", "Can solo", "Solo Sluggbutter"),
     };
 
     public void ScriptMain(IScriptInterface bot)
@@ -268,7 +268,7 @@ public class UnlockForgeEnhancements
 
         LOC.Kitsune();
         Farm.Experience(30);
-        Farm.BlacksmithingREP(4, Bot.Config.Get<bool>("UseGold"));
+        Farm.BlacksmithingREP(4, Bot.Config.Get<bool>("UseGold"), CanSolo: Bot.Config.Get<bool>("CanSolo"));
 
         Core.EquipClass(ClassType.Solo);
         Core.EnsureAccept(8738);
@@ -429,10 +429,9 @@ public class UnlockForgeEnhancements
             return;
 
         Core.Logger("Unlocking Enhancement: Arcana's Concerto (WIP)");
-
         Astravia.CompleteCoreAstravia();
         Farm.Experience(100);
-        Farm.BlacksmithingREP(10, Bot.Config.Get<bool>("UseGold"));
+        Farm.BlacksmithingREP(10, Bot.Config.Get<bool>("UseGold"), CanSolo: Bot.Config.Get<bool>("CanSolo"));
 
         if (!Core.isCompletedBefore(8746))
         {
@@ -476,19 +475,21 @@ public class UnlockForgeEnhancements
 
     public void Acheron()
     {
-        if (Core.isCompletedBefore(8820))
+        if (Core.isCompletedBefore(8820) || !Core.CheckInventory(new[] { 38566, 38567 }, toInv: false))
             return;
 
+        Core.Logger("Unlocking Enhancement: Acheron");
+
         Core.EnsureAccept(8820);
-        
+
         VoidLodestone();
-        
+
         SoW.Tyndarius();
-        
+
         // have the Dark Box and Dark Key mini-saga completed 
         // Quest complete will require you to turn in the Power of Darkness, 
         Core.BuyItem(Bot.Map.Name, 1380, "The Power of Darkness");
-        
+
         //20 Dark Potions,
         Core.RegisterQuests(5710);
         while (!Bot.ShouldExit && !Core.CheckInventory("Dark Potion", 20))
@@ -509,6 +510,8 @@ public class UnlockForgeEnhancements
         if (Core.isCompletedBefore(8821))
             return;
 
+        Core.Logger("Unlocking Enhancement: Elysium");
+
         Core.EnsureAccept(8821);
         CorNSOD.BonesVoidRealm(20);
         YNR.BlademasterSwordScroll();
@@ -520,7 +523,7 @@ public class UnlockForgeEnhancements
             return;
         }
         Core.EnsureComplete(8821);
-        Core.Logger("Enhancement Unlocked: insert");
+        Core.Logger("Enhancement Unlocked: Elysium");
     }
 
     public void ForgeCapeEnhancement()
@@ -658,7 +661,7 @@ public class UnlockForgeEnhancements
 
         if (Core.isCompletedBefore(8823))
             return;
-        
+
         Core.EquipClass(ClassType.Solo);
         Core.EnsureAccept(8823);
         Core.HuntMonster("sepulchurebattle", "Ultra Sepulchure", "Doom Heart", isTemp: false);
@@ -678,7 +681,7 @@ public class UnlockForgeEnhancements
     {
         if (Core.isCompletedBefore(8828))
             return;
-        
+
         Core.EquipClass(ClassType.Solo);
         Core.EnsureAccept(8828);
         Core.HuntMonster("lostruinswar", "Diabolical Warlord", "Prismatic Celestial Wings", isTemp: false);
@@ -798,9 +801,9 @@ public class UnlockForgeEnhancements
     public void TheDarkBox(int itemID, int quant = 1)
     {
         ItemBase Reward = Core.EnsureLoad(5710).Rewards.Find(x => x.ID == itemID);
-        
+
         Core.AddDrop("Dark Potion", Reward.Name);
-        
+
         Daily.MonthlyTreasureChestKeys();
         if (!Core.CheckInventory(new[] { "Dark Box", "Dark Key" }))
         {

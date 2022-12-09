@@ -34,23 +34,21 @@ public class CoreStory
     public void KillQuest(int QuestID, string MapName, string MonsterName, bool GetReward = true, string Reward = "All", bool AutoCompleteQuest = true)
     {
         Quest QuestData = Core.EnsureLoad(QuestID);
-        ItemBase[] Requirements = QuestData.Requirements.ToArray();
         if (QuestProgression(QuestID, GetReward, Reward))
             return;
 
-        SmartKillMonster(QuestID, MapName, MonsterName, 50, Requirements[0].Coins);
+        SmartKillMonster(QuestID, MapName, MonsterName);
         if (AutoCompleteQuest)
-            Bot.Wait.ForPickup(Requirements.ToString());
+            foreach (var item in QuestData.Requirements)
+                Bot.Wait.ForPickup(item.ID);
         TryComplete(QuestData, AutoCompleteQuest);
 
-        void SmartKillMonster(int questID, string map, string monster, int iterations = 20, bool completeQuest = false, bool publicRoom = false)
+        void SmartKillMonster(int questID, string map, string monster)
         {
             Core.EnsureAccept(questID);
             _AddRequirement(questID);
-            Core.Join(map, publicRoom: publicRoom);
-            _SmartKill(monster, iterations);
-            if (completeQuest)
-                Core.EnsureComplete(questID);
+            Core.Join(map);
+            _SmartKill(monster, 20);
             CurrentRequirements.Clear();
         }
     }
@@ -67,25 +65,22 @@ public class CoreStory
     public void KillQuest(int QuestID, string MapName, string[] MonsterNames, bool GetReward = true, string Reward = "All", bool AutoCompleteQuest = true)
     {
         Quest QuestData = Core.EnsureLoad(QuestID);
-        ItemBase[] Requirements = QuestData.Requirements.ToArray();
-
         if (QuestProgression(QuestID, GetReward, Reward))
             return;
 
-        SmartKillMonster(QuestID, MapName, MonsterNames, 50, Requirements[0].Coins);
+        SmartKillMonster(QuestID, MapName, MonsterNames);
         if (AutoCompleteQuest)
-            Bot.Wait.ForPickup(Requirements.ToString());
+            foreach (var item in QuestData.Requirements)
+                Bot.Wait.ForPickup(item.ID);
         TryComplete(QuestData, AutoCompleteQuest);
 
-        void SmartKillMonster(int questID, string map, string[] monsters, int iterations = 20, bool completeQuest = false, bool publicRoom = false)
+        void SmartKillMonster(int questID, string map, string[] monsters)
         {
             Core.EnsureAccept(questID);
             _AddRequirement(questID);
-            Core.Join(map, publicRoom: publicRoom);
+            Core.Join(map);
             foreach (string monster in monsters)
-                _SmartKill(monster, iterations);
-            if (completeQuest)
-                Core.EnsureComplete(questID);
+                _SmartKill(monster, 20);
             CurrentRequirements.Clear();
         }
     }
@@ -341,57 +336,68 @@ public class CoreStory
             return;
         }
 
-        Core.Logger($"Final quest to work torwards: [{finalItemQuestID}] \"{Core.EnsureLoad(finalItemQuestID).Name}\"");
+        Core.Logger($"Final quest in Legacy Quest Chain: [{finalItemQuestID}] \"{Core.EnsureLoad(finalItemQuestID).Name}\"");
 
         runQuest(finalItemQuestID);
 
-        List<string> toBank = new();
         foreach (var l in whereToGet)
-            toBank.AddRange(l.requiredQuestReward.Select(i => i.Name));
-        Core.ToBank(toBank.ToArray());
+            Core.ToBank(l.requiredQuestReward.Select(i => i.ID).ToArray());
 
         void runQuest(int questID)
         {
             var runQuestData = whereToGet.Find(d => d.desiredQuestID == questID);
             var questData = Core.EnsureLoad(questID);
 
+            Core.DebugLogger(this);
             if (runQuestData == null)
             {
                 Core.Logger("runQuestData is NULL");
                 return;
             }
+            Core.DebugLogger(this);
 
-            var requiredReward = runQuestData.requiredQuestReward.Select(i => i.Name).ToArray();
-            if (runQuestData.desiredQuestReward.Count == 0)
+            var requiredReward = runQuestData.requiredQuestReward.Select(i => i.ID).ToArray();
+            Core.DebugLogger(this);
+            if (runQuestData.desiredQuestReward.Count == 0 && questID != finalItemQuestID)
             {
                 if (!Core.CheckInventory(requiredReward))
                     runQuest(runQuestData.requieredQuestID);
                 return;
             }
 
-            var desiredReward = runQuestData.desiredQuestReward.Select(i => i.Name).ToArray();
-            if (Core.CheckInventory(desiredReward))
+            Core.DebugLogger(this);
+            var desiredReward = runQuestData.desiredQuestReward.Select(i => i.ID).ToArray();
+            if (questID != finalItemQuestID ? Core.CheckInventory(desiredReward) : Core.CheckInventory(Core.EnsureLoad(finalItemQuestID).Rewards.Select(x => x.ID).ToArray()))
             {
                 Core.Logger($"Already Completed: [{questID}] - \"{questData.Name}\"", "QuestProgression");
                 return;
             }
+            Core.DebugLogger(this);
 
             if (!Core.CheckInventory(requiredReward))
                 runQuest(runQuestData.requieredQuestID);
 
             if (_LegacyQuestStop)
                 return;
+            Core.DebugLogger(this);
 
             Core.Logger($"Doing Quest: [{questID}] - \"{questData.Name}\"", "QuestProgression");
             Core.EnsureAccept(questID);
             Core.AddDrop(desiredReward);
 
+            Core.DebugLogger(this);
             LegacyQuestID = questID;
             questLogic();
+            Core.DebugLogger(this);
 
             TryComplete(questData, LegacyQuestAutoComplete);
+            Core.DebugLogger(this);
             foreach (var i in desiredReward)
                 Bot.Wait.ForPickup(i);
+            Core.DebugLogger(this);
+            if (questID == finalItemQuestID)
+                Bot.Drops.Pickup(Core.EnsureLoad(finalItemQuestID).Rewards.Select(x => x.ID).ToArray());
+            Core.DebugLogger(this);
 
             LegacyQuestAutoComplete = true;
         }

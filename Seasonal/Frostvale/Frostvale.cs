@@ -10,7 +10,6 @@ public class Frostvale
 
     public void ScriptMain(IScriptInterface Bot)
     {
-        Core.AcceptandCompleteTries = 5;
         Core.SetOptions();
 
         DoAll();
@@ -38,17 +37,15 @@ public class Frostvale
         Howardshill();
         Icerisepast();
         Winterhorror();
-        Gifthulu();
-        cryostorm();
-        icewindpass();
-        icepike();
+        //Gifthulu();
+        Cryostorm();
+        Icewindpass();
+        Icepike();
     }
 
     public void IceCave()
     {
-        if (!Core.isSeasonalMapActive("icecave"))
-            return;
-        if (Core.isCompletedBefore(906))
+        if (Core.isCompletedBefore(906) || !Core.isSeasonalMapActive("icecave"))
             return;
 
         Story.PreLoad(this);
@@ -105,16 +102,12 @@ public class Frostvale
         Story.KillQuest(461, "icecave", "Frozen Moglin");
 
         // Spirit Abducted 
-        Bot.Map.Join("Map");
-        Core.ChainComplete(905);
+        Story.ChainQuest(905);
     }
 
     public void SnowGlobe()
     {
-        if (!Core.isSeasonalMapActive("snowglobe"))
-            return;
-
-        if (Core.isCompletedBefore(1508))
+        if (Core.isCompletedBefore(1508) || !Core.isSeasonalMapActive("snowglobe"))
             return;
 
         Story.PreLoad(this);
@@ -148,9 +141,7 @@ public class Frostvale
 
     public void Alpine()
     {
-        if (!Core.isSeasonalMapActive("alpine"))
-            return;
-        if (Core.isCompletedBefore(1521))
+        if (Core.isCompletedBefore(1521) || !Core.isSeasonalMapActive("alpine"))
             return;
 
         Story.PreLoad(this);
@@ -177,7 +168,7 @@ public class Frostvale
         Story.KillQuest(1513, "alpine", "Wendigo");
 
         // Snow Turning Back!
-        Story.KillQuest(1519, "icevolcano", MonsterNames: new[] { "Snow Golem", "Dead-ly Ice Elemental" });
+        Story.KillQuest(1519, "icevolcano", new[] { "Snow Golem", "Dead-ly Ice Elemental" });
         Story.MapItemQuest(1519, "icevolcano", 761, 10);
 
         // Venom in Your Veins
@@ -189,10 +180,7 @@ public class Frostvale
 
     public void SnowyVale()
     {
-        if (!Core.isSeasonalMapActive("snowyvale"))
-            return;
-
-        if (Core.isCompletedBefore(2576))
+        if (Core.isCompletedBefore(2576) || !Core.isSeasonalMapActive("snowyvale"))
             return;
 
         Story.PreLoad(this);
@@ -212,87 +200,89 @@ public class Frostvale
         Story.MapItemQuest(2525, "snowyvale", 1586);
 
         // Before the Darkest Hour - Will continue after the QuestComplete tries end (idk how many it is but y[e])
-        if (!Story.QuestProgression(2527))
-        {
-            Core.EnsureAccept(2526);
-            Bot.Map.Join("Map");
-            Bot.Sleep(2500);
-            Core.EnsureComplete(2526);
-        }
+        // if (!Story.QuestProgression(2526))
+        // {
+        //     Core.EnsureAccept(2526);
+        //     Core.Join("frostdeep");
+        //     Bot.Wait.ForMapLoad("frostdeep");
+        //     Core.GetMapItem(1587, 1, "frostdeep");
+        //     Core.EnsureComplete(2526);
+        // }
+        Story.MapItemQuest(2526, "frostdeep", 1587, AutoCompleteQuest: false);
 
         // Heart of Ice
-        Story.KillQuest(2527, "frostdeep", MonsterNames: new[] { "Polar Golem", "Polar Elemental" });
+        Story.KillQuest(2527, "frostdeep", new[] { "Polar Golem", "Polar Elemental" });
 
         // Absolute Zero Success
-        Story.KillQuest(2528, "frostdeep", MonsterNames: new[] { "Temple Prowler", "Polar Elemental", "Polar Golem" });
+        Story.KillQuest(2528, "frostdeep", new[] { "Temple Prowler", "Polar Elemental", "Polar Golem" });
 
         // Dirty Secret
-        Story.KillQuest(2529, "frostdeep", MonsterNames: new[] { "Temple Prowler", "Polar Mole" });
+        Story.KillQuest(2529, "frostdeep", new[] { "Temple Prowler", "Polar Mole" });
 
         // Frozen Venom
-        Story.KillQuest(2530, "frostdeep", MonsterNames: new[] { "Polarwyrm Rider", "Polar Spider" });
+        Story.KillQuest(2530, "frostdeep", new[] { "Polarwyrm Rider", "Polar Spider" });
 
         // Rune-ing His Plan
         Story.KillQuest(2531, "frostdeep", "Ancient Golem");
 
         // Deadly Beauty
-        Story.KillQuest(2532, "frostdeep", MonsterNames: new[] { "Polar Elemental", "Polar Golem", "Polar Golem" });
+        Story.KillQuest(2532, "frostdeep", new[] { "Polar Elemental", "Polar Golem", "Polar Golem" });
 
         // Cold-Hearted Trophies
-        Story.KillQuest(2533, "frostdeep", MonsterNames: new[] { "Polar Mole", "Temple Prowler", "Temple Prowler" });
+        Story.KillQuest(2533, "frostdeep", new[] { "Polar Mole", "Temple Prowler", "Temple Prowler" });
 
         // Warmth in the Cold
-        Story.KillQuest(2534, "frostdeep", MonsterNames: new[] { "Temple Spider", "Temple Maggot" });
+        Story.KillQuest(2534, "frostdeep", new[] { "Temple Spider", "Temple Maggot" });
 
         // Icy Prizes
-        Story.KillQuest(2535, "frostdeep", MonsterNames: new[] { "Temple Prowler", "Temple Maggot" });
+        Story.KillQuest(2535, "frostdeep", new[] { "Temple Prowler", "Temple Maggot" });
 
         // Fading Magic - may bug out as its 2 items from 1 mob if the delay doesnt work idfk, doesnt work as a string[] as it gets the sand drop 
-        Story.KillQuest(2536, "frostdeep", "Ancient Golem");
-        Bot.Sleep(2500);
-        Story.KillQuest(2536, "frostdeep", "Ancient Golem");
-        //Story.KillQuest(2536, "frostdeep", MonsterNames: new[] { "Ancient Golem", "Ancient Golem" });
+        if (!Story.QuestProgression(2536))
+        {
+            Core.EnsureAccept(2536);
+            Core.HuntMonster("frostdeep", "Ancient Golem", "Sands of Time", 6);
+            Core.HuntMonster("frostdeep", "Ancient Golem", "Obsidian Key", 2);
+            Core.EnsureComplete(2536);
+        }
 
         // FrostDeep Dwellers
-        Story.KillQuest(2537, "frostdeep", MonsterNames: new[] { "Polarwyrm Rider", "Polar Mole", "Polar Mole" });
+        Story.KillQuest(2537, "frostdeep", new[] { "Polarwyrm Rider", "Polar Mole", "Polar Mole" });
 
         // A Breather
-        Story.KillQuest(2538, "frostdeep", MonsterNames: new[] { "Polar Mole", "Temple Spider", "Polar Spider" });
+        Story.KillQuest(2538, "frostdeep", new[] { "Polar Mole", "Temple Spider", "Polar Spider" });
 
         // Raiders From FrostDeep
-        Story.KillQuest(2539, "frostdeep", MonsterNames: new[] { "Polar Draconian", "Temple Maggot" });
+        Story.KillQuest(2539, "frostdeep", new[] { "Polar Draconian", "Temple Maggot" });
 
         // 8 Legged Frost Freaks
-        Story.KillQuest(2540, "frostdeep", MonsterNames: new[] { "Temple Spider", "Polar Spider" });
+        Story.KillQuest(2540, "frostdeep", new[] { "Temple Spider", "Polar Spider" });
 
         // Freezing the Stone
-        Story.KillQuest(2541, "frostdeep", MonsterNames: new[] { "Ancient Golem", "Ancient Golem" });
+        Story.KillQuest(2541, "frostdeep", new[] { "Ancient Golem", "Ancient Golem" });
 
         // Can You Feel the Chill Tonight?
-        Story.KillQuest(2542, "frostdeep", MonsterNames: new[] { "Temple Prowler", "Polar Elemental", "Polar Elemental" });
+        Story.KillQuest(2542, "frostdeep", new[] { "Temple Prowler", "Polar Elemental", "Polar Elemental" });
 
         // Shrouded in Ice
-        Story.KillQuest(2543, "frostdeep", MonsterNames: new[] { "Ancient Maggot", "Ancient Maggot" });
+        Story.KillQuest(2543, "frostdeep", new[] { "Ancient Maggot", "Ancient Maggot" });
 
         // Hard Fight for a Cold Truth
-        Story.KillQuest(2544, "frostdeep", MonsterNames: new[] { "Ancient Prowler", "Ancient Prowler" });
+        Story.KillQuest(2544, "frostdeep", new[] { "Ancient Prowler", "Ancient Prowler" });
 
         // Sand and Shardin' Bones
-        Story.KillQuest(2545, "frostdeep", MonsterNames: new[] { "Ancient Mole", "Ancient Mole" });
+        Story.KillQuest(2545, "frostdeep", new[] { "Ancient Mole", "Ancient Mole" });
 
         // Older and Colder
-        Story.KillQuest(2546, "frostdeep", MonsterNames: new[] { "Ancient Mole", "Ancient Prowler", "Ancient Maggot" });
+        Story.KillQuest(2546, "frostdeep", new[] { "Ancient Mole", "Ancient Prowler", "Ancient Maggot" });
 
         // The Sword Of Hope
-        Story.KillQuest(2547, "frostdeep", MonsterNames: new[] { "Ancient Terror", "Ancient Terror" });
+        Story.KillQuest(2547, "frostdeep", new[] { "Ancient Terror", "Ancient Terror" });
     }
 
     public void IceRise()
     {
-        if (!Core.isSeasonalMapActive("icerise"))
-            return;
-
-        if (Core.isCompletedBefore(2582))
+        if (Core.isCompletedBefore(2582) || !Core.isSeasonalMapActive("icerise"))
             return;
 
         Story.PreLoad(this);
@@ -307,10 +297,10 @@ public class Frostvale
         Story.KillQuest(2578, "icerise", "Polar Golem");
 
         // Uncovering Pages Of The Past
-        Story.KillQuest(2579, "icerise", MonsterNames: new[] { "Polar Golem", "Polar Elemental", "Arctic Direwolf" });
+        Story.KillQuest(2579, "icerise", new[] { "Polar Golem", "Polar Elemental", "Arctic Direwolf" });
 
         // We Know Where To Look
-        Story.KillQuest(2580, "icerise", MonsterNames: new[] { "Polar Golem", "Polar Elemental", "Arctic Direwolf" });
+        Story.KillQuest(2580, "icerise", new[] { "Polar Golem", "Polar Elemental", "Arctic Direwolf" });
 
         // A Terrible Hiding Place
         Story.KillQuest(2581, "icerise", "Arctic Direwolf");
@@ -321,10 +311,7 @@ public class Frostvale
 
     public void ColdWindValley()
     {
-        if (!Core.isSeasonalMapActive("coldwindvalley"))
-            return;
-
-        if (Core.isCompletedBefore(6132))
+        if (Core.isCompletedBefore(6132) || !Core.isSeasonalMapActive("coldwindvalley"))
             return;
 
         Story.PreLoad(this);
@@ -375,10 +362,7 @@ public class Frostvale
 
     public void BrightLights()
     {
-        if (!Core.isSeasonalMapActive("icestorm"))
-            return;
-
-        if (Core.isCompletedBefore(8176))
+        if (Core.isCompletedBefore(8176) || !Core.isSeasonalMapActive("icestorm"))
             return;
 
         Story.PreLoad(this);
@@ -442,61 +426,207 @@ public class Frostvale
 
     public void Battlefield()
     {
-        if (!Core.isSeasonalMapActive("Battlefield"))
+        if (Core.isCompletedBefore(2575) || !Core.isSeasonalMapActive("battlefield"))
             return;
 
-        //Not avaiable
+        Story.PreLoad(this);
+
+        // Mana for the Magi 2570
+        Story.KillQuest(2570, "newbie", "Slime", GetReward: false);
+
+        // Gathering Spell Components 2571
+        Story.KillQuest(2571, "hydra", "Fire Imp", GetReward: false);
+
+        // Looking for Loggers 2572
+        Story.KillQuest(2572, "farm", "Treeant", GetReward: false);
+
+        // Ballista Cables 2573
+        Story.KillQuest(2573, "orctown", "Horc Warrior", GetReward: false);
+
+        // Arrowheads for Archers 2574
+        Story.KillQuest(2574, "yokairiver", "Kappa Ninja", GetReward: false);
+
+        // Fetching Fletching Feathers 2575
+        Story.KillQuest(2575, "creatures", "Red Bird", GetReward: false);
     }
 
 
     public void Darkwinter()
     {
-        if (!Core.isSeasonalMapActive("Darkwinter"))
+        if (Core.isCompletedBefore(3260) || !Core.isSeasonalMapActive("darkwinter"))
             return;
-        //Not avaiable
+
+        //Good way | Yorumi & Einyuki Questline
+        Core.ChangeAlignment(Alignment.Good);
+
+        Story.PreLoad(this);
+
+        // Feed the Greed 3217
+        Story.KillQuest(3217, "darkwinter", new[] { "Blighted Moglin", "White Stalker", "Blighted Moglin" });
+        // if (!Story.QuestProgression(3217))
+        // {
+        //     Core.EnsureAccept(3217);
+        //     Core.HuntMonster("darkwinter", "Blighted Moglin", "Frostval Gift", 5);
+        //     Core.HuntMonster("darkwinter", "White Stalker", "Frostval Decoration", 5);
+        //     Core.HuntMonster("darkwinter", "Blighted Moglin", "Frostval Dessert", 5);
+        //     Core.EnsureComplete(3217);
+        // }
+
+        // Sleet Samples 3218
+        Story.KillQuest(3218, "darkwinter", "White Stalker");
+
+        // Blighted Deer 3219
+        Story.KillQuest(3219, "darkwinter", "Blighted Deer");
+
+        // Frosty Hearts 3220
+        Story.KillQuest(3220, "darkwinter", "Ice Golem");
+
+        // On the Offensive 3221
+        Story.KillQuest(3221, "darkwinter", "Legion Minion");
+
+        // Inoculation 3222
+        Story.MapItemQuest(3222, "darkwinter", new[] { 2280, 2281 }, 6);
+
+        // A Different Way 3223
+        Story.KillQuest(3223, "darkwinter", "Blighted Deer");
+
+        // Breaking In 3257
+        Story.MapItemQuest(3257, "darkwinter", 2315);
+
+        // Break the Barrier 3258
+        Story.KillQuest(3258, "darkwinter", "Ice Golem");
+
+        // The Final Ward 3259
+        Story.KillQuest(3259, "darkwinter", "Frost Golem");
+
+        // Defeat Frostfang (Good) 3260 /Evil is the same
+        Story.KillQuest(3260, "darkwinter", "Frost Fang");
     }
 
     public void Frozensoul()
     {
-        if (!Core.isSeasonalMapActive("Frozensoul"))
+        if (Core.isCompletedBefore(7264) || !Core.isSeasonalMapActive("frozensoul"))
             return;
-        //Not avaiable
+
+        Story.PreLoad(this);
+
+        // Looks like quest is not unlocked behind anything
+        // Ice Cold Killer 7262
+        Story.KillQuest(7262, "frozensoul", "Frozen Minion", GetReward: false);
+
+        // Get Jacked 7263
+        Story.KillQuest(7263, "frozensoul", "Jack Frost", GetReward: false);
+
+        // Shatter the FrozenSoul Queen 7264
+        Story.KillQuest(7264, "frozensoul", "FrozenSoul Queen", GetReward: false);
     }
 
     public void Howardshill()
     {
-        if (!Core.isSeasonalMapActive("Howardshill"))
+        if (Core.isCompletedBefore(7854) || !Core.isSeasonalMapActive("howardshill"))
             return;
-        //Not avaiable
+
+        Story.PreLoad(this);
+
+        // Blizzy's
+        // Find the Source 7843
+        Story.KillQuest(7843, "howardshill", "Frozen Wisp");
+        Story.MapItemQuest(7843, "howardshill", 7921);
+
+        // Try the Door 7844
+        Story.MapItemQuest(7844, "howardshill", 7922);
+
+        // Find the Key 7845
+        Story.KillQuest(7845, "howardshill", "Frozen Treeant");
+
+        //Howard's
+        // Till the Ground 7846
+        Story.KillQuest(7846, "howardshill", "FrostBite");
+
+        // Beautiful Blossoms 7847
+        Story.KillQuest(7847, "howardshill", "Chillybones");
+
+        // Moldy Trees 7848
+        Story.KillQuest(7848, "howardshill", "Frozen Treeant");
+
+        // Ichor for Elixir 7849
+        Story.KillQuest(7849, "howardshill", "Chillybones");
+
+        // Frozen Tears 7850
+        Story.KillQuest(7850, "howardshill", "Chillybones");
+
+        // Keep them Away 7851
+        Story.KillQuest(7851, "howardshill", "FrostBite");
+
+        // Light up the Darkness 7852
+        Story.KillQuest(7852, "howardshill", "Frozen Wisp");
+
+        // Return to Blizzy 7853
+        Story.KillQuest(7853, "howardshill", "Chillybones");
+        Story.MapItemQuest(7853, "howardshill", 7924);
+
+        // Howard's Grief 7854
+        Story.KillQuest(7854, "howardshill", "Howard's Grief");
     }
 
     public void Icerisepast()
     {
-        if (!Core.isSeasonalMapActive("Icerisepast"))
+        if (!Core.IsMember || Core.isCompletedBefore(3904) || !Core.isSeasonalMapActive("Icerisepast"))
             return;
-        //Not avaiable
+
+        Story.PreLoad(this);
+
+        // Through the pass 3899
+        Story.KillQuest(3899, "icerisepast", "Ice Wolf");
+
+        // Higher Passes 3900
+        Story.KillQuest(3900, "icerisepast", new[] { "Ice Bear", "Ice Bear", "Ice Bear" });
+
+        // Bears? 3901
+        Story.MapItemQuest(3901, "icerisepast", 2987);
+
+        // In the Den 3902
+        Story.KillQuest(3902, "icerisepast", "Guard Drumlin");
+
+        // The Camp 3903
+        Story.KillQuest(3903, "icerisepast", "Drumlin");
+
+        // Fire from the Hole 3904
+        Story.KillQuest(3904, "icerisepast", "Ice Drumlinster");
     }
 
     public void Winterhorror()
     {
-        if (!Core.isSeasonalMapActive("Winterhorror"))
+        if (Core.isCompletedBefore(7859) || !Core.isSeasonalMapActive("winterhorror"))
             return;
-        //Not avaiable
+
+        Story.PreLoad(this);
+
+        // Monster Gems 7856
+        Story.KillQuest(7856, "winterhorror", "Chillybones");
+
+        // Mega Monster Gems 7857
+        Story.KillQuest(7857, "winterhorror", "FrostBite");
+
+        // Oh Heck! 7858
+        Story.KillQuest(7858, "winterhorror", "Arthur and Elise");
+
+        // He's Ragin' 7859
+        Story.KillQuest(7859, "winterhorror", $"Howard’s Rage");
     }
 
     public void Gifthulu()
     {
-        if (!Core.isSeasonalMapActive("Gifthulu"))
+        if (!Core.isSeasonalMapActive("gifthulu"))
             return;
         //Not avaiable
+        //There is no quests over here
     }
 
 
-    public void cryostorm()
+    public void Cryostorm()
     {
-        if (!Core.isSeasonalMapActive("cryostorm"))
-            return;
-        if (Core.isCompletedBefore(4716))
+        if (Core.isCompletedBefore(4716) || !Core.isSeasonalMapActive("cryostorm"))
             return;
 
         Story.PreLoad(this);
@@ -546,13 +676,9 @@ public class Frostvale
         Story.KillQuest(4716, "cryowar", "Super-Charged Karok");
     }
 
-    public void icewindpass()
+    public void Icewindpass()
     {
-        if (!Core.isSeasonalMapActive("icewindpass"))
-            return;
-        //avaiable
-        Core.Logger("map: \"icewindpass\" is available, but not finished");
-        if (Core.isCompletedBefore(5596))
+        if (Core.isCompletedBefore(5596) || !Core.isSeasonalMapActive("icewindpass"))
             return;
 
         Story.PreLoad(this);
@@ -589,11 +715,9 @@ public class Frostvale
         Story.KillQuest(5596, "icewindpass", new[] { "Polar Golem", "Glacial Elemental" });
     }
 
-    public void icepike()
+    public void Icepike()
     {
-        if (!Core.isSeasonalMapActive("icepike"))
-            return;
-        if (Core.isCompletedBefore(5617))
+        if (Core.isCompletedBefore(5617) || !Core.isSeasonalMapActive("icepike"))
             return;
 
         Story.PreLoad(this);

@@ -11,13 +11,12 @@ using Skua.Core.Interfaces;
 public class DrakathArmorBot
 {
     public IScriptInterface Bot => IScriptInterface.Instance;
-
-    public CoreBots Core => CoreBots.Instance;
-    public CoreFarms Farm = new();
-    public CoreDailies Daily = new();
-    public CoreBLOD BLOD = new();
-    public Core13LoC LOC => new Core13LoC();
-    public CoreNation Nation = new();
+    private CoreBots Core => CoreBots.Instance;
+    private CoreFarms Farm = new();
+    private CoreDailies Daily = new();
+    private CoreBLOD BLOD = new();
+    private Core13LoC LOC => new();
+    private CoreNation Nation = new();
 
     public void ScriptMain(IScriptInterface bot)
     {
@@ -29,7 +28,7 @@ public class DrakathArmorBot
     }
 
     public void GetBoth()
-    {        
+    {
         LOC.Complete13LOC();
         DrakathArmorQuest();
         Core.BuyItem("battleon", 994, "Original Drakath Armor");
@@ -40,7 +39,7 @@ public class DrakathArmorBot
     {
         if (Core.CheckInventory("Drakath Armor"))
             return;
-            
+
         DrakathArmorQuest();
         Core.BuyItem("battleon", 994, "Drakath Armor");
     }
@@ -49,7 +48,7 @@ public class DrakathArmorBot
     {
         if (Core.CheckInventory("Original Drakath Armor"))
             return;
-            
+
         LOC.Complete13LOC();
         DrakathArmorQuest();
         Core.BuyItem("battleon", 994, "Original Drakath Armor");
@@ -57,9 +56,13 @@ public class DrakathArmorBot
 
     public void DrakathArmorQuest()
     {
+        if (Core.CheckInventory("Get Your Original Drakath's Armor"))
+            return;
+
         Core.AddDrop("Dage's Scroll Fragment", "Treasure Chest", "Face of Chaos", "Get Your Original Drakath's Armor");
 
         Core.EnsureAccept(3882);
+
         Farm.BladeofAweREP(6, farmBoA: true);
         BLOD.DoAll();
         Nation.FarmUni13(3);
@@ -71,8 +74,9 @@ public class DrakathArmorBot
         Core.KillMonster("ultradrakath", "r1", "Left", "Champion of Chaos", "Face of Chaos", isTemp: false, publicRoom: true);
         Core.Relogin();
         Daily.DagesScrollFragment();
+
         if (!Core.CheckInventory("Dage's Scroll Fragment", 13))
-            Core.Logger($"You Own Dage's Scroll Fragment x{Bot.Inventory.GetQuantity("Dage's Scroll Fragment")}/{13} (Daily Quest), Bot can not continue.", messageBox: true, stopBot: true);
+            Core.Logger($"You own \"Dage's Scroll Fragment\" ({Bot.Inventory.GetQuantity("Dage's Scroll Fragment")}/13) [Daily Quest]. Bot can not continue.", messageBox: true, stopBot: true);
         else Core.EnsureComplete(3882);
     }
 }

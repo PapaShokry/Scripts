@@ -1,4 +1,3 @@
-using System.Reflection.PortableExecutable;
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -20,24 +19,29 @@ public class CoreHarvestDay
 
     public void DoAll()
     {
-        if (!Core.isSeasonalMapActive("harvest"))
-            return;
-        Harvest();
-        Turdraken();
-        Float();
-        Banquet();
-        Grams();
-        ArtixHome();
-        FoulFarm();
-        KillerKitchen();
-        FurbleFeast();
-        FurborgShip();
-        MeatLab();
-        GothicDream();
-        MemetNightmare();
-        NightmareWar();
-        EpilTakeOver();
-        BirdsWithHarms();
+        if (Core.isSeasonalMapActive("harvest"))
+        {
+            Harvest();
+            Turdraken();
+            Float();
+            Banquet();
+            Grams();
+            ArtixHome();
+            FoulFarm();
+            KillerKitchen();
+            FurbleFeast();
+            FurborgShip();
+            MeatLab();
+            GothicDream();
+            MemetNightmare();
+            NightmareWar();
+            EpilTakeOver();
+            BirdsWithHarms();
+            EbilCorpHQ();
+        } else
+        {
+            EbilCorpHQ();
+        }
     }
 
     public void Harvest()
@@ -582,7 +586,7 @@ public class CoreHarvestDay
 
     public void EpilTakeOver()
     {
-        if (Core.isCompletedBefore(8953) || !Core.isSeasonalMapActive("EbilTakeOver"))
+        if ((Core.isCompletedBefore(8953) && Core.isCompletedBefore(8970)) || !Core.isSeasonalMapActive("EbilTakeOver"))
             return;
 
         Story.PreLoad(this);
@@ -634,11 +638,23 @@ public class CoreHarvestDay
 
         // Chief Immolation Officer 8953
         Story.KillQuest(8953, "ebiltakeover", "Ebil Red Dragon");
+
+        // Devil’s Food 8967
+        Story.KillQuest(8967, "ebiltakeover", "Ebil Ghoul");
+
+        // Sample Processing 8968
+        Story.KillQuest(8968, "ebiltakeover", new[] { "Traitor Goon", "Ebil Fishman" });
+
+        // What's That Smell 8969
+        Story.KillQuest(8969, "ebiltakeover", "Mystery Meat");
+
+        // Mystery Solved 8970
+        Story.KillQuest(8970, "ebiltakeover", "Smorgasbord");
     }
 
     public void BirdsWithHarms()
     {
-        if (Core.isCompletedBefore(8987) || !Core.isSeasonalMapActive("birdswithharms"))
+        if (Core.isCompletedBefore(8992) || !Core.isSeasonalMapActive("birdswithharms"))
             return;
 
         Story.PreLoad(this);
@@ -710,6 +726,50 @@ public class CoreHarvestDay
 
         // 8987 Without Feather Ado
         Story.KillQuest(8987, "birdswithharms", "Turking");
+
+        // 8992 No Egrets Badge
+        Core.EquipClass(ClassType.Farm);
+        Core.EnsureAccept(8992);
+        Core.HuntMonster("birdswithharms", "Unsettling Sparrow", "Ruffled Feather", 1000, isTemp: false, log: false);
+        Core.EnsureComplete(8992);
+    }
+
+    public void EbilCorpHQ()
+    {
+        if (Core.isCompletedBefore(8407))
+            return;
+
+        Story.PreLoad(this);
+
+        // Ziri's Contract 8398
+        Story.KillQuest(8398, "ebilcorphq", "Ziri");
+
+        // Alina's Contract 8399
+        Story.KillQuest(8399, "ebilcorphq", "Alina");
+
+        // Victoria's Contract 8400
+        Story.KillQuest(8400, "ebilcorphq", "Victoria");
+
+        // Nulgath's ...Contract? 8401
+        Story.KillQuest(8401, "ebilcorphq", "Nulgath");
+
+        // Dage's Contract 8402
+        Story.KillQuest(8402, "ebilcorphq", "Dage the Evil");
+
+        // Swaggy's Contract 8403
+        Story.KillQuest(8403, "ebilcorphq", "Swaggy");
+
+        // Cysero's Contract 8404
+        Story.KillQuest(8404, "ebilcorphq", "Cysero");
+
+        // Gravelyn's Contract 8405
+        Story.KillQuest(8405, "ebilcorphq", "Gravelyn");
+
+        // Server Room Access 8406
+        Story.KillQuest(8406, "ebilcorphq", new[] { "EbilCorp Goon", "EbilCorp Security" });
+
+        // The M.C.P 8407
+        Story.KillQuest(8407, "ebilcorphq", "Master Chairman");
     }
 
 }

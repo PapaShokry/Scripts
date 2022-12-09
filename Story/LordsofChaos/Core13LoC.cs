@@ -227,19 +227,14 @@ public class Core13LoC
         Story.KillQuest(326, "pines", "Leatherwing");
 
         //Follow your Nose!
-        Story.KillQuest(327, "pines", "Pine Troll");
-
-        //Give Snowbeard His Gold
-        if (!Story.QuestProgression(323))
+        if (!Story.QuestProgression(327) || !Core.isCompletedBefore(323))
         {
-            if (!Core.CheckInventory("Snowbeard's Gold"))
-            {
-                Core.EnsureAccept(327);
-                Core.HuntMonster("pines", "Pine Troll");
-                Core.EnsureComplete(327);
-                Bot.Wait.ForPickup("Snowbeard's Gold");
-            }
-            Story.ChainQuest(323);
+            Core.EnsureAccept(327);
+            Core.HuntMonster("pines", "Pine Troll", "Pine Air Freshener");
+            Core.EnsureComplete(327);
+            Bot.Wait.ForPickup("Snowbeard's Gold");
+            //Give Snowbeard His Gold
+            Core.ChainComplete(323);
         }
 
         //Bad Memory
@@ -529,6 +524,7 @@ public class Core13LoC
             Core.HuntMonster("greenguardwest", "Big Bad Boar", "Wereboar Documentation");
             Core.EnsureComplete(515);
             Bot.Wait.ForPickup("Red's Big Wolf Slaying Axe");
+            Core.RemoveDrop("Red's Big Wolf Slaying Axe");
             Core.EnsureComplete(514);
         }
 
@@ -1514,7 +1510,7 @@ public class Core13LoC
         Story.KillQuest(2479, "dflesson", "Fluffy the Dracolich");
 
         //Board the Ship to Your Future
-        Story.MapItemQuest(2504, "mqlesson", 1580);
+        Story.MapItemQuest(2504, "mqlesson", 1580, GetReward: false);
 
         //Heal the Chaos Lord
         Story.KillQuest(2505, "mqlesson", "Asteroid");
@@ -1913,7 +1909,7 @@ public class Core13LoC
 
 
         //Reflect the Damage
-        if (!Story.QuestProgression(3184) || (Core.isCompletedBefore(3188) ? false : !Core.CheckInventory("Perfect Prism")))
+        if (!Story.QuestProgression(3184) || (!Core.isCompletedBefore(3188) || !Core.CheckInventory("Perfect Prism")))
         {
             Core.AddDrop("Perfect Prism");
             Core.EnsureAccept(3184);
@@ -1922,8 +1918,8 @@ public class Core13LoC
             Bot.Wait.ForPickup("Perfect Prism");
         }
 
-        //Pure Chaos
-        if (!Story.QuestProgression(3185) || (Core.isCompletedBefore(3188) ? false : !Core.CheckInventory("Unchaorrupted Sample")))
+        //Pure Chaos 
+        if (!Story.QuestProgression(3185) || (!Core.isCompletedBefore(3188) || !Core.CheckInventory("Unchaorrupted Sample")))
         {
             Core.AddDrop("Unchaorrupted Sample");
             Core.EnsureAccept(3185);
@@ -1933,7 +1929,7 @@ public class Core13LoC
         }
 
         //Enemies of a Feather Flock Together
-        if (!Story.QuestProgression(3186) || (Core.isCompletedBefore(3188) ? false : !Core.CheckInventory("Harpy Feather")))
+        if (!Story.QuestProgression(3186) || (!Core.isCompletedBefore(3188) || !Core.CheckInventory("Harpy Feather")))
         {
             Core.AddDrop("Harpy Feather");
             Core.EnsureAccept(3186);
@@ -1949,7 +1945,7 @@ public class Core13LoC
 
 
         //Horror Takes Flight
-        if(!Story.QuestProgression(3188))
+        if (!Story.QuestProgression(3188))
         {
             Core.EnsureAccept(3188);
             Core.HuntMonsterMapID("mirrorportal", 1, "Chaos Harpy Defeated");
@@ -2251,26 +2247,26 @@ public class Core13LoC
         if (!Story.QuestProgression(3876))
         {
             Core.EnsureAccept(3876);
-            if (!Core.CheckInventory(26875))
-                Core.KillMonster("finalbattle", "r1", "Left", "Drakath");
+            if (!Bot.Quests.CanComplete(3876))
+                Core.HuntMonsterMapID("finalbattle", 1);
             Core.EnsureComplete(3876);
         }
 
-        // Defeat Drakath! && //Defeat Drakath.. again!
+        //Defeat Drakath.. again!
         if (!Story.QuestProgression(3877))
         {
             Core.EnsureAccept(3877);
-            if (!Core.CheckInventory(26876))
-                Core.KillMonster("finalbattle", "r4", "Left", "Drakath");
+            if (!Bot.Quests.CanComplete(3877))
+                Core.HuntMonsterMapID("finalbattle", 14);
             Core.EnsureComplete(3877);
         }
 
-        //Defeat Drakath!
+        //Defeat Drakath!   
         if (!Story.QuestProgression(3878))
         {
             Core.EnsureAccept(3878);
-            if (!Core.CheckInventory(26877))
-                Core.KillMonster("finalbattle", "r9", "Left", "Drakath");
+            if (!Bot.Quests.CanComplete(3878))
+                Core.HuntMonsterMapID("finalbattle", 23);
             Core.EnsureComplete(3878);
         }
 
@@ -2293,6 +2289,7 @@ public class Core13LoC
         //The Final Showdown!
         if (!Story.QuestProgression(3881))
         {
+            Core.Join("finalshowdown"); // for the updatequestbit
             Core.EnsureAccept(3881);
             Core.KillMonster("finalshowdown", "r2", "Left", "Prince Drakath", "Prince Drakath Defeated");
             Core.EnsureComplete(3881);

@@ -43,7 +43,7 @@ public class CoreLegion
         {
             Core.EnsureAccept(4742);
             Core.KillMonster("shadowblast", "r10", "Left", "*", "Gem of Mastery", 1, false);
-            Core.KillMonster("shadowblast", "r10", "Left", "*", "Legion Seal", 27, false);
+            Core.KillMonster("shadowblast", "r10", "Left", "*", "Legion Seal", 25, false);
             Core.EnsureComplete(4742);
             Bot.Wait.ForPickup("Emblem of Dage");
             Core.Logger($"Completed x{i++}");
@@ -243,7 +243,7 @@ public class CoreLegion
 
     public void LTHardCoreParagon(int quant = 25000)
     {
-        if (Core.CheckInventory("Legion Token", quant) || Core.CheckInventory("Hardcore Paragon Pet") || !Bot.Quests.IsDailyComplete(3394))
+        if (Core.CheckInventory("Legion Token", quant) || !Core.CheckInventory("Hardcore Paragon Pet") || !Bot.Quests.IsDailyComplete(3394))
             return;
 
         Core.AddDrop("Legion Token");
@@ -452,11 +452,11 @@ public class CoreLegion
         Core.FarmingLogger("Legion Token", quant);
         Core.Join("dreadrock");
         Core.RegisterQuests(4849);
-        Bot.Options.AggroMonsters = true;
+        Core.ConfigureAggro();
         while (!Bot.ShouldExit && !Core.CheckInventory("Legion Token", quant))
             Core.KillMonster("dreadrock", "r3", "Bottom", "*", "Dreadrock Enemy Recruited", 6, log: false);
 
-        Bot.Options.AggroMonsters = false;
+        Core.ConfigureAggro(false);
         Core.CancelRegisteredQuests();
     }
 
@@ -648,7 +648,7 @@ public class CoreLegion
             if (ScrollQuant > 0)
                 Core.Logger($"Fragment: {Bot.Inventory.GetQuantity("Sword Scroll Fragment")} / {ScrollQuant}");
 
-            Core.Join("Dagepvp-99999999", "Enter0", "Spawn", ignoreCheck: true);
+            Core.Join("dagepvp", "Enter0", "Spawn", ignoreCheck: true);
 
             Core.PvPMove(1, "r2", 475, 269);
             Core.PvPMove(4, "r4", 963, 351);

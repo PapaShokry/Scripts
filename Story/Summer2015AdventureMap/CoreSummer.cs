@@ -78,18 +78,28 @@ public class CoreSummer
         if (!Story.QuestProgression(4271))
         {
             Core.EnsureAccept(4271);
-            Core.HuntMonster("dreadspace", "Red Trobble", "Red Space Fabric", 6, false);
+            Core.HuntMonster("dreadspace", "Red Trobble", "Red Space Fabric", 6, false, false);
             Adv.BuyItem("dreadspace", 1010, "Red Space Crew Shirt");
             Core.EnsureComplete(4271);
         }
 
         //Cowboyz vs Alienz (4273)
-        Story.KillQuest(4273, "dreadspace", new[] { "Holo Gunslinger", "Vaderix" });
-
+        if (!Story.QuestProgression(4273))
+        {
+            Core.EnsureAccept(4273);
+            Core.HuntMonster("dreadspace", "Holo Gunslinger", "Cowboy defeated", 5, log: false);
+            Core.HuntMonster("dreadspace", "Vaderix", "Alien defeated", 5, log: false);
+            Core.EnsureComplete(4273);
+        }
         //Recover J6's Head! (4272)
-        Story.KillQuest(4272, "dreadspace", "Holo Gunslinger");
-        if (ReplicatorMerge)
-            return;
+        if (!Story.QuestProgression(4272))
+        {
+            Core.EnsureAccept(4272);
+            Core.HuntMonster("dreadspace", "Holo Gunslinger", "J6's Helmet");
+            Core.EnsureComplete(4272);
+            if (ReplicatorMerge)
+                return;
+        }
 
         //Titanic II (4274)
         Story.KillQuest(4274, "dreadspace", "Jack");
@@ -385,7 +395,7 @@ public class CoreSummer
         Story.KillQuest(4361, "livingdungeon", new[] { "Evil Plant Horror", "Evil Tree Faerie" });
 
         // DRAGON vs TITAN
-        Story.KillQuest(4362, "treetitanbattle-999999", "Dakka the Dire Dragon");
+        Story.KillQuest(4362, "treetitanbattle", "Dakka the Dire Dragon");
 
         // Smells like trouble!
         Story.KillQuest(4363, "livingdungeon", "Lil' Poot");
@@ -474,7 +484,7 @@ public class CoreSummer
         {
             Core.Logger("Giant Dakka Fang not found, finding it for you");
             Core.EnsureAccept(4384);
-            Core.HuntMonster("treetitanbattle-999999", "Dakka the Dire Dragon", "Dakka Defeated... again");
+            Core.HuntMonster("treetitanbattle", "Dakka the Dire Dragon", "Dakka Defeated... again");
             Core.EnsureComplete(4384);
             // Bot.Wait.ForPickup("Giant Dakka Fang");
         }

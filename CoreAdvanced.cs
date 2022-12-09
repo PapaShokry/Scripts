@@ -2,12 +2,15 @@
 //cs_include Scripts/CoreFarms.cs
 using System.Globalization;
 using System.Reflection;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Skua.Core.Interfaces;
+using Skua.Core.Models;
 using Skua.Core.Models.Items;
 using Skua.Core.Models.Monsters;
 using Skua.Core.Models.Quests;
 using Skua.Core.Models.Shops;
 using Skua.Core.Options;
+using Skua.Core.Utils;
 
 public class CoreAdvanced
 {
@@ -36,7 +39,7 @@ public class CoreAdvanced
         if (Core.CheckInventory(itemName, quant))
             return;
 
-        ShopItem item = Core.parseShopItem(Core.GetShopItems(map, shopID).Where(x => shopItemID == 0 ? x.Name == itemName : x.ShopItemID == shopItemID).ToList(), shopID, itemName);
+        ShopItem item = Core.parseShopItem(Core.GetShopItems(map, shopID).Where(x => shopItemID == 0 ? x.Name.ToLower() == itemName.ToLower() : x.ShopItemID == shopItemID).ToList(), shopID, itemName);
         if (item == null)
             return;
 
@@ -89,12 +92,20 @@ public class CoreAdvanced
     /// <param name="map">The map where the shop can be loaded from</param>
     /// <param name="shopID">The shop ID to load the shopdata</param>
     /// <param name="findIngredients">A switch nested in a void that will explain this function where to get items</param>
-    public void StartBuyAllMerge(string map, int shopID, Action findIngredients, string buyOnlyThis = null, string[] itemBlackList = null)
+    public void StartBuyAllMerge(string map, int shopID, Action findIngredients, string buyOnlyThis = null, string[] itemBlackList = null, mergeOptionsEnum? buyMode = null)
     {
-        if (buyOnlyThis == null)
+        if (buyOnlyThis == null && buyMode == null)
             Bot.Config.Configure();
 
-        int mode = (int)Bot.Config.Get<mergeOptionsEnum>("Generic", "mode");
+        int mode = 0;
+        if (buyOnlyThis != null)
+            mode = (int)mergeOptionsEnum.all;
+        else if (buyMode != null)
+            mode = (int)buyMode;
+        else if (Bot.Config != null && Bot.Config.MultipleOptions.Any(o => o.Value.Any(x => x.Category == "Generic" && x.Name == "mode")))
+            mode = (int)Bot.Config.Get<mergeOptionsEnum>("Generic", "mode");
+        else Core.Logger("Invalid setup detected for StartBuyAllMerge. Please report", messageBox: true, stopBot: true);
+
         matsOnly = mode == 2;
         List<ShopItem> shopItems = Core.GetShopItems(map, shopID);
         List<ShopItem> items = new();
@@ -104,7 +115,7 @@ public class CoreAdvanced
         {
             if (Core.CheckInventory(item.ID, toInv: false) ||
                 miscCatagories.Contains(item.Category) ||
-                (String.IsNullOrEmpty(buyOnlyThis) ? false : buyOnlyThis == item.Name) ||
+                (String.IsNullOrEmpty(buyOnlyThis) ? false : buyOnlyThis != item.Name) ||
                 (itemBlackList != null && itemBlackList.Any(b => b.ToLower() == item.Name.ToLower())))
                 continue;
 
@@ -306,15 +317,6 @@ public class CoreAdvanced
     /// The name of ScriptOptions for any merge script.
     /// </summary>
     public string OptionsStorage = "MergeOptionStorage";
-
-    private enum mergeOptionsEnum
-    {
-        all = 0,
-        acOnly = 1,
-        mergeMats = 2,
-        select = 3
-    };
-
     #endregion
 
     #region Kill
@@ -492,52 +494,162 @@ public class CoreAdvanced
     /// <param name="EquipItem">To Equip the found item(s) or not</param>
     public string[] BestGear(GearBoost BoostType, bool EquipItem = true)
     {
-        if (Core.CBOBool("DisableBestGear", out bool _DisableBestGear))
-            if (_DisableBestGear)
-                return new string[0];
-
-        if (BoostType == GearBoost.None)
-            BoostType = GearBoost.dmgAll;
-        if (LastBoostType == BoostType)
-            return LastBestGear ?? new[] { "" };
-        LastBoostType = BoostType;
-
-        Core.Logger("Searching for the best available gear " + (isRacial() ? "against " : "for ") + BoostType.ToString());
-
-        List<InventoryItem> BankInvData = Bot.Inventory.Items.Concat(Bot.Bank.Items).ToList();
-        float TotalBoostValue = 0F;
-        string[] ArrayOutput = new string[0];
-
-        if (!isRacial())
+        try
         {
-            Dictionary<string, float> BoostedGear = new();
+            if (Core.CBOBool("DisableBestGear", out bool _DisableBestGear))
+                if (_DisableBestGear)
+                    return new string[0];
 
-            foreach (InventoryItem Item in BankInvData)
-                if (Item.Meta != null && Item.Meta.Contains(BoostType.ToString()) && !BoostedGear.Any(kvp => kvp.Key == Item.Name))
-                    BoostedGear.Add(Item.Name, getBoostFloat(Item, BoostType.ToString()));
+            if (BoostType == GearBoost.None)
+                BoostType = GearBoost.dmgAll;
+            if (LastBoostType == BoostType)
+                return LastBestGear ?? new[] { "" };
+            LastBoostType = BoostType;
 
-            if (BoostedGear.Count != 0)
+            Core.Logger("Searching for the best available gear " + (isRacial() ? "against " : "for ") + BoostType.ToString());
+
+            List<InventoryItem> BankInvData = Bot.Inventory.Items.Concat(Bot.Bank.Items).ToList();
+            float TotalBoostValue = 0F;
+            string[] ArrayOutput = new string[0];
+
+            if (!isRacial())
             {
-                TotalBoostValue = BoostedGear.MaxBy(x => x.Value).Value;
-                ArrayOutput = new[] { BoostedGear.MaxBy(x => x.Value).Key };
+                Dictionary<string, float> BoostedGear = new();
 
-                Dictionary<string, float> BoostedGearMultiple = BoostedGear.Where(x => x.Value == TotalBoostValue).ToDictionary(x => x.Key, y => y.Value);
-                if (BoostedGearMultiple.Count() > 1)
+                foreach (InventoryItem Item in BankInvData)
+                    if (Item.Meta != null && Item.Meta.Contains(BoostType.ToString()) && !BoostedGear.Any(kvp => kvp.Key == Item.Name))
+                        BoostedGear.Add(Item.Name, getBoostFloat(Item, BoostType.ToString()));
+
+                if (BoostedGear.Count != 0)
                 {
-                    if (BoostedGearMultiple.Keys.Any(x => BankInvData.Where(i => i.Equipped).Select(x => x.Name).Contains(x)))
-                        ArrayOutput = new[] { BoostedGearMultiple.First(x => BankInvData.Where(i => i.Equipped).Select(x => x.Name).Contains(x.Key)).Key };
-                    else foreach (KeyValuePair<string, float> Gear in BoostedGearMultiple)
-                        {
-                            InventoryItem Item = BankInvData.First(x => x.Name == Gear.Key && x.Meta.Contains(BoostType.ToString()));
-                            InventoryItem equippedItem = BankInvData.First(x => x.Equipped && x.ItemGroup == Item.ItemGroup);
-                            if (Item != null && equippedItem != null
-                                && Bot.Flash.GetGameObject<int>($"world.invTree.{Item.ID}.EnhID") == Bot.Flash.GetGameObject<int>($"world.invTree.{equippedItem.ID}.EnhID"))
+                    TotalBoostValue = BoostedGear.MaxBy(x => x.Value).Value;
+                    ArrayOutput = new[] { BoostedGear.MaxBy(x => x.Value).Key };
+
+                    Dictionary<string, float> BoostedGearMultiple = BoostedGear.Where(x => x.Value == TotalBoostValue).ToDictionary(x => x.Key, y => y.Value);
+                    if (BoostedGearMultiple.Count() > 1)
+                    {
+                        if (BoostedGearMultiple.Keys.Any(x => BankInvData.Where(i => i.Equipped).Select(x => x.Name).Contains(x)))
+                            ArrayOutput = new[] { BoostedGearMultiple.First(x => BankInvData.Where(i => i.Equipped).Select(x => x.Name).Contains(x.Key)).Key };
+                        else foreach (KeyValuePair<string, float> Gear in BoostedGearMultiple)
                             {
-                                ArrayOutput = new[] { Item.Name };
-                                break;
+                                InventoryItem Item = BankInvData.First(x => x.Name == Gear.Key && x.Meta.Contains(BoostType.ToString()));
+                                InventoryItem equippedItem = BankInvData.First(x => x.Equipped && x.ItemGroup == Item.ItemGroup);
+                                if (Item != null && equippedItem != null
+                                    && Bot.Flash.GetGameObject<int>($"world.invTree.{Item.ID}.EnhID") == Bot.Flash.GetGameObject<int>($"world.invTree.{equippedItem.ID}.EnhID"))
+                                {
+                                    ArrayOutput = new[] { Item.Name };
+                                    break;
+                                }
                             }
-                        }
+                    }
+
+                    if (EquipItem)
+                    {
+                        //foreach (string Item in ArrayOutput)
+                        //{
+                        //    InventoryItem invItem = BankInvData.First(x => x.Name == Item);
+                        //    if (!invItem.Equipped)
+                        //        continue;
+
+                        //    if (invItem.ItemGroup == "Weapon")
+                        //    {
+                        //        List<InventoryItem> theList = new();
+                        //        theList.AddRange(Bot.Inventory.Items.Where(x => x.Name != Item && x.ItemGroup == "Weapon" && x.EnhancementLevel > 0 && Core.IsMember ? true : !x.Upgrade));
+                        //        if (theList.Count == 0)
+                        //            theList.AddRange(Bot.Bank.Items.Where(x => x.Name != Item && x.ItemGroup == "Weapon" && x.EnhancementLevel > 0 && Core.IsMember ? true : !x.Upgrade));
+
+                        //        if (theList.Count != 0)
+                        //            Core.Equip(theList.First().Name);
+                        //        else
+                        //        {
+                        //            Core.BuyItem(Bot.Map.Name, 299, "Battle Oracle Battlestaff");
+                        //            Core.Equip("Battle Oracle Battlestaff");
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        Core.JumpWait();
+                        //        Bot.Send.Packet($"%xt%zm%unequipItem%{Bot.Map.RoomID}%{invItem.ID}%");
+                        //    }
+                        //}
+                        Core.Equip(ArrayOutput);
+                    }
+
+                    LastBestGear = ArrayOutput;
                 }
+            }
+            else
+            {
+                List<BestGearData> BestGearData = new();
+                List<InventoryItem> AllRaceItems = new();
+                List<InventoryItem> AllDMGallItems = new();
+
+                foreach (InventoryItem Item in BankInvData)
+                {
+                    if (!String.IsNullOrEmpty(Item.Meta))
+                    {
+                        if (Item.Meta.Contains(BoostType.ToString()))
+                            AllRaceItems.Add(Item);
+                        if (Item.Meta.Contains("dmgAll"))
+                            AllDMGallItems.Add(Item);
+                    }
+                }
+
+                if (AllRaceItems.Count != 0)
+                    foreach (InventoryItem iRace in AllRaceItems)
+                    {
+                        float iRaceBoostFloat = getBoostFloat(iRace, BoostType.ToString());
+                        BestGearData.Add(new(iRace.Name, "", iRaceBoostFloat));
+
+                        foreach (InventoryItem iAll in AllDMGallItems)
+                        {
+                            if (iRace.ID == iAll.ID || iRace.Category == iAll.Category || iRace.ItemGroup == iAll.ItemGroup)
+                                continue;
+
+                            float iAllBoostFloat = getBoostFloat(iAll, "dmgAll");
+                            BestGearData.Add(new(iRace.Name, iAll.Name, (iRaceBoostFloat * iAllBoostFloat)));
+                            if (!BestGearData.Any(x => x.iDMGall == iAll.Name && x.iRace == ""))
+                                BestGearData.Add(new("", iAll.Name, iAllBoostFloat));
+                        }
+                    }
+                else foreach (InventoryItem iAll in AllDMGallItems)
+                        BestGearData.Add(new("", iAll.Name, getBoostFloat(iAll, "dmgAll")));
+
+                if (BestGearData.Count == 0)
+                {
+                    Core.Logger("Best gear " + (isRacial() ? "against " : "for ") + $"{BoostType.ToString()} wasnt found!");
+                    return new[] { "" };
+                }
+                BestGearData FinalCombo = BestGearData.MaxBy(x => x.BoostValue) ?? new("", "", 0);
+                TotalBoostValue = FinalCombo.BoostValue;
+                string BestRace = FinalCombo.iRace ?? "";
+                string BestDMGAll = FinalCombo.iDMGall ?? "";
+                List<string> ListOutput = new();
+
+                //List<BestGearData> BestBestGearData = BestGearData.Where(x => x.BoostValue == TotalBoostValue).ToList();
+                //if (BestBestGearData.Count() > 1)
+                //{
+                //    if (BestBestGearData.Any(x => BankInvData.Where(i => i.Equipped).Select(x => x.Name).Contains(x.iRace)
+                //     || BestBestGearData.Any(x => BankInvData.Where(i => i.Equipped).Select(x => x.Name).Contains(x.iDMGall))))
+                //        ArrayOutput = new[] { BestBestGearData.First(x => BankInvData.Where(i => i.Equipped).Select(x => x.Name).Contains(x.Key)).Key };
+                //    foreach (BestGearData Gear in BestGearData.Where(x => x.BoostValue == TotalBoostValue))
+                //    {
+                //        InventoryItem Item = BankInvData.First(x => x.Name == Gear.iRace || x.Name == Gear.iDMGall);
+                //        InventoryItem equippedWeapon = BankInvData.First(x => x.Equipped == true && x.ItemGroup == "Weapon");
+                //        if (Item != null && equippedWeapon != null
+                //            && Bot.Flash.GetGameObject<int>($"world.invTree.{Item.ID}.EnhID") == Bot.Flash.GetGameObject<int>($"world.invTree.{equippedWeapon.ID}.EnhID"))
+                //        {
+                //            ArrayOutput = new[] { Item.Name };
+                //            break;
+                //        }
+                //    }
+                //}
+
+                if (!String.IsNullOrEmpty(BestRace))
+                    ListOutput.Add(BestRace);
+                if (!String.IsNullOrEmpty(BestDMGAll))
+                    ListOutput.Add(BestDMGAll);
+                ArrayOutput = ListOutput.ToArray();
 
                 if (EquipItem)
                 {
@@ -570,137 +682,35 @@ public class CoreAdvanced
                     //}
                     Core.Equip(ArrayOutput);
                 }
-
                 LastBestGear = ArrayOutput;
             }
-        }
-        else
-        {
-            List<BestGearData> BestGearData = new();
-            List<InventoryItem> AllRaceItems = new();
-            List<InventoryItem> AllDMGallItems = new();
 
-            foreach (InventoryItem Item in BankInvData)
-            {
-                if (!String.IsNullOrEmpty(Item.Meta))
-                {
-                    if (Item.Meta.Contains(BoostType.ToString()))
-                        AllRaceItems.Add(Item);
-                    if (Item.Meta.Contains("dmgAll"))
-                        AllDMGallItems.Add(Item);
-                }
-            }
-
-            if (AllRaceItems.Count != 0)
-                foreach (InventoryItem iRace in AllRaceItems)
-                {
-                    float iRaceBoostFloat = getBoostFloat(iRace, BoostType.ToString());
-                    BestGearData.Add(new(iRace.Name, "", iRaceBoostFloat));
-
-                    foreach (InventoryItem iAll in AllDMGallItems)
-                    {
-                        if (iRace.ID == iAll.ID || iRace.Category == iAll.Category || iRace.ItemGroup == iAll.ItemGroup)
-                            continue;
-
-                        float iAllBoostFloat = getBoostFloat(iAll, "dmgAll");
-                        BestGearData.Add(new(iRace.Name, iAll.Name, (iRaceBoostFloat * iAllBoostFloat)));
-                        if (!BestGearData.Any(x => x.iDMGall == iAll.Name && x.iRace == ""))
-                            BestGearData.Add(new("", iAll.Name, iAllBoostFloat));
-                    }
-                }
-            else foreach (InventoryItem iAll in AllDMGallItems)
-                    BestGearData.Add(new("", iAll.Name, getBoostFloat(iAll, "dmgAll")));
-
-            if (BestGearData.Count == 0)
+            if (ArrayOutput.Length == 0)
             {
                 Core.Logger("Best gear " + (isRacial() ? "against " : "for ") + $"{BoostType.ToString()} wasnt found!");
                 return new[] { "" };
             }
-            BestGearData FinalCombo = BestGearData.MaxBy(x => x.BoostValue) ?? new("", "", 0);
-            TotalBoostValue = FinalCombo.BoostValue;
-            string BestRace = FinalCombo.iRace ?? "";
-            string BestDMGAll = FinalCombo.iDMGall ?? "";
-            List<string> ListOutput = new();
+            else if (ArrayOutput.Length == 1)
+                Core.Logger("Best gear " + (isRacial() ? "against " : "for ") + $"{BoostType.ToString()} found: {ArrayOutput[0]} ({(TotalBoostValue - 1).ToString("+0.##%")})");
+            else if (ArrayOutput.Length == 2)
+                Core.Logger($"Best gear against {BoostType.ToString()} found: {ArrayOutput[0]} + {ArrayOutput[1]} ({(TotalBoostValue - 1).ToString("+0.##%")})");
+            return ArrayOutput;
 
-            //List<BestGearData> BestBestGearData = BestGearData.Where(x => x.BoostValue == TotalBoostValue).ToList();
-            //if (BestBestGearData.Count() > 1)
-            //{
-            //    if (BestBestGearData.Any(x => BankInvData.Where(i => i.Equipped).Select(x => x.Name).Contains(x.iRace)
-            //     || BestBestGearData.Any(x => BankInvData.Where(i => i.Equipped).Select(x => x.Name).Contains(x.iDMGall))))
-            //        ArrayOutput = new[] { BestBestGearData.First(x => BankInvData.Where(i => i.Equipped).Select(x => x.Name).Contains(x.Key)).Key };
-            //    foreach (BestGearData Gear in BestGearData.Where(x => x.BoostValue == TotalBoostValue))
-            //    {
-            //        InventoryItem Item = BankInvData.First(x => x.Name == Gear.iRace || x.Name == Gear.iDMGall);
-            //        InventoryItem equippedWeapon = BankInvData.First(x => x.Equipped == true && x.ItemGroup == "Weapon");
-            //        if (Item != null && equippedWeapon != null
-            //            && Bot.Flash.GetGameObject<int>($"world.invTree.{Item.ID}.EnhID") == Bot.Flash.GetGameObject<int>($"world.invTree.{equippedWeapon.ID}.EnhID"))
-            //        {
-            //            ArrayOutput = new[] { Item.Name };
-            //            break;
-            //        }
-            //    }
-            //}
-
-            if (!String.IsNullOrEmpty(BestRace))
-                ListOutput.Add(BestRace);
-            if (!String.IsNullOrEmpty(BestDMGAll))
-                ListOutput.Add(BestDMGAll);
-            ArrayOutput = ListOutput.ToArray();
-
-            if (EquipItem)
+            bool isRacial()
             {
-                //foreach (string Item in ArrayOutput)
-                //{
-                //    InventoryItem invItem = BankInvData.First(x => x.Name == Item);
-                //    if (!invItem.Equipped)
-                //        continue;
-
-                //    if (invItem.ItemGroup == "Weapon")
-                //    {
-                //        List<InventoryItem> theList = new();
-                //        theList.AddRange(Bot.Inventory.Items.Where(x => x.Name != Item && x.ItemGroup == "Weapon" && x.EnhancementLevel > 0 && Core.IsMember ? true : !x.Upgrade));
-                //        if (theList.Count == 0)
-                //            theList.AddRange(Bot.Bank.Items.Where(x => x.Name != Item && x.ItemGroup == "Weapon" && x.EnhancementLevel > 0 && Core.IsMember ? true : !x.Upgrade));
-
-                //        if (theList.Count != 0)
-                //            Core.Equip(theList.First().Name);
-                //        else
-                //        {
-                //            Core.BuyItem(Bot.Map.Name, 299, "Battle Oracle Battlestaff");
-                //            Core.Equip("Battle Oracle Battlestaff");
-                //        }
-                //    }
-                //    else
-                //    {
-                //        Core.JumpWait();
-                //        Bot.Send.Packet($"%xt%zm%unequipItem%{Bot.Map.RoomID}%{invItem.ID}%");
-                //    }
-                //}
-                Core.Equip(ArrayOutput);
+                return RaceBoosts.Contains(BoostType);
             }
-            LastBestGear = ArrayOutput;
-        }
 
-        if (ArrayOutput.Length == 0)
-        {
-            Core.Logger("Best gear " + (isRacial() ? "against " : "for ") + $"{BoostType.ToString()} wasnt found!");
-            return new[] { "" };
+            float getBoostFloat(InventoryItem Item, string BoostType)
+            {
+                string CorrectData = Item.Meta.Split(',').ToList().First(i => i.Contains(BoostType));
+                return float.Parse(CorrectData.Replace($"{BoostType}:", ""), CultureInfo.InvariantCulture.NumberFormat);
+            }
         }
-        else if (ArrayOutput.Length == 1)
-            Core.Logger("Best gear " + (isRacial() ? "against " : "for ") + $"{BoostType.ToString()} found: {ArrayOutput[0]} ({(TotalBoostValue - 1).ToString("+0.##%")})");
-        else if (ArrayOutput.Length == 2)
-            Core.Logger($"Best gear against {BoostType.ToString()} found: {ArrayOutput[0]} + {ArrayOutput[1]} ({(TotalBoostValue - 1).ToString("+0.##%")})");
-        return ArrayOutput;
-
-        bool isRacial()
+        catch (Exception e)
         {
-            return RaceBoosts.Contains(BoostType);
-        }
-
-        float getBoostFloat(InventoryItem Item, string BoostType)
-        {
-            string CorrectData = Item.Meta.Split(',').ToList().First(i => i.Contains(BoostType));
-            return float.Parse(CorrectData.Replace($"{BoostType}:", ""), CultureInfo.InvariantCulture.NumberFormat);
+            AdvCrash(CrashTypes.BestGear, e);
+            return new string[0];
         }
     }
     private GearBoost[] RaceBoosts =
@@ -840,7 +850,14 @@ public class CoreAdvanced
             return;
 
         List<InventoryItem> EquippedItems = Bot.Inventory.Items.FindAll(i => i.Equipped == true && EnhanceableCatagories.Contains(i.Category));
-        AutoEnhance(EquippedItems, type, cSpecial, hSpecial, wSpecial);
+        try
+        {
+            AutoEnhance(EquippedItems, type, cSpecial, hSpecial, wSpecial);
+        }
+        catch (Exception e)
+        {
+            AdvCrash(CrashTypes.AutoEnhance, e);
+        }
     }
 
     /// <summary>
@@ -868,7 +885,14 @@ public class CoreAdvanced
             return;
         }
 
-        AutoEnhance(new() { SelectedItem }, type, cSpecial, hSpecial, wSpecial);
+        try
+        {
+            AutoEnhance(new() { SelectedItem }, type, cSpecial, hSpecial, wSpecial);
+        }
+        catch (Exception e)
+        {
+            AdvCrash(CrashTypes.AutoEnhance, e);
+        }
     }
 
     /// <summary>
@@ -916,7 +940,36 @@ public class CoreAdvanced
             return;
         }
 
-        AutoEnhance(SelectedItems, type, cSpecial, hSpecial, wSpecial);
+        try
+        {
+            AutoEnhance(SelectedItems, type, cSpecial, hSpecial, wSpecial);
+        }
+        catch (Exception e)
+        {
+            AdvCrash(CrashTypes.AutoEnhance, e);
+        }
+    }
+
+    private void AdvCrash(CrashTypes type, Exception e)
+    {
+        List<string> logs = Ioc.Default.GetRequiredService<ILogService>().GetLogs(LogType.Script);
+        logs = logs.Skip(logs.Count() > 5 ? (logs.Count() - 5) : logs.Count()).ToList();
+        Bot.Handlers.RegisterOnce(1, Bot => Bot.ShowMessageBox($"{type} has crashed. Please fill in the Skua Bug Report/Request for under the topic: Crashed\n" +
+                            $"Due to special handling for this type of crash, your script will continue without using {type} in this instance.\n\n" +
+                            "---------------------------------------------------" +
+                            "Last 5 logs:\n\t" +
+                            logs.Join("\n\t") +
+                            "\n\n" +
+                            "---------------------------------------------------" +
+                            "Crash Log:\n\t" +
+                            e.Message + "\n" + e.InnerException,
+                        type + " crashed"));
+    }
+
+    private enum CrashTypes
+    {
+        AutoEnhance,
+        BestGear
     }
 
     /// <summary>
@@ -940,7 +993,10 @@ public class CoreAdvanced
         InventoryItem? EquippedCape = Bot.Inventory.Items.Find(i => i.Equipped && i.Category == ItemCategory.Cape);
         if (EquippedCape == null)
             return CapeSpecial.None;
-        return (CapeSpecial)getEnhPatternID(EquippedCape);
+        int pattern_id = getEnhPatternID(EquippedCape);
+        if (Enum.IsDefined(typeof(EnhancementType), pattern_id))
+            return CapeSpecial.None;
+        return (CapeSpecial)pattern_id;
     }
 
     /// <summary>
@@ -952,7 +1008,10 @@ public class CoreAdvanced
         InventoryItem? EquippedHelm = Bot.Inventory.Items.Find(i => i.Equipped && i.Category == ItemCategory.Helm);
         if (EquippedHelm == null)
             return HelmSpecial.None;
-        return (HelmSpecial)getEnhPatternID(EquippedHelm);
+        int pattern_id = getEnhPatternID(EquippedHelm);
+        if (Enum.IsDefined(typeof(EnhancementType), pattern_id))
+            return HelmSpecial.None;
+        return (HelmSpecial)pattern_id;
     }
 
     /// <summary>
@@ -964,7 +1023,10 @@ public class CoreAdvanced
         InventoryItem? EquippedWeapon = Bot.Inventory.Items.Find(i => i.Equipped && WeaponCatagories.Contains(i.Category));
         if (EquippedWeapon == null)
             return WeaponSpecial.None;
-        return (WeaponSpecial)getProcID(EquippedWeapon);
+        int pattern_id = getProcID(EquippedWeapon);
+        if (Enum.IsDefined(typeof(EnhancementType), pattern_id))
+            return WeaponSpecial.None;
+        return (WeaponSpecial)pattern_id;
     }
 
     private static ItemCategory[] EnhanceableCatagories =
@@ -1361,26 +1423,9 @@ public class CoreAdvanced
             else
             {
                 // Sorting by level (descending)
-                List<ShopItem> sortedList = availableEnh.OrderByDescending(x => x.Level).ToList();
-                List<ShopItem> bestTwoEnhancements = new();
-                if (sortedList.Count >= 2) {
-                    bestTwoEnhancements = sortedList.GetRange(0, 2);
-                }
-                else
-                {
-                    Core.Logger($"Enhancement Failed: sortedList {(sortedList.Count > 0 ? $"has a count of {sortedList.Count}" : "is empty")}");
-                    return;
-                }
-
-                if (bestTwoEnhancements.Count != 2)
-                {
-                    Core.Logger($"Enhancement Failed: bestTwoEnhancements {(bestTwoEnhancements.Count > 0 ? $"has a count of {sortedList.Count}" : "is empty")}");
-                    return;
-                }
-
-                // Getting the best enhancement out of the two
-                bestEnhancement = bestTwoEnhancements.First().Level >= bestTwoEnhancements.Last().Level ?
-                    bestTwoEnhancements.First(x => Core.IsMember ? x.Upgrade : !x.Upgrade) : bestTwoEnhancements.Last();
+                List<ShopItem> sortedList = availableEnh.OrderByDescending(x => x.Level)
+                    .ThenByDescending(x => x.Upgrade ? 1 : 0).ToList();
+                bestEnhancement = sortedList[0];
             }
 
             // Null check
@@ -1479,6 +1524,30 @@ public class CoreAdvanced
                 type = EnhancementType.Lucky;
                 cSpecial = CapeSpecial.Forge;
                 wSpecial = WeaponSpecial.Spiral_Carve;
+                break;
+            #endregion
+
+            #region Forge - Lucky - Smite
+            case "necrotic chronomancer":
+            case "Draconic Chronomancer":
+                if (!uSmite() || !uForgeCape())
+                    goto default;
+
+                type = EnhancementType.Lucky;
+                cSpecial = CapeSpecial.Forge;
+                wSpecial = WeaponSpecial.Smite;
+                break;
+            #endregion
+
+            #region Forge - Lucky - Elysium
+            case "ultra omniknight":
+            case "dark ultra omninight":
+                if (!uElysium() || !uForgeCape())
+                    goto default;
+
+                type = EnhancementType.Lucky;
+                cSpecial = CapeSpecial.Forge;
+                wSpecial = WeaponSpecial.Elysium;
                 break;
             #endregion
 
@@ -1665,7 +1734,6 @@ public class CoreAdvanced
                     case "skyguard grenadier":
                     case "soul cleaver":
                     case "starlord":
-                    case "stonecrusher":
                     case "swordmaster assassin":
                     case "swordmaster":
                     case "timekeeper":
@@ -1696,6 +1764,7 @@ public class CoreAdvanced
                     case "clawsuit":
                     case "cryomancer mini pet coming soon":
                     case "dark legendary hero":
+                    case "ultra omniknight":
                     case "dark ultra omninight":
                     case "doomknight overlord":
                     case "dragonslayer general":
@@ -1721,7 +1790,6 @@ public class CoreAdvanced
                     case "silver paladin":
                     case "thief of hours":
                     case "ultra elemental warrior":
-                    case "ultra omniknight":
                     case "void highlord tester":
                     case "warlord":
                     case "warrior":
@@ -1754,6 +1822,7 @@ public class CoreAdvanced
                     case "lord of order":
                     case "nechronomancer":
                     case "necrotic chronomancer":
+                    case "Draconic Chronomancer":
                     case "no class":
                     case "nu metal necro":
                     case "obsidian no class":
@@ -1813,6 +1882,7 @@ public class CoreAdvanced
                     case "royal battlemage":
                     case "timeless dark caster":
                     case "witch":
+                    case "stonecrusher":
                         type = EnhancementType.Wizard;
                         wSpecial = WeaponSpecial.Awe_Blast;
                         break;
@@ -1968,3 +2038,11 @@ public enum HelmSpecial //Enhancement Pattern ID
     Anima = 28,
     Pneuma = 27,
 }
+
+public enum mergeOptionsEnum
+{
+    all = 0,
+    acOnly = 1,
+    mergeMats = 2,
+    select = 3
+};

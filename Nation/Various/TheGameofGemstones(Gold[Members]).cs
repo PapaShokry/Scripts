@@ -12,7 +12,7 @@ public class TheGameofGemstones
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(new[] {"Tendurrr The Assistant", "Unidentified 13"});
+        Core.BankingBlackList.AddRange(new[] { "Tendurrr The Assistant", "Unidentified 13" });
         Core.SetOptions();
 
         Gold();
@@ -26,6 +26,7 @@ public class TheGameofGemstones
             return;
 
         Nation.FarmUni13();
+        Core.HuntMonster("tercessuinotlim", "Dark Makai", "Tendurrr The Assistant", isTemp: false);
 
         Bot.Quests.UpdateQuest(597);
         Core.RegisterQuests(5815);
@@ -33,8 +34,8 @@ public class TheGameofGemstones
         {
             Nation.ApprovalAndFavor(1, 0);
             Core.HuntMonster("Lavarun", "Mega Tyndarius", "Archfiend's Amber", isTemp: false);
-            Core.HuntMonster("asylum", "Dr. De'Sawed", "Phantasmia's Charoite", isTemp: false);
-            Farm.BludrutBrawlBoss("Yoshino's Citrine");
+            Core.KillMonster("Catacombs", "Boss2", "Left", "Dr. De'Sawed", "Phantasmia's Charoite", isTemp: false);
+            Farm.BludrutBrawlBoss("Yoshino's Citrine", 1, false);
             Core.HuntMonster("Wolfwing", "Wolfwing", "Tendou's Moonstone", isTemp: false);
             Core.HuntMonster("baconcatyou", "*", "Asuka's Ruby", isTemp: false);
         }

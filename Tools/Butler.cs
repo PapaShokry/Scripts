@@ -1,9 +1,9 @@
 //cs_include Scripts/CoreBots.cs
+using System.IO;
 using Skua.Core.Interfaces;
 using Skua.Core.Models.Monsters;
 using Skua.Core.Models.Players;
 using Skua.Core.Options;
-using System.IO;
 
 public class Follower
 {
@@ -66,6 +66,22 @@ public class Follower
             Core.PrivateRoomNumber = roomNr;
         }
 
+        // Bypasses
+        foreach (int questId in new int[] {
+                        598,    // lycan
+                        3004,   // doomvaultb
+                        3008,   // doomvault
+                        3484,   // towerofdoom
+                        3798,   // shadowattack
+                        4616,   // mummies
+                        8107    // downbelow
+                    }
+                )
+        {
+            Bot.Quests.UpdateQuest(questId);
+        }
+        Core.SetAchievement(18); // doomvaultb
+
         // Enabling listeners
         Bot.Events.MapChanged += MapNumberParses;
         Bot.Events.ScriptStopping += ScriptStopping;
@@ -104,7 +120,7 @@ public class Follower
                     if (tryGoto(playerName))
                     {
                         Core.Logger(playerName + " found!");
-                        return;
+                        break;
                     }
                     min++;
 
@@ -117,7 +133,7 @@ public class Follower
             // Attack any monster that is alive.
             if (!Bot.Combat.StopAttacking && Bot.Monsters.CurrentMonsters.Count(m => m.Alive) > 0)
                 Bot.Combat.Attack("*");
-
+            Core.Rest();
             Bot.Sleep(Core.ActionDelay);
         }
     }
@@ -315,7 +331,7 @@ public class Follower
             }
             if (tryGoto(playerName))
             {
-                Core.Logger(playerName + " found!");    
+                Core.Logger(playerName + " found!");
                 return;
             }
             min++;
@@ -339,6 +355,7 @@ public class Follower
             }
         }
     }
+
 
     private async void MapNumberParses(string map)
     {

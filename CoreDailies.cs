@@ -6,9 +6,9 @@ using Skua.Core.Models.Quests;
 public class CoreDailies
 {
     // [Can Change] Default metals to be acquired by MineCrafting quest
-    public string[] MineCraftingMetals = { "Barium", "Copper", "Silver" };
+    public string[] MineCraftingMetalsArray = { "Barium", "Copper", "Silver" };
     // [Can Change] Default metals to be acquired by Hard Core Metals quest
-    public string[] HardCoreMetalsMetals = { "Arsenic", "Chromium", "Rhodium" };
+    public string[] HardCoreMetalsMetalsArray = { "Arsenic", "Chromium", "Rhodium" };
     // [Can Change] Skip daily if you own max stack of reward
     public bool SkipOnMaxStack = true;
 
@@ -35,6 +35,7 @@ public class CoreDailies
     {
         if (Bot.Quests.IsDailyComplete(quest))
             return;
+        Bot.Drops.Add(item);
         Core.Join(map);
         Core.EnsureAccept(quest);
         if (cell != null)
@@ -115,13 +116,13 @@ public class CoreDailies
     public void MineCrafting(string[] metals = null, int quant = 2, bool ToBank = false)
     {
         if (metals == null)
-            metals = MineCraftingMetals;
+            metals = MineCraftingMetalsArray;
         Core.Logger($"Daily: Mine Crafting ({string.Join('/', metals)})");
         if (Core.CheckInventory(metals, quant))
         {
             Core.Logger($"All metals were found with the needed quantity ({quant}). Skipped");
             if (ToBank)
-                Core.ToBank(MineCraftingMetals);
+                Core.ToBank(metals);
             return;
         }
         if (!CheckDaily(2091, false, metals))
@@ -136,11 +137,11 @@ public class CoreDailies
             if (!Core.CheckInventory(metal, quant, false))
             {
                 Core.AddDrop(metal);
-                int metalID = MetalID(metal);
+                int metalID = (int)Enum.Parse(typeof(MineCraftingMetalsEnum), metal);
                 Core.EnsureComplete(2091, metalID);
                 Bot.Wait.ForPickup(metal);
                 if (ToBank)
-                    Core.ToBank(MineCraftingMetals);
+                    Core.ToBank(metals);
                 break;
             }
         }
@@ -159,13 +160,13 @@ public class CoreDailies
         if (!Core.IsMember)
             return;
         if (metals == null)
-            metals = HardCoreMetalsMetals;
+            metals = HardCoreMetalsMetalsArray;
         Core.Logger($"Daily: Hard Core Metals ({string.Join('/', metals)})");
         if (Core.CheckInventory(metals, quant))
         {
             Core.Logger($"All metals were found with the needed quantity ({quant}). Skipped");
             if (ToBank)
-                Core.ToBank(HardCoreMetalsMetals);
+                Core.ToBank(metals);
             return;
         }
         if (!CheckDaily(2098, false, metals))
@@ -179,53 +180,16 @@ public class CoreDailies
             if (!Core.CheckInventory(metal, quant, false))
             {
                 Core.AddDrop(metal);
-                int metalID = MetalID(metal);
+                int metalID = (int)Enum.Parse(typeof(HardCoreMetalsEnum), metal);
                 Core.EnsureComplete(2098, metalID);
                 Bot.Wait.ForPickup(metal);
                 if (ToBank)
-                    Core.ToBank(HardCoreMetalsMetals);
+                    Core.ToBank(metals);
                 break;
             }
         }
         if (Bot.Quests.IsInProgress(2098))
             Core.Logger($"All desired metals were found with the needed quantity ({quant}), quest not completed");
-    }
-
-    private int MetalID(string metal)
-    {
-        switch (metal.ToLower())
-        {
-            case "arsenic":
-                return 11287;
-            case "beryllium":
-                return 11534;
-            case "chromium":
-                return 11591;
-            case "palladium":
-                return 11864;
-            case "rhodium":
-                return 12032;
-            case "thorium":
-                return 12075;
-            case "mercury":
-                return 12122;
-            case "aluminum":
-                return 11608;
-            case "barium":
-                return 11932;
-            case "gold":
-                return 12157;
-            case "iron":
-                return 12263;
-            case "copper":
-                return 12297;
-            case "silver":
-                return 12308;
-            case "platinum":
-                return 12315;
-        }
-        Core.Logger($"Could not find {metal}, is it written right?", messageBox: true, stopBot: true);
-        return 0;
     }
 
     public void FungiforaFunGuy()
@@ -309,7 +273,7 @@ public class CoreDailies
         DailyRoutine(4308, "deadmoor", "Nightmare", "Nightmare Fire");
         if (Core.IsMember)
             DailyRoutine(4309, "deadmoor", "Nightmare", "Unlucky Horseshoe");
-        Core.ToBank("C-Armor Token");
+        Core.ToBank("C-Armor Token", "Mad Weaponsmith");
     }
 
     public void BrightKnightArmor(bool checkArmor = true)
@@ -541,7 +505,7 @@ public class CoreDailies
 
         Core.Logger("Montly: Treasure Chest Keys");
         if (!CheckDaily(1239))
-            Core.Logger($"Next keys are available on {new DateTime(DateTime.Now.Year, DateTime.Now.Month + 1, 1).ToLongDateString()}");
+            Core.Logger($"Next keys are available on {new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).ToLongDateString()}");
         else Core.ChainComplete(1239);
 
 
@@ -775,4 +739,26 @@ public class CoreDailies
                 break;
         }
     }
+}
+
+public enum MineCraftingMetalsEnum
+{
+    Aluminum = 11608,
+    Barium = 11932,
+    Gold = 12157,
+    Iron = 12263,
+    Copper = 12297,
+    Silver = 12308,
+    Platinum = 12315,
+}
+
+public enum HardCoreMetalsEnum
+{
+    Arsenic = 11287,
+    Beryllium = 11534,
+    Chromium = 11591,
+    Palladium = 11864,
+    Rhodium = 12032,
+    Thorium = 12075,
+    Mercury = 12122,
 }

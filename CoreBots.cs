@@ -74,7 +74,7 @@ public class CoreBots
 
     private static CoreBots _instance;
     public static CoreBots Instance => _instance ??= new CoreBots();
-    public IScriptInterface Bot => IScriptInterface.Instance;
+    private IScriptInterface Bot => IScriptInterface.Instance;
 
     #endregion
 
@@ -98,7 +98,10 @@ public class CoreBots
             }
 
             if (AppPath != null)
-                Logger($"Bot Started [{Bot.Manager.LoadedScript.Replace(AppPath, string.Empty).Replace("\\Scripts\\", "").Replace(".cs", "")}]");
+            {
+                loadedBot = Bot.Manager.LoadedScript.Replace(AppPath, string.Empty).Replace("\\Scripts\\", "").Replace(".cs", "");
+                Logger($"Bot Started [{loadedBot}]");
+            }
             else Logger($"Bot Started");
 
             SkuaVersionChecker("1.1.1.0");
@@ -122,12 +125,13 @@ public class CoreBots
                         Logger("Please log-in before starting the bot.", messageBox: true, stopBot: true);
                     Bot.Sleep(5000);
                 }
-                else Logger("Please log-in before starting the bot.", messageBox: true, stopBot: true);
+                else Logger("Please log-in before starting the bot.\nIf you are already logged in but are recieving this message regardless, please re-install cleanFlash", messageBox: true, stopBot: true);
             }
 
             IsMember = Bot.Player.IsMember;
 
             ReadMe();
+            UpdateSkills();
         }
 
         // Common Options
@@ -177,20 +181,23 @@ public class CoreBots
                 }
             }, "Quest-Limit Handler");
 
-            Bot.Events.MapChanged += PrisonDetector;
-            void PrisonDetector(string map)
+            if (loadedBot != "Tools/Butler")
             {
-                if (map.ToLower() == "prison" && !joinedPrison && !prisonListernerActive)
+                Bot.Events.MapChanged += PrisonDetector;
+                void PrisonDetector(string map)
                 {
-                    prisonListernerActive = true;
-                    Bot.Options.AutoRelogin = false;
-                    Bot.Servers.Logout();
-                    string message = "You were teleported to /prison by someone other than the bot. We disconnected you and stopped the bot out of precaution.\n" +
-                                     "Be ware that you might have received a ban, as this is a method moderators use to see if you're botting." +
-                                     (!PrivateRooms || PrivateRoomNumber < 1000 || PublicDifficult ? "\nGuess you should have stayed out of public rooms!" : String.Empty);
-                    Logger(message);
-                    Bot.ShowMessageBox(message, "Unauthorized joining of /prison detected!", "Oh fuck!");
-                    Bot.Stop(true);
+                    if (map.ToLower() == "prison" && !joinedPrison && !prisonListernerActive)
+                    {
+                        prisonListernerActive = true;
+                        Bot.Options.AutoRelogin = false;
+                        Bot.Servers.Logout();
+                        string message = "You were teleported to /prison by someone other than the bot. We disconnected you and stopped the bot out of precaution.\n" +
+                                         "Be ware that you might have received a ban, as this is a method moderators use to see if you're botting." +
+                                         (!PrivateRooms || PrivateRoomNumber < 1000 || PublicDifficult ? "\nGuess you should have stayed out of public rooms!" : String.Empty);
+                        Logger(message);
+                        Bot.ShowMessageBox(message, "Unauthorized joining of /prison detected!", "Oh fuck!");
+                        Bot.Stop(true);
+                    }
                 }
             }
 
@@ -248,6 +255,7 @@ public class CoreBots
     private List<string> EquipmentBeforeBot = new();
     private bool joinedPrison = false;
     private bool prisonListernerActive = false;
+    public string loadedBot = String.Empty;
 
     /// <summary>
     /// Stops the bot and moves you back to /Battleon
@@ -261,22 +269,25 @@ public class CoreBots
         if (Bot.Player.LoggedIn)
         {
             JumpWait();
-            Bot.Combat.Exit();
             Bot.Sleep(ActionDelay);
+
             if (EquipmentBeforeBot.Count() > 0)
                 Equip(EquipmentBeforeBot.ToArray());
+
             if (!string.IsNullOrWhiteSpace(CustomStopLocation))
             {
                 if (CustomStopLocation.Trim().ToLower() == "home")
                 {
                     if (Bot.House.Items.Count(h => h.Equipped) > 0)
                         Bot.Send.Packet($"%xt%zm%house%1%{Bot.Player.Username}%");
-                    else Join("whitemap");
+                    else
+                        SendPackets($"%xt%zm%cmd%1%tfer%{Bot.Player.Username}%whitemap-{PrivateRoomNumber}%");
                 }
+
                 else if (new[] { "off", "disabled", "disable", "stop", "same", "currentmap", "bot.map.currentmap", String.Empty }
                                 .Any(m => m.ToLower() == CustomStopLocation.ToLower())) { }
                 else
-                    Join(CustomStopLocation);
+                    Bot.Send.Packet($"%xt%zm%cmd%1%tfer%{Bot.Player.Username}%{CustomStopLocation.ToLower()}-{PrivateRoomNumber}%");
             }
         }
         if (AntiLag)
@@ -297,8 +308,7 @@ public class CoreBots
             Logger("Bot Stopped due to crash.");
         else if (!Bot.Player.LoggedIn)
             Logger("Auto Relogin appears to have failed.");
-        else
-            Logger("Bot Stopped Successfully.");
+        else Logger("Bot Stopped Successfully.");
 
         GC.KeepAlive(Instance);
         return scriptFinished;
@@ -397,31 +407,24 @@ public class CoreBots
     /// <returns>Returns whether the item exists in the desired quantity in the Bank and Inventory</returns>
     public bool CheckInventory(int itemID, int quant = 1, bool toInv = true)
     {
-        ItemBase? itemTempInv = Bot.TempInv.Items.Find(i => i.ID == itemID);
-        InventoryItem? itemInv = Bot.Inventory.Items.Find(i => i.ID == itemID);
-        InventoryItem? itemBank = Bot.Bank.Items.Find(i => i.ID == itemID);
-        InventoryItem? itemHouse = Bot.House.Items.Find(i => i.ID == itemID);
-
-        if (itemTempInv == null && itemInv == null && itemBank == null)
-            return false;
-
-        if (itemTempInv != null && Bot.TempInv.Contains(itemTempInv.Name, quant))
+        if (Bot.TempInv.Contains(itemID, quant))
             return true;
 
-        if (itemInv != null && Bot.Inventory.Contains(itemInv.Name, quant))
+        if (Bot.Inventory.Contains(itemID, quant))
             return true;
 
-        if (itemHouse != null && Bot.House.Contains(itemHouse.Name, quant))
-            return true;
-
-        if (itemBank != null && Bot.Bank.Contains(itemBank.Name))
+        if (Bot.Bank.Contains(itemID))
         {
             if (toInv)
-                Unbank(itemBank.Name);
+                Unbank(itemID);
 
-            if (itemBank.Quantity >= quant)
+            if ((toInv && Bot.Inventory.GetQuantity(itemID) >= quant) ||
+               (!toInv && Bot.Bank.TryGetItem(itemID, out InventoryItem? _item) && _item != null && _item.Quantity >= quant))
                 return true;
         }
+
+        if (Bot.House.Contains(itemID))
+            return true;
 
         return false;
     }
@@ -469,6 +472,42 @@ public class CoreBots
         return !any;
     }
 
+    public bool CheckInventory(int[] itemIDs, int quant = 1, bool any = false, bool toInv = true)
+    {
+        if (itemIDs == null)
+            return true;
+
+        foreach (int id in itemIDs)
+        {
+            if (Bot.Inventory.Contains(id, quant))
+            {
+                if (any)
+                    return true;
+                else
+                    continue;
+            }
+
+            else if (Bot.Bank.Contains(id))
+            {
+                if (toInv)
+                    Unbank(id);
+
+                if ((toInv && Bot.Inventory.GetQuantity(id) >= quant) ||
+                   (!toInv && Bot.Bank.TryGetItem(id, out InventoryItem? _item) && _item != null && _item.Quantity >= quant))
+                {
+                    if (any)
+                        return true;
+                    else continue;
+                }
+            }
+
+            if (!any)
+                return false;
+        }
+
+        return !any;
+    }
+
     public void CheckSpaces(ref int counter, params string[] items)
     {
         int count = 0;
@@ -490,7 +529,6 @@ public class CoreBots
         if (items == null)
             return;
 
-        ToggleAggro(false);
         JumpWait();
 
         if (Bot.Flash.GetGameObject("ui.mcPopup.currentLabel") != "Bank")
@@ -512,7 +550,38 @@ public class CoreBots
                 Logger($"{item} moved from bank");
             }
         }
-        ToggleAggro(true);
+    }
+
+    /// <summary>
+    /// Move items from bank to inventory
+    /// </summary>
+    /// <param name="items">Items to move</param>
+    public void Unbank(params int[] items)
+    {
+        if (items == null)
+            return;
+
+        JumpWait();
+
+        if (Bot.Flash.GetGameObject("ui.mcPopup.currentLabel") != "Bank")
+            Bot.Bank.Open();
+
+        foreach (int item in items)
+        {
+            if (Bot.Bank.Contains(item))
+            {
+                Bot.Sleep(ActionDelay);
+                if (Bot.Inventory.FreeSlots == 0)
+                    Logger("Your inventory is full, please clean it and restart the bot", messageBox: true, stopBot: true);
+
+                if (!Bot.Bank.EnsureToInventory(item))
+                {
+                    Logger($"Failed to unbank {item}, skipping it", messageBox: true);
+                    continue;
+                }
+                Logger($"{Bot.Inventory.GetItem(item)?.Name ?? item.ToString()} moved from bank");
+            }
+        }
     }
 
     /// <summary>
@@ -524,7 +593,6 @@ public class CoreBots
         if (items == null)
             return;
 
-        ToggleAggro(false);
         JumpWait();
 
         if (Bot.Flash.GetGameObject("ui.mcPopup.currentLabel") != "Bank")
@@ -547,7 +615,39 @@ public class CoreBots
                 Logger($"{item} moved to bank");
             }
         }
-        ToggleAggro(true);
+    }
+
+    /// <summary>
+    /// Move items from inventory to bank
+    /// </summary>
+    /// <param name="items">Items to move</param>
+    public void ToBank(params int[] items)
+    {
+        if (items == null)
+            return;
+
+        JumpWait();
+
+        if (Bot.Flash.GetGameObject("ui.mcPopup.currentLabel") != "Bank")
+            Bot.Bank.Open();
+
+        foreach (int item in items)
+        {
+            if (Bot.Inventory.IsEquipped(item))
+            {
+                Logger("Can't bank an equipped item");
+                continue;
+            }
+            if (Bot.Inventory.Contains(item))
+            {
+                if (!Bot.Inventory.EnsureToBank(item))
+                {
+                    Logger($"Failed to bank {item}, skipping it");
+                    continue;
+                }
+                Logger($"{item} moved to bank");
+            }
+        }
     }
 
     /// <summary>
@@ -564,7 +664,7 @@ public class CoreBots
         if (CheckInventory(itemName, quant))
             return;
 
-        ShopItem? item = parseShopItem(GetShopItems(map, shopID).Where(x => shopItemID == 0 ? x.Name == itemName : x.ShopItemID == shopItemID).ToList(), shopID, itemName, shopItemID);
+        ShopItem? item = parseShopItem(GetShopItems(map, shopID).Where(x => shopItemID == 0 ? x.Name.ToLower() == itemName.ToLower() : x.ShopItemID == shopItemID).ToList(), shopID, itemName, shopItemID);
         _BuyItem(map, shopID, item, quant);
     }
 
@@ -591,8 +691,6 @@ public class CoreBots
         int buy_quant;
         if (item == null || (buy_quant = _CalcBuyQuantity(item, quant)) == 0 || !_canBuy(shopID, item, buy_quant))
             return;
-
-        ToggleAggro(false);
 
         Join(map);
         Bot.Wait.ForMapLoad(map);
@@ -632,8 +730,6 @@ public class CoreBots
         }
         else
             Logger($"Failed at buying {buy_quant}/{quant} {item.Name}");
-
-        ToggleAggro(true);
 
         void RelogRequieredListener(dynamic packet)
         {
@@ -885,7 +981,6 @@ public class CoreBots
     /// </summary>
     public void TrashCan(params string[] items)
     {
-        ToggleAggro(false);
         JumpWait();
         foreach (string item in items)
         {
@@ -899,7 +994,6 @@ public class CoreBots
             }
             else ToBank(item);
         }
-        ToggleAggro(true);
     }
 
     #endregion
@@ -921,6 +1015,25 @@ public class CoreBots
     /// </summary>
     /// <param name="items">Items to remove</param>
     public void RemoveDrop(params string[] items)
+    {
+        Bot.Drops.Remove(items);
+    }
+
+    /// <summary>
+    /// Adds drops to the pickup list, un-bank the items.
+    /// </summary>
+    /// <param name="items">Items to add</param>
+    public void AddDrop(params int[] items)
+    {
+        Unbank(items);
+        Bot.Drops.Add(items);
+    }
+
+    /// <summary>
+    /// Removes drops from the pickup list.
+    /// </summary>
+    /// <param name="items">Items to remove</param>
+    public void RemoveDrop(params int[] items)
     {
         Bot.Drops.Remove(items);
     }
@@ -999,13 +1112,24 @@ public class CoreBots
                     {
                         if (!Bot.Quests.IsInProgress(kvp.Key.ID))
                             EnsureAccept(kvp.Key.ID);
+
                         if (Bot.Quests.CanComplete(kvp.Key.ID))
                         {
-                            // Finding the next item that you dont have max stack of yet
+                            // Finding the list of items you dont have yet.
                             List<SimpleReward> simpleRewards =
                                 kvp.Key.SimpleRewards.Where(r => r.Type == 2 &&
-                                                            (!Bot.Inventory.IsMaxStack(r.Name) ||
-                                                                            !(Bot.Bank.TryGetItem(r.Name, out InventoryItem? item) && item != null && item.Quantity >= r.MaxStack))).ToList(); if (simpleRewards.Count == 0)
+                                    Bot.Inventory.GetQuantity(r.ID) <= 0 && Bot.Bank.GetQuantity(r.ID) <= 0).ToList();
+
+                            // If you have at least 1 of each item, start finding items that you dont have max stack of yet
+                            if (simpleRewards.Count == 0)
+                            {
+                                simpleRewards =
+                                    kvp.Key.SimpleRewards.Where(r => r.Type == 2 &&
+                                        (!Bot.Inventory.IsMaxStack(r.ID) &&
+                                        !(Bot.Bank.TryGetItem(r.ID, out InventoryItem? item) && item != null && item.Quantity >= item.MaxStack))).ToList();
+                            }
+
+                            if (simpleRewards.Count == 0)
                             {
                                 EnsureComplete(kvp.Key.ID);
                                 await Task.Delay(ActionDelay);
@@ -1017,8 +1141,7 @@ public class CoreBots
                             EnsureComplete(kvp.Key.ID, simpleRewards.First().ID);
                             await Task.Delay(ActionDelay);
                             EnsureAccept(kvp.Key.ID);
-                            Logger($"Quest completed x{chooseQuests[kvp.Key]++} times: [{kvp.Key.ID} \"{kvp.Key.Name}\" (got {kvp.Key.Rewards.First(x => x.ID == simpleRewards.First().ID).Name}])");
-
+                            Logger($"Quest completed x{chooseQuests[kvp.Key]++} times: [{kvp.Key.ID}] \"{kvp.Key.Name}\" (Got \"{kvp.Key.Rewards.First(x => x.ID == simpleRewards.First().ID).Name}\")");
                         }
                     }
                 }
@@ -1213,6 +1336,13 @@ public class CoreBots
         return toReturn;
     }
 
+    public string[] QuestRewards(params int[] questIDs)
+    {
+        List<string> toReturn = new();
+        EnsureLoad(questIDs).Select(q => q.Rewards).ForEach(r => toReturn.AddRange(r.Select(i => i.Name)));
+        return toReturn.ToArray();
+    }
+
     /// <summary>
     /// Accepts and then completes the quest, used inside a loop
     /// </summary>
@@ -1269,7 +1399,9 @@ public class CoreBots
         {
             if (log)
                 Logger($"Killing {monster}");
+            ToggleAggro(true);
             Bot.Kill.Monster(monster);
+            ToggleAggro(false);
             Rest();
             return;
         }
@@ -1309,7 +1441,9 @@ public class CoreBots
         {
             if (log)
                 Logger($"Killing {monster}");
+            ToggleAggro(true);
             Bot.Kill.Monster(monster);
+            ToggleAggro(false);
             Rest();
             return;
         }
@@ -1559,6 +1693,7 @@ public class CoreBots
             Logger($"Killing {name} for {item}, ({dynamicQuantity}/{quantity}) [Temp = {tempItem}]");
         }
 
+        ToggleAggro(true);
         while (!Bot.ShouldExit && !CheckInventory(item, quantity))
         {
             if (!Bot.Combat.StopAttacking)
@@ -1625,7 +1760,7 @@ public class CoreBots
     private void auraWarning([CallerMemberName] string caller = "")
     {
         if (!Bot.Flash.Call<bool>("isTrue"))
-            Logger("Looks like some botmaker decided to add a function to a bot who's SWF is not released yet, please report", caller, true, true);
+            Logger("Looks like some botmaker decided to add a function to a bot who's SWF is not released yet, please report.", caller, true, true);
     }
 
     #endregion
@@ -1740,20 +1875,42 @@ public class CoreBots
         Bot.Handlers.RegisterOnce(1, (Bot) => Bot.ShowMessageBox(message, caption));
     }
 
+    public void ConfigureAggro(bool status = true)
+    {
+        Logger("Configuring aggro");
+        last_aggro_status = status;
+    }
+
     public void ToggleAggro(bool enable)
     {
-        //if (enable && AggroMonsters)
-        //{
-        //    AggroMonsters = false;
-        //    Bot.Options.AggroMonsters = true;
-        //}
-        //else if (Bot.Options.AggroMonsters)
-        //{
-        //    AggroMonsters = true;
-        //    Bot.Options.AggroMonsters = false;
-        //}
+        if (enable)
+        {
+            if (last_aggro_status)
+            {
+                // If was previously aggro when untoggled
+                // Set aggro back and flip last aggro
+                Logger("Flipping aggro to False");
+                last_aggro_status = false;
+                Bot.Options.AggroMonsters = true;
+            }
+            else
+                return;
+        }
+        else
+        {
+            if (!Bot.Options.AggroMonsters)
+                return;
+            else
+            {
+                // If currently aggro, set last aggro to true
+                // and flip current aggro status
+                Logger("Flipping aggro to False");
+                last_aggro_status = true;
+                Bot.Options.AggroMonsters = false;
+            }
+        }
     }
-    private bool AggroMonsters = false;
+    private bool last_aggro_status = false;
 
     /// <summary>
     /// Send a packet to the server the desired amount of times
@@ -1832,9 +1989,7 @@ public class CoreBots
                     int? class_id = Bot.Inventory.Items.Find(i => i.Name.ToLower().Trim() == FarmClass.ToLower().Trim() && i.Category == ItemCategory.Class)?.ID;
                     if (class_id == null)
                         Logger("Class not found", stopBot: true);
-                    ToggleAggro(false);
                     Bot.Wait.ForItemEquip(class_id ?? 0);
-                    ToggleAggro(true);
                     Bot.Skills.StartAdvanced(FarmClass, true, FarmUseMode);
                     break;
                 }
@@ -1853,9 +2008,7 @@ public class CoreBots
                     int? class_id = Bot.Inventory.Items.Find(i => i.Name.ToLower().Trim() == SoloClass.ToLower().Trim() && i.Category == ItemCategory.Class)?.ID;
                     if (class_id == null)
                         Logger("Class not found", stopBot: true);
-                    ToggleAggro(false);
                     Bot.Wait.ForItemEquip(class_id ?? 0);
-                    ToggleAggro(true);
 
                     Bot.Skills.StartAdvanced(SoloClass, true, SoloUseMode);
                     break;
@@ -1872,7 +2025,6 @@ public class CoreBots
         if (gear == null)
             return;
 
-        ToggleAggro(false);
         JumpWait();
 
         foreach (string Item in gear)
@@ -1885,8 +2037,6 @@ public class CoreBots
                     Logger($"Equipped {Item}");
             }
         }
-
-        ToggleAggro(true);
     }
 
     public void EquipCached()
@@ -1916,7 +2066,6 @@ public class CoreBots
     public bool HasWebBadge(int badgeID) => GetBadgeJSON().Result.Contains($"\"badgeID\":{badgeID}");
     public bool HasWebBadge(string badgeName) => GetBadgeJSON().Result.Contains($"\"sTitle\":\"{badgeName}\"");
 
-    // To find the 
     private async Task<string> GetBadgeJSON()
     {
         string toReturn = string.Empty;
@@ -1938,45 +2087,10 @@ public class CoreBots
         return toReturn;
     }
 
-    #region Save State
     public void SavedState(bool on = true)
     {
-        return;
-        //string[] Files = Directory.GetFiles(@"Scripts\SavedState");
-        //string file = Files[Bot.Random.Next(0, Files.Count() - 1)];
-        //string[] SavedStateRNG = File.ReadAllLines(file);
 
-        //if (on)
-        //{
-        //    int MinumumDelay = 180;
-        //    int MaximumDelay = 300;
-        //    int timerInterval = Bot.Random.Next(MinumumDelay, MaximumDelay + 1);
-        //    int SSH = 0;
-        //    Logger("Saved State Handler enabled");
-        //    Bot.Send.ClientModerator("These Moderator messages about botting are client side and wont be seen by AE", "Mod-Messages");
-        //    Bot.Handlers.RegisterHandler(5000, s =>
-        //    {
-        //        SSH++;
-        //        if (SSH >= (timerInterval / 5))
-        //        {
-        //            int messageSelect = Bot.Random.Next(1, SavedStateRNG.Length);
-        //            Bot.Send.ClientModerator($"Ignore the whisper below, this is to save your player data ({file.Split('\\').Last().Split('/').Last()})", "Saved-State");
-        //            Bot.Send.Whisper(Bot.Player.Username, SavedStateRNG[messageSelect][2..]);
-        //            timerInterval = Bot.Random.Next(MinumumDelay, MaximumDelay);
-        //            SSH = 0;
-        //        }
-        //    }, "Saved-State Handler");
-        //}
-        //else if (Bot.Handlers.CurrentHandlers.Any(handler => handler.Name == "Saved-State Handler"))
-        //{
-        //    Bot.Handlers.Remove("Saved-State Handler");
-        //    int messageSelect = Bot.Random.Next(1, SavedStateRNG.Length);
-        //    Bot.Send.ClientModerator("Final Saved-State before the Saved State Handler is turned off", "Saved-State");
-        //    Bot.Send.Whisper(Bot.Player.Username, SavedStateRNG[messageSelect][2..]);
-        //    Logger("Saved State Handler disabled");
-        //}
     }
-    #endregion
 
     public int[] FromTo(int from, int to)
     {
@@ -1988,7 +2102,6 @@ public class CoreBots
 
     public Option<bool> SkipOptions = new Option<bool>("SkipOption", "Skip this window next time", "You will be able to return to this screen via [Scripts] -> [Edit Script Options] if you wish to change anything.", false);
     public bool DontPreconfigure = true;
-
 
     public void RunCore()
     {
@@ -2052,6 +2165,7 @@ public class CoreBots
         if (!Bot.Player.InCombat)
             return;
 
+        ToggleAggro(false);
         List<string> MonsterCells = Bot.Monsters.MapMonsters.Select(monster => monster.Cell).ToList();
 
         if (!MonsterCells.Contains(Bot.Player.Cell))
@@ -2100,6 +2214,7 @@ public class CoreBots
             Bot.Wait.ForCombatExit();
         }
         Bot.Combat.Exit();
+        Bot.Wait.ForCombatExit();
     }
     private string lastJumpWait = "";
 
@@ -2120,7 +2235,6 @@ public class CoreBots
         if (Bot.Map.Name != null && Bot.Map.Name.ToLower() == strippedMap && !ignoreCheck)
             return;
 
-        ToggleAggro(false);
         Bot.Sleep(ActionDelay);
 
         switch (strippedMap)
@@ -2130,23 +2244,103 @@ public class CoreBots
                 tryJoin();
                 break;
 
+            #region Simple Quest Bypasses
+            case "lycan":
+                SimpleQuestBypass(598);
+                break;
+
+            case "downbelow":
+                SimpleQuestBypass(8107);
+                break;
+
+            case "shadowattack":
+                SimpleQuestBypass(3798);
+                break;
+
+            case "mummies":
+                SimpleQuestBypass(4616);
+                break;
+
+            case "doomvault":
+                SimpleQuestBypass(3008);
+                break;
+
+            case "ultradrakath":
+                SimpleQuestBypass(3879);
+                break;
+
+            case "backroom":
+                SimpleQuestBypass(8059);
+                break;
+
+            case "venomvaults":
+                SimpleQuestBypass(2804);
+                break;
+
+            case "chaoscave":
+            case "lycanwar":
+                SimpleQuestBypass(567);
+                break;
+
+            case "timespace":
+                SimpleQuestBypass(2518);
+                break;
+
+            case "transformation":
+                SimpleQuestBypass(8094);
+                break;
+
+            case "ebilcorphq":
+                SimpleQuestBypass(8406);
+                break;
+
+            case "championdrakath":
+                SimpleQuestBypass(3881);
+                break;
+
+            case "towerofdoom1":
+            case "towerofdoom2":
+            case "towerofdoom3":
+            case "towerofdoom4":
+            case "towerofdoom5":
+            case "towerofdoom6":
+            case "towerofdoom7":
+            case "towerofdoom8":
+            case "towerofdoom9":
+            case "towerofdoom10":
+                SimpleQuestBypass(3484);
+                break;
+            #endregion
+
+            #region Private Simple Quest Bypasses
+            case "celestialarenab":
+            case "celestialarenac":
+            case "celestialarenad":
+                PrivateSimpleQuestBypass(6032);
+                break;
+
+            case "titandrakath":
+                PrivateSimpleQuestBypass(8776);
+                break;
+
+            case "confrontation":
+                PrivateSimpleQuestBypass(3799);
+                break;
+
+            case "finalshowdown":
+                PrivateSimpleQuestBypass(3880);
+                break;
+            #endregion
+
+            #region Special Cases
             case "tercessuinotlim":
                 Bot.Map.Jump("m22", "Left");
                 tryJoin();
                 break;
 
-            case "doomvault":
-                JumpWait();
-                Bot.Quests.UpdateQuest(3008);
-                tryJoin();
-                break;
-
             case "doomvaultb":
-                JumpWait();
-                Bot.Quests.UpdateQuest(3008);
                 SetAchievement(18);
-                Bot.Quests.UpdateQuest(3004);
-                tryJoin();
+                SimpleQuestBypass(3004, 3008);
                 break;
 
             case "prison":
@@ -2161,68 +2355,46 @@ public class CoreBots
                 Bot.Send.Packet($"%xt%zm%serverUseItem%{Bot.Map.RoomID}%+%5041%525,275%hyperium%");
                 break;
 
-            case "lycan":
-                JumpWait();
-                Bot.Quests.UpdateQuest(598);
-                tryJoin();
-                break;
-
             case "icestormarena":
                 JumpWait();
                 tryJoin();
                 Bot.Send.ClientPacket("{\"t\":\"xt\",\"b\":{\"r\":-1,\"o\":{\"cmd\":\"levelUp\",\"intExpToLevel\":\"0\",\"intLevel\":100}}}");
                 break;
+            #endregion
 
-            case "celestialarenad":
+            #region Always Private
+            // PvP
+            case "blutrutbrawl":
+            case "dagepvp":
+            case "deathpitbrawl":
+            // Room Limit: 1
+            case "treetitanbattle":
+            case "chaosrealm":
+            case "vordredboss":
+            case "trickortreat":
+            case "drakathfight":
+            case "finalbattle":
+            case "dragonfire":
+            case "darkthronehub":
+            case "malgor":
+            case "chaosbattle":
+            case "baconcatyou":
+            case "herotournament":
+            case "dragonkoi":
+            case "chaoslord":
+            case "ravenscar":
+            case "nothing":
+            case "falcontower":
+            case "baconcatb":
+            case "baconcat":
+            case "tlapd":
+                // Special
+                //case "fearhouse":
                 JumpWait();
-                Bot.Quests.UpdateQuest(6032);
-                Bot.Map.Join("celestialarenad-9999999");
-                break;
-
-            case "towerofdoom1":
-            case "towerofdoom2":
-            case "towerofdoom3":
-            case "towerofdoom4":
-            case "towerofdoom5":
-            case "towerofdoom6":
-            case "towerofdoom7":
-            case "towerofdoom8":
-            case "towerofdoom9":
-            case "towerofdoom10":
-                JumpWait();
-                Bot.Quests.UpdateQuest(3484);
+                map = strippedMap + "-999999";
                 tryJoin();
                 break;
-
-
-            case "shadowattack":
-                JumpWait();
-                Bot.Quests.UpdateQuest(3798);
-                tryJoin();
-                break;
-
-            case "confrontation":
-                JumpWait();
-                // Bot.Quests.UpdateQuest(3765);                
-                Bot.Quests.UpdateQuest(3799);
-                tryJoin();
-                break;
-
-            case "finalshowdown":
-                JumpWait();
-                Bot.Quests.UpdateQuest(3880);
-                tryJoin();
-                break;
-
-            case "Mummies":
-                JumpWait();
-                Bot.Quests.UpdateQuest(4616);
-                tryJoin();
-                break;
-
-                // case "fearhouse":
-                //     SendPackets($"%xt%zm%cmd%{Bot.Map.RoomID}%tfer%{Bot.Player.Username}%fearhouse%{999999}&Enter%Spawn%");
-                //     break;
+                #endregion
         }
 
         if (Bot.Map.Name != null && strippedMap == Bot.Map.Name.ToLower())
@@ -2257,27 +2429,27 @@ public class CoreBots
                 };
                 if (lockedMaps.Contains(strippedMap))
                     File.WriteAllText($"options/Butler/{Bot.Player.Username.ToLower()}.txt", Bot.Map.FullName);
-                AggroMonsters = true;
             }
 
             Jump(cell, pad);
             Bot.Sleep(200);
         }
 
-        // ToggleAggro(true);
-        //^ breaks shit
-
         void tryJoin()
         {
             Bot.Events.ExtensionPacketReceived += MapIsMemberLocked;
             bool hasMapNumber = map.Contains('-') && Int32.TryParse(map.Split('-').Last(), out int result) && result >= 1000;
+            Random rnd = new();
             for (int i = 0; i < 20; i++)
             {
                 if (hasMapNumber)
                     Bot.Map.Join(map, cell, pad, ignoreCheck);
-                else Bot.Map.Join((publicRoom && PublicDifficult) || !PrivateRooms ? map : $"{map}-{PrivateRoomNumber}", cell, pad, ignoreCheck);
+                else
+                    Bot.Map.Join((publicRoom && PublicDifficult) || !PrivateRooms ? map : $"{map}-{PrivateRoomNumber}", cell, pad, ignoreCheck);
                 Bot.Wait.ForMapLoad(strippedMap);
-                Bot.Sleep(200);
+
+                // Exponential Backoff
+                Bot.Sleep(Math.Max(1, 100 * rnd.Next((int)(Math.Pow(2, i / 2.0)))));
 
                 string? currentMap = Bot.Map.Name;
                 if (!String.IsNullOrEmpty(currentMap) && currentMap.ToLower() == strippedMap)
@@ -2286,29 +2458,43 @@ public class CoreBots
                 if (i == 19)
                     Logger($"Failed to join {map}");
             }
-        }
-        void MapIsMemberLocked(dynamic packet)
-        { //%xt%warning%-1%"artixhome" is an Membership-Only Map.%
+            Bot.Events.ExtensionPacketReceived -= MapIsMemberLocked;
 
-            string type = packet["params"].type;
-            dynamic data = packet["params"].dataObj;
-            if (type is not null and "str")
-            {
-                string cmd = data[0];
-                switch (cmd)
+            void MapIsMemberLocked(dynamic packet)
+            { //%xt%warning%-1%"artixhome" is an Membership-Only Map.%
+
+                string type = packet["params"].type;
+                dynamic data = packet["params"].dataObj;
+                if (type is not null and "str")
                 {
-                    case "warning":
-                        string b = Convert.ToString(packet);
-                        if (b.Contains("is an Membership-Only Map"))
-                        {
-                            Logger($" \"{map}\" Requires MemberShip to access it, Stopping the Bot.", stopBot: true);
-                            Bot.Events.ExtensionPacketReceived -= MapIsMemberLocked;
-                        }
-                        break;
+                    string cmd = data[0];
+                    switch (cmd)
+                    {
+                        case "warning":
+                            if (Convert.ToString(packet).Contains("is an Membership-Only Map"))
+                            {
+                                Logger($" \"{map}\" requires membership to access it. Stopping the Bot.", stopBot: true);
+                                Bot.Events.ExtensionPacketReceived -= MapIsMemberLocked;
+                            }
+                            break;
+                    }
                 }
             }
         }
 
+        void SimpleQuestBypass(params int[] questIDs)
+        {
+            JumpWait();
+            foreach (int id in questIDs)
+                Bot.Quests.UpdateQuest(id);
+            tryJoin();
+        }
+
+        void PrivateSimpleQuestBypass(params int[] questIDs)
+        {
+            map = strippedMap + "-999999";
+            SimpleQuestBypass(questIDs);
+        }
     }
 
     public void JoinSWF(string map, string swfPath, string cell = "Enter", string pad = "Spawn", bool ignoreCheck = false)
@@ -2331,7 +2517,6 @@ public class CoreBots
         if (map != null)
             Join(map);
 
-        ToggleAggro(false);
         JumpWait();
         Bot.Sleep(ActionDelay);
         List<ItemBase> tempItems = Bot.TempInv.Items;
@@ -2353,7 +2538,7 @@ public class CoreBots
             int t = 0;
             while (Bot.TempInv.GetQuantity(newItem.Name) < quant ||
                 (Bot.TempInv.TryGetItem(newItem.Name, out ItemBase? _item) && _item != null &&
-                (Bot.TempInv.GetQuantity(newItem.Name) < _item.MaxStack)))
+                (_item.Quantity < _item.MaxStack)))
             {
                 Bot.Map.GetMapItem(itemID);
                 Bot.Sleep(1000);
@@ -2363,7 +2548,6 @@ public class CoreBots
                     break;
             }
         }
-        ToggleAggro(true);
 
         Logger($"Map item {itemID}({quant}) acquired");
     }
@@ -2406,8 +2590,6 @@ public class CoreBots
         if (Bot.Map.Name != null && Bot.Map.Name.ToLower() == map)
             return true;
 
-        ToggleAggro(false);
-
         JumpWait();
         Bot.Events.ExtensionPacketReceived += MapIsNotAvailableListener;
         bool seasonalMessageProc = false;
@@ -2431,14 +2613,9 @@ public class CoreBots
                 Logger($"Failed to join {map}");
         }
 
-        ToggleAggro(true);
-
         Bot.Events.ExtensionPacketReceived -= MapIsNotAvailableListener;
 
-        if (Bot.Map.Name != null && Bot.Map.Name.ToLower() == map)
-            return true;
-        else
-            return false;
+        return Bot.Map.Name != null && Bot.Map.Name.ToLower() == map;
 
         void MapIsNotAvailableListener(dynamic packet)
         {
@@ -2462,13 +2639,12 @@ public class CoreBots
                 }
             }
         }
-
     }
+
 
     #endregion
 
     #region Using Local Files
-
     /// <summary>
     /// Returns the file path the user has Skua stored in.
     /// </summary>
@@ -2783,6 +2959,81 @@ public class CoreBots
         }
     }
     private int ScriptInstanceID = 0;
+
+    private void UpdateSkills()
+    {
+        string settings = AppPath + @"/UpdateSkillsSettings.txt";
+        string skillsFile = AppPath + @"/AdvancedSkills.txt";
+        if (!FileSetup())
+            return;
+
+        string[]? skills = GetSkills().Result;
+        if (skills == null)
+            return;
+
+        File.WriteAllLines(skillsFile, skills);
+
+        bool FileSetup()
+        {
+            if (File.Exists(settings))
+                return File.ReadAllText(settings) == "Yes";
+
+            var response = Bot.ShowMessageBox(
+                "Do you wish for the AdvancedSkills.txt file to be automatically updated when you run a script?\n\n" +
+                "This file is what dictates the skill combos that our bots use for your various classes.\n" +
+                "This is a temporary workaround so that this file will update." +
+                "In a later version of Skua this function will be integrated and it will update on startup, just like our scripts.\n\n" +
+                "If you have made any custom skill-sets, it's recommended to use the backup option here. Then a backup will be made for you this one time.\n" +
+                "The current AdvancedSkills.txt will be overwriten every time you start a bot whilst this option is on.\n" +
+                "If you have any skillsets you want us to integrate into the general file, " +
+                "make sure to ping a Skua Hero or above in #skua-questions-help in our discord (https://discord.gg/pearlharbor)",
+
+                "Auto Update AdvancedSkills.txt?", "Yes", "Yes and backup old file", "No"
+            );
+
+            if (response.Text.StartsWith("Yes"))
+            {
+                File.WriteAllText(settings, "Yes");
+                if (response.Text == "Yes and backup old file")
+                {
+                    File.WriteAllLines(AppPath + @"/AdvancedSkills_Backup.txt", File.ReadAllLines(skillsFile));
+                }
+            }
+            else if (response.Text == "No")
+            {
+                File.WriteAllText(settings, "No");
+            }
+            else return false;
+
+            Bot.ShowMessageBox(
+                    $"If you wish to change this setting, you can easily modify it in the following file:\n[{settings}]" +
+                    (response.Text == "Yes and backup old file" ?
+                        $"\n\nThe backup has been stored in:\n[{AppPath + @"/AdvancedSkills_Backup.txt"}]" : ""),
+
+                    "File Location"
+                );
+            return response.Text.StartsWith("Yes");
+        }
+
+        async Task<string[]?> GetSkills()
+        {
+            string? toReturn = null;
+            HttpClient client = new();
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    toReturn = await client.GetStringAsync("https://raw.githubusercontent.com/BrenoHenrike/Scripts/Skua/Skills/AdvancedSkills.txt");
+                }
+                catch { }
+            });
+            if (String.IsNullOrEmpty(toReturn))
+                return null;
+            return toReturn.Split("\r\n")[..^1];
+        }
+    }
 
     private void ReadCBO()
     {

@@ -41,6 +41,8 @@ public class Frostvale
         Cryostorm();
         Icewindpass();
         Icepike();
+        FrostvalPastPresentandFuture();
+        Snowview();
     }
 
     public void IceCave()
@@ -767,6 +769,101 @@ public class Frostvale
 
         // Karok still Stands
         Story.KillQuest(5617, "icepike", "Karok the Fallen");
+    }
+
+    public void FrostvalPastPresentandFuture()
+    {
+        if (Core.isCompletedBefore(6651) || Core.isSeasonalMapActive("frostvalperil"))
+            return;
+
+        Story.PreLoad(this);
+
+        // Memory #1 - Yeti or Not - 6636
+        Story.KillQuest(6636, "frostvalpast", "Ice Master Yeti");
+
+        // Activate the Spacetimebobulator - 6637   
+        Story.MapItemQuest(6637, "frostvalpast", 6165);
+
+        // Memory #2 - Who Started the Fire - 6638
+        Story.KillQuest(6638, "frostvalnext", "Arcane Fire");
+
+        // Memory #2 - Moglins on Ice - 6639
+        Story.KillQuest(6639, "frostvalnext", "Frozen Moglin");
+
+        // Memory #2 - Ice Ice Golems - 6640
+        Story.KillQuest(6640, "frostvalnext", "Ice Golem");
+
+        // Memory #2 - Xanta Claus Can't Come - 6641
+        Story.KillQuest(6641, "frostvalnext", "Xanta Claus");
+
+        // Activate the Spacetimebobulator - 6642
+        Story.MapItemQuest(6642, "frostvalnext", 6165);
+
+        // Memory #3 - Wraithing Away - 6643
+        Story.KillQuest(6643, "frostvalpresent", "Time Wraith");
+
+        // Memory #3 - Echoes - 6644
+        Story.KillQuest(6644, "frostvalpresent", new[] { "Echo of Cysero", "Echo of Lim", "Echo of Sora", "Echo of Warlic" });
+
+        // Activate the Spacetimebobulator - 6645
+        Story.MapItemQuest(6645, "frostvalpresent", 6165);
+
+        // Memory #4 - Clear the Snow - 6646
+        Story.MapItemQuest(6646, "frostvalfuture", 6166);
+
+        // Memory #4 - Fend off the Fiends - 6647
+        Story.KillQuest(6647, "frostvalfuture", "Frost Fiend");
+
+        // Memory #4 - The Frozen Warlock - 6648
+        Story.KillQuest(6648, "frostvalfuture", "Wargoth the Frozen");
+
+        // Bring the Cheer! - 6651
+        Story.KillQuest(6651, "frostvalfuture", "Wargoth the Frozen");
+        Story.KillQuest(6651, "frostvalpresent", "Time Wraith");
+        Story.KillQuest(6651, "frostvalnext", "Xanta Claus");
+        Story.KillQuest(6651, "frostvalpast", "Ice Master Yeti", GetReward: false);
+    }
+
+    public void Snowview()
+    {
+        if (Core.isCompletedBefore(9015) || !Core.isSeasonalMapActive("snowview"))
+            return;
+
+        Story.PreLoad(this);
+
+        //Glorified Pest Control (9006)
+        Story.KillQuest(9006, "snowview", new[] { "Mountain Owl", "Arctic Fox" });
+
+        //Mingling Sights (9007)
+        Story.MapItemQuest(9007, "snowview", new[] { 10989, 10990 });
+
+        //Sore Long Faces (9008)
+        Story.KillQuest(9008, "snowview", "Tundra Steed");
+
+        //Eggcellent Trade (9009)
+        Story.KillQuest(9009, "snowview", "Arctic Fox");
+        Story.MapItemQuest(9009, "snowview", 10991);
+
+        //Homemade Stars (9010)
+        Story.KillQuest(9010, "snowview", "Mountain Owl");
+        Story.MapItemQuest(9010, "snowview", 10992, 4);
+
+        //Rooted Remedy (9011)
+        Story.MapItemQuest(9011, "snowview", 10993, 5);
+        Story.MapItemQuest(9011, "snowview", 10994);
+
+        //No Lasso Rodeo (9012)
+        Story.KillQuest(9012, "snowview", "Tundra Steed");
+
+        //A Gift of Faith (9013)
+        Story.KillQuest(9013, "snowview", new[] { "Mountain Owl", "Arctic Fox" });
+
+        //Together from Afar (9014)
+        Story.KillQuest(9014, "snowview", "Tundra Steed");
+        Story.MapItemQuest(9014, "snowview", 10995);
+
+        //Intrudere From the Stars (9015)
+        Story.KillQuest(9015, "snowview", "Vaderix");
     }
 
 

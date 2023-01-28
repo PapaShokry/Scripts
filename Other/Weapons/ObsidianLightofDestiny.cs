@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreDailies.cs
@@ -23,7 +28,6 @@ public class ObsidianLightofDestiny
     {
         Core.SetOptions();
 
-        DW.DoomwoodPart3();
         Axe();
 
         Core.SetOptions(false);
@@ -31,6 +35,8 @@ public class ObsidianLightofDestiny
 
     public void Axe()
     {
+        DW.DoomwoodPart3();
+        
         if (Core.CheckInventory("Obsidian Light of Destiny"))
             return;
 

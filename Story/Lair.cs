@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -97,7 +102,7 @@ public class Lair
 
         // Do Not Crush The Eggs 1502
         Story.ChainQuest(1502);
-        
+
         // Heat ‘Em Up! 1503
         Story.MapItemQuest(1503, "lair", 754, 12);
 

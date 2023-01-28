@@ -1,3 +1,8 @@
+/*
+name: Furble Feast Story
+description: This will finish the Furble Feast storyline.
+tags: furble-feast-story, seasonal, harvest-day
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Seasonal/HarvestDay/CoreHarvestDay.cs

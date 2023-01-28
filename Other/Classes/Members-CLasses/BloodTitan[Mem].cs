@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -25,6 +30,7 @@ public class BloodTitan
 
         Core.EquipClass(ClassType.Farm);
         Core.RegisterQuests(2908);
+        Core.AddDrop("Blood Titan Token");
         while (!Bot.ShouldExit && !Core.CheckInventory("Blood Titan Token", 425))
             Core.HuntMonster("dwarfhold", "Albino Bat", "Bat Wing", 3);
         Core.BuyItem("classhalla", 617, "Blood Titan");

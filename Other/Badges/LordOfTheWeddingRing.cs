@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Story/ArtixWedding.cs
@@ -17,7 +22,7 @@ public class LordOfTheWeddingRing
 
         Core.SetOptions(false);
     }
-    
+
     public void Badge()
     {
         if (Core.HasWebBadge(badge))
@@ -28,7 +33,7 @@ public class LordOfTheWeddingRing
 
         Core.Logger($"Doing Artix Wedding story for {badge} badge");
         AW.ArtixWeddingComplete();
-        
+
     }
 
     private string badge = "Lord of the Wedding Ring";

@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreAdvanced.cs
 //cs_include Scripts/CoreFarms.cs
@@ -17,10 +22,15 @@ public class DarkWarLegionandNation
     {
         Core.SetOptions();
 
-        DarkWarLegion();
-        DarkWarNation();
+        DoBoth();
 
         Core.SetOptions(false);
+    }
+
+    public void DoBoth()
+    {
+        DarkWarLegion();
+        DarkWarNation();
     }
 
     public void DarkWarLegion()

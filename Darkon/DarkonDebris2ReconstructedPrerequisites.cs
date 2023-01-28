@@ -1,3 +1,8 @@
+/*
+name:  Darkon Debris 2 [reconstructed] Prerequisites
+description:  Farms the non-boss items to get the Darkon debris 2 [reconstructed], may require some manualing
+tags: darkon, darkon debris 2, prerequisites
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs

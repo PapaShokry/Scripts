@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -15,7 +20,6 @@ public class SagaChiralValley
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.AcceptandCompleteTries = 5;
         Core.SetOptions();
 
         LOC.Escherion();

@@ -1,3 +1,8 @@
+/*
+name: aggro monster creator
+description: This bot will allow you to start a custom AggroMon bot. It also allows you to save it to a file for later.
+tags: custom, aggro monster, army
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/Army/CoreArmyLite.cs
 using Skua.Core.Interfaces;
@@ -182,10 +187,10 @@ public class CustomAggroMon
             if (Ioc.Default.GetRequiredService<IDialogService>().ShowDialog(diag) != true)
                 return;
 
-            if (!Directory.Exists("Scripts/Army/Generated"))
-                Directory.CreateDirectory("Scripts/Army/Generated");
+            if (!Directory.Exists(Path.Combine(CoreBots.ScriptsPath, "Army", "Generated")))
+                Directory.CreateDirectory(Path.Combine(CoreBots.ScriptsPath, "Army", "Generated"));
 
-            string[] template = File.ReadAllLines("Scripts/Templates/CustomAggroMonTemplate.cs");
+            string[] template = File.ReadAllLines(Path.Combine(CoreBots.ScriptsPath, "Templates", "CustomAggroMonTemplate.cs"));
             string botName = removeInvalidChar(diag.DialogTextInput);
 
             int classIndex = FetchIndex("public class CustomAggroMonTemplate");
@@ -214,8 +219,8 @@ public class CustomAggroMon
             int classTypeIndex = FetchIndex("private ClassType classtype = ClassType.None;");
             template[classTypeIndex] = $"{spaces}private ClassType classtype = ClassType.{Bot.Config.Get<ClassType>("classtype")};";
 
-            File.WriteAllLines($"Scripts/Army/Generated/{diag.DialogTextInput.Replace(" ", "")}.cs", template);
-            Core.Logger($"\"{diag.DialogTextInput.Replace(" ", "")}.cs\" has been generated and can be found in Scripts/Army/Generated", messageBox: true);
+            File.WriteAllLines(Path.Combine(CoreBots.SkuaPath, "Scripts", "Army", "Generated", diag.DialogTextInput.Replace(" ", "") + ".cs"), template);
+            Core.Logger($"\"{diag.DialogTextInput.Replace(" ", "")}.cs\" has been generated and can be found in Skua_Modules/Scripts/Army/Generated", messageBox: true);
 
             int FetchIndex(string text)
             {

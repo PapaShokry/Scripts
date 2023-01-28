@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -24,7 +29,7 @@ public class DeathPitArenaRepMerge
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(new[] { "Death Pit Arena Medal", "General Gall Medal", "General Velm Medal", "General Hun'Gar Medal", "General Chud Medal "});
+        Core.BankingBlackList.AddRange(new[] { "Death Pit Arena Medal", "General Gall Medal", "General Velm Medal", "General Hun'Gar Medal", "General Chud Medal " });
         Core.SetOptions();
 
         BuyAllMerge();
@@ -32,10 +37,10 @@ public class DeathPitArenaRepMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("deathpit", 1261, findIngredients);
+        Adv.StartBuyAllMerge("deathpit", 1261, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

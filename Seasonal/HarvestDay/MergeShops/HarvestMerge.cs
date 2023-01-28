@@ -1,3 +1,8 @@
+/*
+name: Harvest Merge
+description: This will get all or selected items on this merge shop.
+tags: harvest-merge, seasonal, harvest-day
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -33,10 +38,10 @@ public class HarvestMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("feast", 2181, findIngredients);
+        Adv.StartBuyAllMerge("feast", 2181, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

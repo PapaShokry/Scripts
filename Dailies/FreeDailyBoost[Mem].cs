@@ -1,3 +1,8 @@
+/*
+name:  Free Daily Boost Daily
+description:  Free Daily Boost
+tags: daily, free daily boost, member, boost, free
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

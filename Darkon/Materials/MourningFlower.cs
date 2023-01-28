@@ -1,3 +1,8 @@
+/*
+name:  Mouring Flower
+description:  Mouring Flower
+tags: darkon, mouring flower
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs

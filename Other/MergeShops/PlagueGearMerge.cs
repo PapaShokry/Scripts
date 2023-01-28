@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -33,11 +38,11 @@ public class PlagueGearMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         DD.Sloth();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("sloth", 1429, findIngredients);
+        Adv.StartBuyAllMerge("sloth", 1429, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

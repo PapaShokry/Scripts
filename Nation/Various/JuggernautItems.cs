@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/Nation/CoreNation.cs
@@ -38,9 +43,6 @@ public class JuggernautItemsofNulgath
         Core.AddDrop(Nation.bagDrops);
         Core.AddDrop(Rewards);
 
-        Nation.FarmUni13();
-
-
         var Count = 0;
         int x = 1;
 
@@ -49,13 +51,12 @@ public class JuggernautItemsofNulgath
         foreach (Skua.Core.Models.Items.ItemBase Item in RewardOptions)
             RewardsList.Add(Item.Name);
         Count = RewardsList.Count();
-
         var rewards = Core.EnsureLoad(837).Rewards;
         ItemBase item = rewards.Find(x => x.ID == (int)reward) ?? null;
 
         while (!Bot.ShouldExit &&
                 (reward == RewardsSelection.All ?
-                    Core.CheckInventory(rewards.Select(x => x.Name).ToArray(), toInv: false) :
+                    !Core.CheckInventory(rewards.Select(x => x.Name).ToArray(), toInv: false) :
                     !Core.CheckInventory(item.ID, toInv: false)
                 )
               )
@@ -64,6 +65,7 @@ public class JuggernautItemsofNulgath
                 Core.Logger($"Farming All {x++}/{Count}");
             else Core.Logger($"... {reward} ...");
 
+            Nation.FarmUni13();
             Core.EnsureAccept(837);
             Nation.FarmDiamondofNulgath(13);
             Nation.FarmDarkCrystalShard(50);
@@ -74,7 +76,7 @@ public class JuggernautItemsofNulgath
             Core.HuntMonster("underworld", "Undead Bruiser", "Undead Bruiser Rune");
 
             if (Bot.Config.Get<RewardsSelection>("RewardsSelection") == RewardsSelection.All)
-                Core.EnsureComplete(837);
+                Core.EnsureCompleteChoose(837);
             else Core.EnsureComplete(837, (int)reward);
         }
     }

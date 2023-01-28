@@ -1,3 +1,8 @@
+/*
+name:  Astravian Medal
+description:  Astravian Medals
+tags: astravian medals, darkon
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs

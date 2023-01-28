@@ -24,6 +24,8 @@ RBot_3.6.3.2
 Projects W.I.P
 Class1.cs
 *.json
+!ScriptTags.json
+scripts.json
 *.code-workspace
 Projects
 .shacache
@@ -31,3 +33,4 @@ UltraBosses
 CoreArmy.cs
 z_CompiledScript.cs
 Generated
+!SkuaScriptsGenerator/SkuaScriptsGenerator.csproj

@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -14,9 +19,14 @@ public class CombatTrophy
     {
         Core.SetOptions();
 
-        Adv.BestGear(GearBoost.dmgAll);
-        Farm.BludrutBrawlBoss();
+        DoCombatTrophy();
 
         Core.SetOptions(false);
+    }
+
+    public void DoCombatTrophy()
+    {
+        Adv.BestGear(GearBoost.dmgAll);
+        Farm.BludrutBrawlBoss();
     }
 }

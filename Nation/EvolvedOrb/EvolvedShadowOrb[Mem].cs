@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/Nation/CoreNation.cs
@@ -17,9 +22,7 @@ public class EvolvedShadowOrb
 
     public void GetEvolvedShadowOrb()
     {
-        if (!Core.IsMember)
-            return;
-        else if (Core.CheckInventory("Evolved Shadow Orb"))
+        if (Core.CheckInventory("Evolved Shadow Orb") || !Core.IsMember)
             return;
         Nation.ApprovalAndFavor(200, 0);
         Nation.FarmUni13(3);

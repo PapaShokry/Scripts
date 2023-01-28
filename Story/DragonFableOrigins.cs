@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -10,7 +15,6 @@ public class DragonFableOrigins
 
     public void ScriptMain(IScriptInterface Bot)
     {
-        Core.AcceptandCompleteTries = 5;
         Core.SetOptions();
 
         DragonFableOriginsAll();

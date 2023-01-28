@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -39,10 +44,10 @@ public class TechfortressWarMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("techfortress", 1902, findIngredients);
+        Adv.StartBuyAllMerge("techfortress", 1902, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

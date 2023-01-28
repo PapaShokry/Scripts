@@ -1,3 +1,8 @@
+/*
+name:  Army Unique Quarry
+description:  uses an army to farm the queust rewards from "unique quarry"
+tags: army, unique quarry, quest, rewards
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -36,11 +41,8 @@ public class ArmyUniqueQuarry
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(new[]
-        {"Chaos Sphinx", "Chaoroot", "Kathool Annihilator", "Chaotic Manticore Head", "Chaos Tentacle", "Chaos Dragon Slayer", "HarpyHunter", "Naga Baas Pet"});
-
+        Core.BankingBlackList.AddRange(new[] { "Chaos Sphinx", "Chaoroot", "Kathool Annihilator", "Chaotic Manticore Head", "Chaos Tentacle", "Chaos Dragon Slayer", "HarpyHunter", "Naga Baas Pet" });
         Core.SetOptions(disableClassSwap: true);
-        bot.Options.RestPackets = false;
 
         Setup();
 
@@ -130,8 +132,8 @@ public class ArmyUniqueQuarry
                 Army.AggroMonStart("chaoswar");
                 Army.DivideOnCells("r2");
             }
-            else 
-            {                
+            else
+            {
                 Army.AggroMonCells("r1", "r2");
                 Army.AggroMonStart("chaoswar");
                 Army.DivideOnCells("r1", "r2");

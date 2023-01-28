@@ -1,3 +1,8 @@
+/*
+name: Sweet Birthday Treats Rewards
+description: This will do the Sweet Birthday Treats quest and obtain all of the rewards.
+tags: sweet-birthday-treats, seasonal, aqw-anniversary
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 using Skua.Core.Interfaces;

@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -27,7 +32,6 @@ public class BurningBladeOfAbezeth
 
         // CC.BuyAllMerge("Burning Blade Of Abezeth", mergeOptionsEnum.select);
         Core.EquipClass(ClassType.Solo);
-        Bot.Quests.UpdateQuest(6042);
         Core.HuntMonster("celestialarenad", "Aranx", "Champion Sash", 20, isTemp: false);
         Adv.BuyItem("celestialarena", 1474, "Burning Blade Of Abezeth");
         Adv.EnhanceItem("Burning Blade Of Abezeth", EnhancementType.Lucky);

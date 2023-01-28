@@ -1,3 +1,8 @@
+/*
+name: Unoriginal Recipe Farm
+description: Farms the max Unoriginal Recipe quantity.
+tags: unoriginal-recipe, seasonal, april-fools
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs

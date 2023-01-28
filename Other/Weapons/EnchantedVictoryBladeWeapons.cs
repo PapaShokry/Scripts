@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -14,10 +19,17 @@ public class EnchantedVictoryBladeWeapons
     {
         Core.SetOptions();
         Core.BankingBlackList.AddRange(new[] { "Enchanted Mana Blade", "Bright Aura Gem", "Amulet of Glory", "Arcane Blade of Glory", "Enchanted Shadow Blade", "Dark Aura Gem", "Amulet of Despair", "Shadow Blade of Despair" });
-        GetWeapon(VictoryBladeStyles.ArcaneBladeOfGlory);
-        GetWeapon(VictoryBladeStyles.ShadowBladeOfDespair);
+
+GetBoth();
 
         Core.SetOptions(false);
+    }
+
+    public void GetBoth()
+    {
+        GetWeapon(VictoryBladeStyles.ArcaneBladeOfGlory);
+        GetWeapon(VictoryBladeStyles.ShadowBladeOfDespair);
+        
     }
 
     public void GetWeapon(VictoryBladeStyles Method = VictoryBladeStyles.Smart)
@@ -120,7 +132,7 @@ public class EnchantedVictoryBladeWeapons
 
         Core.HuntMonster("graveyard", "Skeletal Viking", "Nornir Triad Shard", 12, false);
 
-        Core.EnsureComplete(4813, type == "Amulet of Glory" ? 33502 : 33501); 
+        Core.EnsureComplete(4813, type == "Amulet of Glory" ? 33502 : 33501);
         // Core.EnsureComplete(4813, Amulet.ID); 
         Bot.Wait.ForPickup(type);
     }

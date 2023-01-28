@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -24,16 +29,12 @@ public class CandiedCostumesMerge
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(
-            new[]
-            {
-                "MarshMeowllows",
-                "Horehound Bits",
-                "Kitty Cordials",
-                "Candied Jalapeno",
-                "Spicy Sample "
-            }
-        );
+        Core.BankingBlackList.AddRange(new[] {
+            "MarshMeowllows",
+            "Horehound Bits",
+            "Kitty Cordials",
+            "Candied Jalapeno",
+            "Spicy Sample "});
         Core.SetOptions();
 
         BuyAllMerge();
@@ -41,12 +42,12 @@ public class CandiedCostumesMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         if (!Core.isSeasonalMapActive("mogloween"))
             return;
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("candyshop", 1761, findIngredients);
+        Adv.StartBuyAllMerge("candyshop", 1761, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

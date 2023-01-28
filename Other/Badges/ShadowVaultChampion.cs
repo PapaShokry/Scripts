@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Story/ShadowVault.cs
@@ -29,7 +34,7 @@ public class ShadowVaultChampion
 
         Core.Logger($"Doing ShadowVault story for {badge} badge");
         SV.StoryLine();
-        
+
     }
 
     private string badge = "ShadowScythe Champion";

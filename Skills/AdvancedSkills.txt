@@ -105,6 +105,7 @@ Base = Evolved ClawSuit = 3 | 4 | 2 | 5 | 2 | 4 | 2 | 2 = 250
 Base = Evolved Dark Caster = 4 | 5 | 3 | 2 = 250
 Base = Evolved Leprechaun = 5 | 4 | 2 | 3 = 250
 Base = Evolved Pumpkin Lord = 3 | 4 | 2 | 1 = 250
+Base = Evolved Shaman = 3 | 4 | 2 | 1 = 250
 Base = Exalted Harbinger = 4 | 4 | 4 | 3 | 1 | 2H<30S = 250
 Base = Exalted Soul Cleaver = 2 | 3 | 2 | 2 | 3 = 250
 Base = FireLord Summoner = 3 | 2 | 1 | 4 = 250
@@ -134,7 +135,9 @@ Base = Imperial Chunin = 1 | 2 | 3 | 4 = Use if Available
 Base = Infinite Dark Caster = 1 | 2 | 3 | 4 = Use if Available
 Base = Infinite Legion Dark Caster = 1 | 2 | 3 | 4 = Use if Available
 Base = Interstellar Knight = 1 | 2 | 4 | 1 | 2 | 1 | 1 | 2 | 1 | 1 | 2 | 3 = 250
-Base = Infinity Titan = 4M>50S | 2S | 3H<50S | 2S | 3H<50S | 1 | 1 = Use if Available
+Base = Infinity Titan = 3 | 2 | 1 | 4 = Use if Available
+Solo = Infinity Titan = 4M>50S | 2S | 3H<50S | 2S | 3H<50S | 1 | 1 = Use if Available
+Supp = Infinity Titan = 3 | 2 | 4 | 1 = Use if Available
 Base = Interstellar Knight = 1 | 2 | 4 | 1 | 2 | 1 | 1 | 2 | 1 | 1 | 2 | 3 = 250
 Base = Legendary ArchFiend = 1 | 2 | 3 | 4 = Use if Available
 Atk = Legendary Elemental Warrior = 1 | 3 | 4 | 1 | 2 | 4 | 1 | 3 | 2 | 1 | 4 | 2 = 250
@@ -166,13 +169,19 @@ Base = Mystical Dark Caster = 1 | 2 | 3 | 4 = Use if Available
 Base = Naval Commander = 3WW10000 | 4 | 2 | 1 = 250
 Base = Nechronomancer = 4 H<40S | 3 | 1 | 2 = Use if Available
 Base = Necrotic Chronomancer = 4 H<40S | 3 | 1 | 2 = Use if Available
+Base = Necromancer = 1 | 2 | 3 M<25S H<30S | 4 = Use if Available
 Base = Ninja = 1 | 2 | 3 | 4 = Use if Available
 Base = Ninja Warrior = 1 | 2 | 3 | 4 = Use if Available
 Base = Northlands Monk = 1 | 2 | 3 | 4 = Use if Available
 Base = NOT A MOD = 1 | 2 | 3 | 4 = Use if Available
 Base = Nu Metal Necro = 1 | 2 | 3 | 4 = Use if Available
 Base = Oracle = 1 | 2 | 3 | 4 = Use if Available
+Base = Overworld Chronomancer = 5 | 2 | 3 | 1 | 1 | 1 | 3 | 1 | 4 | 3 | 1 | 1 | 1 | 3 | 1 | 4 = 250
 Base = Paladin = 1 | 2 | 3 | 4 = Use if Available
+Solo = Paladin Chronomancer = 1 | 1 | 1 | 1 | 1 | 3 | 1 | 4WW8250 = 250
+Supp = Paladin Chronomancer = 1 | 3 | 2 = 250
+Solo = Obsidian Paladin Chronomancer = 1 | 1 | 1 | 1 | 1 | 3 | 1 | 4WW8250 = 250
+Supp = Obsidian Paladin Chronomancer = 1 | 3 | 2 = 250
 Base = Paladin Highlord = 4 | 1 | 3 | 2 H<60 = 250
 Base = PaladinSlayer = 1 | 2 | 3 | 4 = Use if Available
 Base = Pink Romancer = 1 | 2 | 3 | 4 = Use if Available
@@ -219,8 +228,8 @@ Def = Star Captain = 2 | 1S | 2S | 3S | 4 | 2 = 300
 Atk = Star Captain = 3 | 1S | 2S | 3S | 4 | 3 = 300
 Solo = Star Captain = 1 | 1S | 2S | 3S | 4 | 1 = 300
 Base = StarLord = 1 | 2 | 3 | 4 = Use if Available
-Base = StoneCrusher = 2 | 3 | 1 | 4 = 250
-Solo = StoneCrusher = 4M>50S | 2S | 3H<50S | 2S | 3H<50S | 1 | 1 = Use if Available
+Base = StoneCrusher = 3 | 2 | 1 | 4 = Use if Available
+Solo = StoneCrusher = 4M>50S | 2S | 3H<50S | 1 = Use if Available
 Supp = StoneCrusher = 3 | 2 | 4 | 1 = Use if Available
 Base = SwordMaster = 1 | 2 | 3 | 4 = Use if Available
 Base = SwordMaster Assassin = 1 | 2 | 3 | 4 = Use if Available
@@ -250,10 +259,10 @@ Solo = Vampire Lord = 2 | 3 | 1 | 1 | 3 = 250
 Base = Vindicator Of They = 1WW20000 | 3 | 4 | 1 = 250
 Atk = Void Highlord = 3H>25S | 4 | 2 | 1H>25S | 3H>25S | 2 | 1H>25S | 3H>25S | 2 | 1H>25S = 250
 Def = Void Highlord = 4 | 2 | 1 = Use if Available
-Farm = Void Highlord = 3 H>30S | 2 | 4 | 1 H>30S = Use if Available
+Farm = Void Highlord = 3H>30S | 2 | 4 | 1H>30S = Use if Available
 Atk = Void Highlord (IoDA) = 3H>25S | 4 | 2 | 1H>25S | 3H>25S | 2 | 1H>25S | 3H>25S | 2 | 1H>25S = 250
 Def = Void Highlord (IoDA) = 4 | 2 | 1 = Use if Available
-Farm = Void Highlord (IoDA) = 3 H>30S | 2 | 4 | 1 H>30S = Use if Available
+Farm = Void Highlord (IoDA) = 3H>30S | 2 | 4 | 1H>30S = Use if Available
 Base = Void Highlord Tester = 3 | 2 | 4 | 3 | 2 | 1 | 3 | 2 | 1 = 250
 Def = Void Highlord Tester = 4 | 2 | 1 = Use if Available
 Base = Warlord = 1 | 2 | 3 | 4 = Use if Available
@@ -261,5 +270,4 @@ Base = Warrior = 1 | 2 | 3 | 4 = Use if Available
 Base = Warrior (Rare) = 1 | 2 | 3 | 4 = Use if Available
 Base = WarriorScythe General = 1 | 2 | 3 | 4 = Use if Available
 Base = Witch = 1 | 2 | 3 | 4 = Use if Available
-Def = Yami no Ronin = 2 | 1 | 1 | 2 | 1 | 4 = 250
-Atk = Yami no Ronin = 3 | 2 | 3 | 3 | 1 | 3 | 1 | 4 = 250
+Solo = Yami no Ronin = 4 | 2 | 1 | 4  Use if Available

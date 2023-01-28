@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -174,7 +179,14 @@ public class CoreDoomwood
         Story.MapItemQuest(1113, "necroU", 450, 5);
 
         //1114    Goals for Ghouls and Other Undead
-        Story.KillQuest(1114, "necroU", new[] { "Ghoul", "Doomwood Soldier", "Doomwood Soldier" });
+        if (!Story.QuestProgression(1114))
+        {
+            Core.EnsureAccept(1114);
+            Core.HuntMonster("necroU", "Ghoul", "Undead Wishes");
+            Core.HuntMonster("necroU", "Doomwood Soldier", "Undead Dreams");
+            Core.HuntMonster("necroU", "Doomwood Soldier", "Undead Ambitions");
+            Core.EnsureComplete(1114);
+        }
 
         //1115    Knee Bone's Connected to the Thigh Bone
         Story.MapItemQuest(1115, "necroU", 449, 6);
@@ -669,11 +681,14 @@ public class CoreDoomwood
         //7624    EN GARDE!
         if (!Story.QuestProgression(7624))
         {
+            Bot.Quests.UpdateQuest(7623); //dunno it makes dood apear :shrug:
+            Bot.Options.AttackWithoutTarget = true;
             Core.EnsureAccept(7624);
-            Core.HuntMonsterMapID("stonewooddeep", 1, "Defeat Asherion");
-            Core.EnsureAccept(7624);
+            Core.KillMonster("stonewooddeep", "r2", "Left", "Asherion", "Defeat Asherion");
+            Bot.Options.AttackWithoutTarget = false;
+            Core.EnsureComplete(7624);
         }
-        
+
         //7625    The Light Of Destiny
         Story.MapItemQuest(7625, "stonewooddeep", 7529);
 
@@ -683,8 +698,8 @@ public class CoreDoomwood
             Bot.Options.AttackWithoutTarget = true;
             Core.EnsureAccept(7626);
             Core.KillMonster("stonewooddeep", "r2", "Right", "Doomwood Treeant", "Sturdy Wood", 8);
-            Story.MapItemQuest(7626, "stonewooddeep", 7530, 8);
             Bot.Options.AttackWithoutTarget = false;
+            Story.MapItemQuest(7626, "stonewooddeep", 7530, 8);
         }
 
         //7627    Build the Dummies
@@ -701,33 +716,43 @@ public class CoreDoomwood
         //7628    Battle the Dummies
         if (!Story.QuestProgression(7628))
         {
+            Core.Logger("trying to fix this broke map.");
+            Bot.Map.Reload();
+            Bot.Options.AttackWithoutTarget = true;
             Core.EnsureAccept(7628);
-            Core.HuntMonsterMapID("stonewooddeep", 4 | 5, "Target Dummy Slain", 6);
+            Core.HuntMonsterMapID("stonewooddeep", 5, "Target Dummy Slain", 6);
+            Bot.Options.AttackWithoutTarget = false;
             Core.EnsureComplete(7628);
         }
 
         //7629    Lesson 1: Bravery
         if (!Story.QuestProgression(7629))
         {
+            Bot.Options.AttackWithoutTarget = true;
             Core.EnsureAccept(7629);
-            Core.KillMonster("stonewooddeep", "r3", "Right", "Doomwood SLime", "Slime Slain", 10);
+            Core.KillMonster("stonewooddeep", "r3", "Right", "Doomwood Slime", "Slime Slain", 10);
+            Bot.Options.AttackWithoutTarget = false;
             Core.EnsureComplete(7629);
         }
 
         //7630    Lesson 2: Armor
         if (!Story.QuestProgression(7630))
         {
+            Bot.Options.AttackWithoutTarget = true;
             Core.EnsureAccept(7630);
-            Core.KillMonster("stonewooddeep", "r3", "Right", "Doomwood SLime", "Stolen Armor", 7);
+            Core.KillMonster("stonewooddeep", "r3", "Right", "Doomwood Slime", "Stolen Armor", 7);
+            Bot.Options.AttackWithoutTarget = false;
             Core.EnsureComplete(7630);
         }
 
         //7631    Lesson 3: Protection
         if (!Story.QuestProgression(7631))
         {
+            Bot.Options.AttackWithoutTarget = true;
             Core.EnsureAccept(7631);
             Core.HuntMonster("stonewooddeep", "CryptHacker", "Crypthacker Slain", 10);
             Core.HuntMonster("stonewooddeep", "CryptHacker", "Unidentified Clue");
+            Bot.Options.AttackWithoutTarget = false;
             Core.EnsureComplete(7631);
         }
 
@@ -738,8 +763,8 @@ public class CoreDoomwood
         if (!Story.QuestProgression(7633))
         {
             Core.EnsureAccept(7633);
-            Core.KillMonster("stonewooddeep", "r3", "Right", "Doomwood SLime", "Acid Ooze", 6);
-            Core.HuntMonster("stonewooddeep", "NecroDrone", "Explosive Tech", 6);
+            Core.KillMonster("stonewooddeep", "r3", "Right", "Doomwood Slime", "Acid Ooze", 6);
+            Core.KillMonster("stonewooddeep", "r7", "Right", "NecroDrone", "Explosive Tech", 6);
             Core.EnsureComplete(7633);
         }
 

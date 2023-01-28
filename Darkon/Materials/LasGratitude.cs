@@ -1,3 +1,8 @@
+/*
+name:  Las Gratitude
+description:  Las Gratitude
+tags: darkon, las gratitude
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs

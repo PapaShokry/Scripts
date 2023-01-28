@@ -1,3 +1,8 @@
+/*
+name: Kala Story
+description: This will finish the Kala storyline.
+tags: kala-story, kala, seasonal
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Seasonal/August/Rangda.cs
@@ -23,7 +28,7 @@ public class KalaSeasonal
     {
         if (!Core.isSeasonalMapActive("kala"))
             return;
-            
+
         Ran.StoryLine();
 
         if (Core.isCompletedBefore(8214))

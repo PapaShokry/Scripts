@@ -1,3 +1,8 @@
+/*
+name:  Crypto Token Daily
+description:  Crypto Token
+tags: daily, crypto token
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

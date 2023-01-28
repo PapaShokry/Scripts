@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -26,7 +31,7 @@ public class BeleensChaosFuzzyMerge
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(new[] { "Chaos Fuzzies "});
+        Core.BankingBlackList.AddRange(new[] { "Chaos Fuzzies " });
         Core.SetOptions();
 
         BuyAllMerge();
@@ -34,12 +39,12 @@ public class BeleensChaosFuzzyMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         Summer.Beleen();
 
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("pastelia", 135, findIngredients);
+        Adv.StartBuyAllMerge("pastelia", 135, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

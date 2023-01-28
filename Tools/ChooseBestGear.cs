@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -26,13 +31,14 @@ public class ChooseBestGear
     {
         Core.SetOptions();
 
-        ChooseItem
-        (
-            Bot.Config.Get<GearBoost>("RacialGearBoost"),
-            Bot.Config.Get<bool>("EnhanceEquipment")
-        );
+        ChooseItem(Bot.Config.Get<GearBoost>("RacialGearBoost"), Bot.Config.Get<bool>("EnhanceEquipment"));
 
         Core.SetOptions(false);
+    }
+
+    public void Choose()
+    {
+
     }
 
     public void ChooseItem(GearBoost gearBoost = GearBoost.dmgAll, bool EnhanceEquipment = true)
@@ -48,5 +54,5 @@ public class ChooseBestGear
         if (EnhanceEquipment)
             Adv.SmartEnhance(Bot.Player.CurrentClass.Name);
     }
-    
+
 }

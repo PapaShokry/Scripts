@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -45,7 +50,6 @@ public class ArmyTaintedGem
         Core.BankingBlackList.AddRange(Loot);
 
         Core.SetOptions();
-        bot.Options.RestPackets = false;
 
         TaintedGem();
 

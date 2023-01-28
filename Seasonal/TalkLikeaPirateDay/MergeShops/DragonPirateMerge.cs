@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -34,11 +39,11 @@ public class DragonPirateMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         DP.DragonPirate();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("dragonpirate", 2048, findIngredients);
+        Adv.StartBuyAllMerge("dragonpirate", 2048, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()
@@ -89,9 +94,9 @@ public class DragonPirateMerge
                     break;
 
                 case "Lightning Pirate":
-                Core.EquipClass(ClassType.Solo);
-                Core.HuntMonster("dragonpirate", "Scalebeard", req.Name);
-                break;
+                    Core.EquipClass(ClassType.Solo);
+                    Core.HuntMonster("dragonpirate", "Scalebeard", req.Name);
+                    break;
             }
         }
     }

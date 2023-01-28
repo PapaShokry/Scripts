@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -14,10 +19,15 @@ public class IcestormArenaXP
     {
         Core.SetOptions();
 
+        DoIcestormArenaXP();
+
+        Core.SetOptions(false);
+    }
+
+    public void DoIcestormArenaXP()
+    {
         Adv.BestGear(GearBoost.exp);
         //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Experience, true);
         Farm.IcestormArena();
-
-        Core.SetOptions(false);
     }
 }

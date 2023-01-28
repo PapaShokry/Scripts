@@ -1,3 +1,8 @@
+/*
+name:  Chaos Avenger Class
+description:  Gets the prerequisites for the Chaos avengers class besides the insignias.
+tags: chaos avenger, class, prerequisites
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreFarms.cs
@@ -99,7 +104,7 @@ public class ChaosAvengerClass
 
             //Vath's Chaotic Dragonlord Armor
             Core.KillVath("Vath's Chaotic Dragonlord Armor");
-            
+
             //Chaos Shogun Armor
             Core.HuntMonster("kitsune", "Kitsune", "Chaos Shogun Armor", isTemp: false, publicRoom: true);
 

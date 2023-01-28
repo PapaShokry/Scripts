@@ -1,3 +1,8 @@
+/*
+name: army blood moon tokens
+description: uses an army to farm blood moon tokens
+tags: blood moon tokens, army, seasonal, bloodmoon
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/Army/CoreArmyLite.cs
 using Skua.Core.Interfaces;
@@ -9,7 +14,7 @@ public class ArmyBloodMoonToken
     private CoreBots Core => CoreBots.Instance;
     private CoreArmyLite Army = new();
     private static CoreArmyLite sArmy = new();
-    
+
     public string OptionsStorage = "ArmyBloodMoonToken";
     public bool DontPreconfigure = true;
     public List<IOption> Options = new List<IOption>()
@@ -30,7 +35,6 @@ public class ArmyBloodMoonToken
         Core.BankingBlackList.AddRange(Loot);
 
         Core.SetOptions(disableClassSwap: true);
-        Bot.Options.RestPackets = false;
 
         Setup();
 

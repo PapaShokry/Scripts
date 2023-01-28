@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 using Skua.Core.Interfaces;
 
@@ -11,7 +16,6 @@ public class BadgeTemplate
         Core.SetOptions();
 
         Badge();
-
         Core.SetOptions(false);
     }
 

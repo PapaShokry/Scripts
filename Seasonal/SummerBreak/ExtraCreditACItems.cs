@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 using Skua.Core.Interfaces;
@@ -49,7 +54,7 @@ public class ExtraCreditAC
     {
         if (!Core.isSeasonalMapActive("extracredit"))
             return;
-            
+
         if (Core.CheckInventory(Dogear) && Core.CheckInventory(Bully) && Core.CheckInventory(Locker))
             return;
 

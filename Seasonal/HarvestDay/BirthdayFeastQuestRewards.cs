@@ -1,3 +1,8 @@
+/*
+name: Birthday Feast Rewards
+description: This will obtain all of the quest rewards of your quest choice.
+tags: birthday-feast-quest-rewards, seasonal, harvest-day
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Story/SepulchureSaga/CoreSepulchure.cs
@@ -30,6 +35,13 @@ public class BirthdayFeastQuestRewards
     {
         Core.SetOptions();
 
+        configure();
+
+        Core.SetOptions(false);
+    }
+
+    public void configure()
+    {
         if (Bot.Config.Get<bool>("ArlettesQuests"))
         {
             ArlettesQuests();
@@ -51,8 +63,6 @@ public class BirthdayFeastQuestRewards
             KotarosQuests();
             Core.ToBank(Core.EnsureLoad(8383).Rewards.ToString());
         }
-
-        Core.SetOptions(false);
     }
 
     int i = 0;

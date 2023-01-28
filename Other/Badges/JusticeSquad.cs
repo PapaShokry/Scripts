@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 using Skua.Core.Interfaces;
 
@@ -26,7 +31,7 @@ public class JusticeSquadBadge
         Core.Logger($"Doing a quest for the {badge}");
         Core.AddDrop("Enchanted Justice Blade");
         Core.EnsureAccept(5722);
-        Core.HuntMonster("battleontown", "Zard", "Quill Pen", isTemp:true, log:false);
+        Core.HuntMonster("battleontown", "Zard", "Quill Pen", isTemp: true, log: false);
         Core.EnsureComplete(5722);
 
 

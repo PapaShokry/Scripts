@@ -1,3 +1,8 @@
+/*
+name:  Death Knight Lord Daily
+description:  Death Knight Lord
+tags: daily, death knight lord, member, class
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

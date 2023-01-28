@@ -1,3 +1,8 @@
+/*
+name:  Unfinished Musical Score
+description:  Unfinished Musical Score
+tags: darkon, unfinished musical score
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs

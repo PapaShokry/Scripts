@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -17,20 +22,26 @@ public class CelestialArenaQuests
     {
         Core.SetOptions();
 
-        Bot.Options.LagKiller = false;
+        DoAll();
+
+        Core.SetOptions(false);
+    }
+
+    public void DoAll()
+    {
         Adv.GearStore();
         Arena1to10();
         Arena11to20();
         Arena21to29();
         Adv.GearStore(true);
 
-        Core.SetOptions(false);
     }
 
     public void Arena1to10()
     {
         if (Core.isCompletedBefore(6022))
             return;
+        Adv.BestGear(GearBoost.dmgAll);
         Core.EquipClass(ClassType.Solo);
         Story.KillQuest(6013, "CelestialArenaB", "Slork Construct");
         Story.KillQuest(6014, "CelestialArenaB", "Azkorath Construct");
@@ -48,6 +59,7 @@ public class CelestialArenaQuests
         if (Core.isCompletedBefore(6032))
             return;
 
+        Adv.BestGear(GearBoost.dmgAll);
         Core.EquipClass(ClassType.Solo);
         Story.KillQuest(6023, "CelestialArenaC", "Conquest Construct");
         Story.KillQuest(6024, "CelestialArenaC", "War Construct");
@@ -65,6 +77,7 @@ public class CelestialArenaQuests
         if (Core.isCompletedBefore(6042))
             return;
 
+        Adv.BestGear(GearBoost.dmgAll);
         Core.EquipClass(ClassType.Solo);
         Story.KillQuest(6033, "CelestialArenaD", "Queen of Hope");
         Story.KillQuest(6034, "CelestialArenaD", "Malxas Construct");

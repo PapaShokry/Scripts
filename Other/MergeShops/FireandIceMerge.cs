@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -33,11 +38,11 @@ public class FireandIceMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         DFO.DragonFableOriginsAll();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("drakonnan", 1596, findIngredients);
+        Adv.StartBuyAllMerge("drakonnan", 1596, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()
@@ -68,9 +73,9 @@ public class FireandIceMerge
                         Core.HuntMonster("drakonnan", "Fire Dragon", "Dragon Scale");
                         Core.HuntMonster("drakonnan", "Living Fire", "Ember of a Living Flame");
                         Core.HuntMonster("drakonnan", "Fire Elemental", "Fire Elemental's Gauntlet");
-                        Core.HuntMonster("drakonnan", "Living Lava", "Lava Rock");                     
+                        Core.HuntMonster("drakonnan", "Living Lava", "Lava Rock");
                     }
-                     Core.CancelRegisteredQuests();
+                    Core.CancelRegisteredQuests();
                     break;
 
                 case "Ice Katana":

@@ -1,3 +1,8 @@
+/*
+name:  Army Spirit Orbs
+description:  
+tags: army, spirit orb
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -20,6 +25,7 @@ public class ArmySpiritOrb
     public bool DontPreconfigure = true;
     public List<IOption> Options = new List<IOption>()
     {
+        new Option<int>("amount","Amount", "Input the amount of spirit orbs to farm", 65000),
         sArmy.player1,
         sArmy.player2,
         sArmy.player3,
@@ -27,7 +33,6 @@ public class ArmySpiritOrb
         sArmy.player5,
         sArmy.player6,
         sArmy.packetDelay,
-        new Option<int>("amount","Amount", "Input the amount of spirit orbs to farm", 65000),
         CoreBots.Instance.SkipOptions
     };
 
@@ -35,7 +40,6 @@ public class ArmySpiritOrb
     {
         Core.BankingBlackList.AddRange(Loot);
         Core.SetOptions();
-        bot.Options.RestPackets = false;
 
         Setup(Bot.Config.Get<int>("amount"));
 
@@ -49,13 +53,13 @@ public class ArmySpiritOrb
 
         Core.AddDrop(Loot);
         Core.EquipClass(ClassType.Farm);
-		Core.RegisterQuests(2082, 2083);
+        Core.RegisterQuests(2082, 2083);
         Core.Logger($"Farming for {quant} bone dust");
-		Army.SmartAggroMonStart("battleunderb", "Skeleton Warrior", "Skeleton Fighter", "Undead Champion");
+        Army.SmartAggroMonStart("battleunderb", "Skeleton Warrior", "Skeleton Fighter", "Undead Champion");
         while (!Bot.ShouldExit && !Core.CheckInventory("Spirit Orb", quant))
             Bot.Combat.Attack("*");
         Army.AggroMonStop(true);
-		Core.CancelRegisteredQuests();
+        Core.CancelRegisteredQuests();
     }
 
     private string[] Loot = { "Bone Dust", "Undead Essence", "Undead Energy", "Spirit Orb" };

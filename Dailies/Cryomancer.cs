@@ -1,3 +1,8 @@
+/*
+name:  Cryomancer Daily
+description:  Cryomancer
+tags: daily, cryomancer, class, seasonal
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 //cs_include Scripts/CoreStory.cs
@@ -16,9 +21,15 @@ public class Cryomancer
     {
         Core.SetOptions();
 
-        Glac.DoAll();
-        Daily.Cryomancer();
+        DoCryomancer();
 
         Core.SetOptions(false);
     }
+
+    public void DoCryomancer()
+    {
+        Glac.DoAll();
+        Daily.Cryomancer();
+    }
+
 }

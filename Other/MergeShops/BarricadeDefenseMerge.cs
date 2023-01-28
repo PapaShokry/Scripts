@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -26,7 +31,7 @@ public class BarricadeDefenseMerge
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(new[] { "Rift Defense Medal "});
+        Core.BankingBlackList.AddRange(new[] { "Rift Defense Medal " });
         Core.SetOptions();
 
         BuyAllMerge();
@@ -34,12 +39,12 @@ public class BarricadeDefenseMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         QOM.TheDestroyer();
 
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("greenguardeast", 1401, findIngredients);
+        Adv.StartBuyAllMerge("greenguardeast", 1401, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

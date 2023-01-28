@@ -1,3 +1,8 @@
+/*
+name: Aspiring Necromancer Merge
+description: This will get all or selected items on this merge shop.
+tags: aspiring-necromancer-merge, seasonal, aqw-anniversary
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -32,13 +37,13 @@ public class AspiringNecromancerMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         if (!Core.isSeasonalMapActive("birthday"))
             return;
 
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("battleontown", 1924, findIngredients);
+        Adv.StartBuyAllMerge("battleontown", 1924, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

@@ -1,3 +1,8 @@
+/*
+name: Harvest Story
+description: This will finish the Harvest storyline.
+tags: harvest-story, seasonal, harvest-day
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Seasonal/HarvestDay/CoreHarvestDay.cs

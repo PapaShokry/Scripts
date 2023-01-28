@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -14,10 +19,15 @@ public class DeathPitBrawlREP
     {
         Core.SetOptions();
 
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Reputation, false);
-        CoreToD.DeathPitPVP();
-        Farm.DeathPitBrawlREP();
+        DoRep();
 
         Core.SetOptions(false);
+    }
+
+    public void DoRep()
+    {
+        CoreToD.DeathPitPVP();
+        Farm.DeathPitBrawlREP();
+        
     }
 }

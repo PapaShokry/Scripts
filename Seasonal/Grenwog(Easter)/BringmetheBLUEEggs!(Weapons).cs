@@ -1,3 +1,8 @@
+/*
+name: Steampunk Weapons
+description: This will finish the Bring me the BLUE Eggs quest to obtain all of the steampunk weapons.
+tags: steampunk-weapons, bring-me-the-blue-eggs, seasonal, easter
+*/
 //cs_include Scripts/CoreBots.cs
 using Skua.Core.Interfaces;
 using Skua.Core.Models.Items;

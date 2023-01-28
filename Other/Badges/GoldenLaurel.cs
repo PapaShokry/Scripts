@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Story/QueenofMonsters/Extra/GoldenArena.cs
@@ -28,7 +33,7 @@ public class GoldenLaurel
 
         Core.Logger($"Doing Golden Arena story for {badge} badge");
         GA.StoryLine();
-        
+
     }
 
     private string badge = "Golden Laurel";

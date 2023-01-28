@@ -1,3 +1,8 @@
+/*
+name: Nightmare Harvest Merge
+description: This will get all or selected items on this merge shop.
+tags: nightmare-harvest-merge, seasonal, harvest-day
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -32,12 +37,12 @@ public class NightmareHarvestMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         if (!Core.isSeasonalMapActive("gothicdream"))
             return;
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("gothicdream", 1939, findIngredients);
+        Adv.StartBuyAllMerge("gothicdream", 1939, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

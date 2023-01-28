@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -11,11 +16,7 @@ public class GetQuests
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.SetOptions(true, true);
-
         GenerateQuestFiles();
-
-        Core.SetOptions(false);
     }
 
     private void GenerateQuestFiles()
@@ -24,7 +25,7 @@ public class GetQuests
             return;
 
         Core.Logger("Reading Quest.txt");
-        var v = JsonConvert.DeserializeObject<dynamic[]>(File.ReadAllText("Quests.txt"));
+        var v = JsonConvert.DeserializeObject<dynamic[]>(File.ReadAllText(Path.Combine(CoreBots.SkuaPath, "Quests.txt")));
 
         List<string> r = new();
         List<string> d = new();

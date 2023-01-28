@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -76,7 +81,7 @@ public class Concert
     {
         if (Core.isCompletedBefore(1035))
             return;
-        
+
         //Death Be Not Pround 1030
         Story.MapItemQuest(1030, "feardeath", 391);
 

@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -10,6 +15,14 @@ public class ExaltedApotheosisPreReqs
     public CoreBots Core => CoreBots.Instance;
     public CoreFarms Farm = new();
     public CoreAdvanced Adv = new();
+
+    private string[] Weps =
+    {
+        "Exalted Penultima", "Exalted Unity",
+        "Thaumaturgus Ultima", "Thaumaturgus Omega",
+        "Apostate Ultima", "Apostate Omega"
+    };
+
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
@@ -29,8 +42,11 @@ public class ExaltedApotheosisPreReqs
         // }
 
         /// No ultras required
-        if (!Core.CheckInventory("Apostate Alpha") && !Core.CheckInventory("Thaumaturgus Alpha"))
+        if (!Core.CheckInventory("Thaumaturgus Alpha") && !Core.CheckInventory("Apostate Alpha"))
         {
+            if (Core.CheckInventory(Weps))
+                return;
+
             Core.EquipClass(ClassType.Farm);
             Core.KillMonster("timeinn", "r3", "Top", "Energy Elemental", "Exalted Node", 300, isTemp: false);
             Core.EquipClass(ClassType.Solo);
@@ -47,7 +63,7 @@ public class ExaltedApotheosisPreReqs
             Core.Logger("Got all prerequisites! Kill the ultra bosses manually\n" +
             "for insignias next to complete Exalted Apotheosis.");
         }
-        
+
         // if (Core.CheckInventory("Ezrajal Insignia", 24) && Core.CheckInventory("Warden Insignia", 24) && Core.CheckInventory("Engineer Insignia", 16))
         // {
         //     Core.Logger($"{Bot.Inventory.GetQuantity("Ezrajal Insignia") / 24}");

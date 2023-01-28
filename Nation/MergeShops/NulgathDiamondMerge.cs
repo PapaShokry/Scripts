@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -39,10 +44,10 @@ public class NulgathDiamondMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("evilwarnul", 456, findIngredients);
+        Adv.StartBuyAllMerge("evilwarnul", 456, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()
@@ -147,7 +152,7 @@ public class NulgathDiamondMerge
                     Core.FarmingLogger($"{req.Name}", quant);
                     Core.EnsureAccept(584);
                     Nation.Supplies("Unidentified 26");
-                    Core.HuntMonster("evilmarsh", "Dark Makai", "Dark Makai Sigil", 1);
+                    Core.HuntMonster("evilmarsh", "Dark Makai", "Dark Makai Sigil");
                     Core.EnsureComplete(584);
                     Bot.Wait.ForPickup(req.Name);
                     break;

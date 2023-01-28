@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreFarms.cs
@@ -86,7 +91,7 @@ public class CoreSoW
             Bot.Options.AttackWithoutTarget = false;
             Core.EnsureComplete(6852);
             Bot.Wait.ForMapLoad("shadowwar"); //game will force you bac to shadowar-1 ._. so you're welcome.
-            Core.Join("whitemap-100000"); 
+            Core.Join("whitemap-100000");
         }
     }
 
@@ -105,7 +110,7 @@ public class CoreSoW
         Story.KillQuest(6857, "shadowlordkeep", "Shadow Gunner");
 
         //Build a Bomb (6858)
-        Story.KillQuest(6858, "shadowlordkeep", new[] { "Shadow Mage", "Shadow Gunner|Shadow Mage" });
+        Story.KillQuest(6858, "shadowlordkeep", new[] { "Shadow Mage", "Shadow Gunner" });
 
         //Light 'em Up! (6859)
         Story.MapItemQuest(6859, "shadowlordkeep", 6391);

@@ -1,3 +1,8 @@
+/*
+name:  Darkons First Errand
+description:  Darkons First Errand
+tags: darkon, errand, first
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs

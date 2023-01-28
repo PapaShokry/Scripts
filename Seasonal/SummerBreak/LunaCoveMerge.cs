@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -31,13 +36,13 @@ public class LunaCoveMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         if (!Core.isSeasonalMapActive("lunacove"))
             return;
-            
+
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("lunacove", 32, findIngredients);
+        Adv.StartBuyAllMerge("lunacove", 32, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

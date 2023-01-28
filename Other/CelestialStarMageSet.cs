@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Story/SepulchureSaga/CoreSepulchure.cs
@@ -14,7 +19,6 @@ public class CelestialStarMageSet
     {
         Core.SetOptions();
 
-        CoreSS.ShadowfallRise();
         GetSet();
 
         Core.SetOptions(false);
@@ -22,6 +26,7 @@ public class CelestialStarMageSet
 
     public void GetSet()
     {
+        CoreSS.ShadowfallRise();
         List<ItemBase> RewardOptions = Core.EnsureLoad(6592).Rewards;
 
         foreach (ItemBase item in RewardOptions)

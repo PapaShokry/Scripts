@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreDailies.cs
@@ -13,22 +18,31 @@ public class AssistingCragAndBamboozle
     public CoreDailies Daily = new();
     public CoreNation Nation = new();
 
+    string[] ACaBItems = {"Nulgath Larvae",
+                     "Sword of Nulgath", "Gem of Nulgath", "Tainted Gem", "Dark Crystal Shard", "Diamond of Nulgath",
+                     "Totem of Nulgath", "Blood Gem of the Archfiend", "Unidentified 19", "Elders' Blood", "Voucher of Nulgath", "Voucher of Nulgath (non-mem)"};
+
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(new[] {"Nulgath Larvae",
-                     "Sword of Nulgath", "Gem of Nulgath", "Tainted Gem", "Dark Crystal Shard", "Diamond of Nulgath",
-                     "Totem of Nulgath", "Blood Gem of the Archfiend", "Unidentified 19", "Elders' Blood", "Voucher of Nulgath", "Voucher of Nulgath (non-mem)"});
+        Core.BankingBlackList.AddRange(ACaBItems);
         Core.SetOptions();
 
-        AssistingCandB();
+        AssistingCandB(logSparrow: true);
 
         Core.SetOptions(false);
     }
 
-    public void AssistingCandB(string Reward = "any")
+    public void AssistingCandB(string Reward = "any", bool logSparrow = false)
     {
-        if (!Core.IsMember || !Core.CheckInventory(Nation.CragName) || (!Core.CheckInventory("Sparrow's Blood") && !Daily.CheckDaily(803, true, "Sparrow's Blood")))
+        if (!Core.IsMember || !Core.CheckInventory(Nation.CragName))
             return;
+
+        if (!Core.CheckInventory("Sparrow's Blood") && !Daily.CheckDaily(803, true, "Sparrow's Blood"))
+        {
+            if (logSparrow)
+                Core.Logger("This bot requiers you to have at least 1 Sparrow's Blood OR to have not done the Sparrow's Blood Daily yet");
+            return;
+        }
 
         if (!Core.CheckInventory("Tendurrr The Assistant"))
             Core.HuntMonster("tercessuinotlim", "Dark Makai", "Tendurrr The Assistant", 1, false);

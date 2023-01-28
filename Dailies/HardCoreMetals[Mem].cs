@@ -1,3 +1,8 @@
+/*
+name:  HardCore Metals Daily
+description:  HardCore Metals
+tags: daily, hardcore metals, member
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

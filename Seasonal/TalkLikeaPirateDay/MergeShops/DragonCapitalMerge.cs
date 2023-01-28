@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -35,11 +40,11 @@ public class DragonCapitalMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         DCS.DragonCapital();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("dragoncapital", 2053, findIngredients);
+        Adv.StartBuyAllMerge("dragoncapital", 2053, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

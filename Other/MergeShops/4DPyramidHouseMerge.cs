@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -26,7 +31,7 @@ public class FourDPyramidHouseShop
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(new[] { "Anti-Matter Gem "});
+        Core.BankingBlackList.AddRange(new[] { "Anti-Matter Gem " });
         Core.SetOptions();
 
         BuyAllMerge();
@@ -34,13 +39,13 @@ public class FourDPyramidHouseShop
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         TOD.FourthDimensionalPyramid();
         Farm.EternalREP();
 
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("fourdpyramid", 1276, findIngredients);
+        Adv.StartBuyAllMerge("fourdpyramid", 1276, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -44,7 +49,12 @@ public class MagicThief
         Story.MapItemQuest(1914, "twilightslums", 958);
 
         // 1915|Demented Deorysa
-        Story.KillQuest(1915, "palace", "Deorysa");
+        if(!Story.QuestProgression(1915))
+        {
+            Core.EnsureAccept(1915);
+            Core.HuntMonster("palace", "Deorysa", "Deorysa Slain", 15);
+            Core.EnsureComplete(1915);
+        }
 
         // 1916|Traitor Takedown
         Story.ChainQuest(1916);

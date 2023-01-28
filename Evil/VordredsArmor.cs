@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -54,15 +59,14 @@ public class VordredArmor
             if (!Core.CheckInventory("Screaming Might"))
             {
                 Core.HuntMonster("dagefortress", "Scorned Knight", "Dark Palace Token", 10, isTemp: false);
-                Core.BuyItem("dagefortress", 1144, "Screaming Might");
+                Adv.BuyItem("dagefortress", 1144, "Screaming Might");
             }
             Core.HuntMonster("graveyard", "Big Jack Sprat", "Bone Axe", isTemp: false);
             Core.HuntMonster("battleundera", "Angry Undead Giant", "Spine Gripper", isTemp: false);
             Core.HuntMonster("marsh", "Dreadspider", "Dread Staff", isTemp: false);
             Core.KillMonster("Odokuro", "Boss", "Left", "O-Dokuro", "O-dokuro Blade", isTemp: false);
             Farm.ArcangroveREP();
-            if (!Core.CheckInventory("Ancient Skull Blade"))
-                Core.BuyItem("arcangrove", 214, "Ancient Skull Blade");
+            Adv.BuyItem("arcangrove", 214, "Ancient Skull Blade");
             Farm.DoomWoodREP();
             Core.HuntMonster("dragonheart", "Avatar of Desolich", "Dracolich Destroyer Scythe", isTemp: false);
             Core.HuntMonster("dragonbone", "Gorgorath", "Boneblade of Gorgorath", isTemp: false);
@@ -74,7 +78,7 @@ public class VordredArmor
         {
             Core.EnsureAccept(8378);
             Farm.EvilREP();
-            Core.BuyItem("Shadowfall", 89, "Shadow Lich");
+            Adv.BuyItem("Shadowfall", 89, "Shadow Lich");
             Core.KillEscherion("Escherion's Robe");
             Core.HuntMonster("battleundera", "Bone Terror", "Undead Terror Armor", isTemp: false);
             Core.HuntMonster("necrocavern", "Shadow Dragon", "Skulls of the Necromancer", isTemp: false);
@@ -86,7 +90,7 @@ public class VordredArmor
                     Core.HuntMonster("evilwardage", "Bloodfiend", "Dage's Favor", 75, isTemp: false);
                 if (!Core.CheckInventory("Undead Warrior Bruiser"))
                     Core.HuntMonster("underworld", "Revontheus ", "Undead Warrior Bruiser", isTemp: false);
-                Core.BuyItem("evilwardage", 454, "Undead Warrior Executioner");
+                Adv.BuyItem("evilwardage", 454, "Undead Warrior Executioner");
             }
             Core.EnsureComplete(8378);
         }
@@ -108,9 +112,9 @@ public class VordredArmor
             Core.EnsureAccept(8380);
             Core.HuntMonster("epicvordred", "Ultra Vordred", "(Necro) Scroll of Dark Arts", 1, isTemp: false);
             Core.HuntMonster("lightguardwar", "Extreme Noxus", "Noxus Runes", isTemp: false);
-            Farm.Gold(20000000);
-            Core.BuyItem("necrotower", 282, "Sally's Necronomicon");
+            Adv.BuyItem("necrotower", 282, "Sally's Necronomicon");
             Core.EquipClass(ClassType.Farm);
+            Bot.Quests.UpdateQuest(2059);
             Core.KillMonster("necrodungeon", "r22", "Down", "*", "Ancient Evil of the Necropolis", isTemp: false);
             Core.EnsureComplete(8380);
         }
@@ -127,7 +131,7 @@ public class VordredArmor
             }
             if (!Core.CheckInventory("Vordred's Armor") && Bot.Quests.IsUnlocked(8381))
             {
-                Core.BuyItem("stonewood", 2063, "Vordred's Armor");
+                Adv.BuyItem("stonewood", 2063, "Vordred's Armor");
             }
             Core.HuntMonster("epicvordred", "Ultra Vordred", "Ultra Vordred Beat Up");
             Core.EnsureComplete(8381);

@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Story/VasalkarLairWar.cs
@@ -15,7 +20,6 @@ public class VoidBattleMageSet
     {
         Core.SetOptions();
 
-        War.Attack();
         GetSet();
 
         Core.SetOptions(false);
@@ -25,6 +29,8 @@ public class VoidBattleMageSet
 
     public void GetSet()
     {
+        War.Attack();
+        
         List<ItemBase> RewardOptions = Core.EnsureLoad(6694).Rewards;
 
         foreach (ItemBase item in RewardOptions)

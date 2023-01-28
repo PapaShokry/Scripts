@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -27,16 +32,16 @@ public class ShorinzanMerge
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
-        SF.StoryLine();
         BuyAllMerge();
 
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
+        SF.StoryLine();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("starfest", 2148, findIngredients);
+        Adv.StartBuyAllMerge("starfest", 2148, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

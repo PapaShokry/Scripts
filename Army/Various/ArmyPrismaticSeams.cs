@@ -1,3 +1,8 @@
+/*
+name:  Army Prismatic Seams
+description:  
+tags: army, prismatic seams
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreFarms.cs
@@ -18,7 +23,6 @@ public class ArmyPrimaticSeams
     public bool DontPreconfigure = true;
     public List<IOption> Options = new List<IOption>()
     {
-        CoreBots.Instance.SkipOptions,
         sArmy.player1,
         sArmy.player2,
         sArmy.player3,
@@ -26,21 +30,25 @@ public class ArmyPrimaticSeams
         sArmy.player5,
         sArmy.player6,
         sArmy.player7,
+        sArmy.packetDelay,
+        CoreBots.Instance.SkipOptions
     };
 
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
 
-        if (!Core.isCompletedBefore(8814))
-        {
-            SoW.CompleteCoreSoW();
-        }
-        
-        ArmyPS();
+        Dothething();
 
         Core.SetOptions(false);
     }
+
+    private void Dothething()
+    {
+        SoW.CompleteCoreSoW();
+        ArmyPS();
+    }
+
 
     public void ArmyPS()
         => Army.RunGeneratedAggroMon(map, monNames, questIDs, classtype, drops);

@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 using Skua.Core.Interfaces;
@@ -27,8 +32,8 @@ public class UnderWorldPirateCasterQuset
 
         string[] Rewards = (Core.EnsureLoad(7086).Rewards.Select(i => i.Name).ToArray());
         Core.AddDrop(Rewards);
-      
-        while(!Bot.ShouldExit && !Core.CheckInventory(Rewards, toInv: false))
+
+        while (!Bot.ShouldExit && !Core.CheckInventory(Rewards, toInv: false))
         {
             //Underworld Pirate Caster’s Pet Chest 7086
             Core.EnsureAccept(7086);

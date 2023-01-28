@@ -1,3 +1,8 @@
+/*
+name:  Grumble Grumble Daily
+description:  Grumble Grumble
+tags: daily, grumble grumble
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

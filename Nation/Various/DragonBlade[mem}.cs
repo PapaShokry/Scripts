@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/Nation/CoreNation.cs
@@ -73,7 +78,7 @@ public class DragonBladeofNulgath
             Farm.BludrutBrawlBoss(quant: 50);
             Core.BuyItem("battleon", 222, "Steel Afterlife");
         }
-        Farm.BludrutBrawlBoss();
+        Farm.BludrutBrawlBoss(quant: 500);
         Core.BuyItem("battleon", 222, $"Behemoth Blade of {blade}");
     }
 }

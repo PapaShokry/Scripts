@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -33,10 +38,10 @@ public class FirePlaneWarMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("fireplanewar", 2006, findIngredients);
+        Adv.StartBuyAllMerge("fireplanewar", 2006, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()
@@ -62,74 +67,74 @@ public class FirePlaneWarMerge
                     Core.FarmingLogger($"{req.Name}", quant);
                     Core.EquipClass(ClassType.Farm);
                     Core.RegisterQuests(8125, 8126);
-                    while (!Bot.ShouldExit && !Core.CheckInventory(req.Name, quant))
+                    while (!Bot.ShouldExit && !Core.CheckInventory(req.ID, quant))
                     {
-                        Core.KillMonster("fireplanewar", "r5", "Right", "*", "War Medal", 5);
-                        Bot.Wait.ForPickup(req.Name);
+                        Core.KillMonster("fireplanewar", "r5", "Right", "*", "War Medal", 5, log: false);
+                        Core.KillMonster("fireplanewar", "r5", "Right", "*", "Mega War Medal", 3, log: false);
+                        Bot.Wait.ForPickup(req.ID);
                     }
                     Core.CancelRegisteredQuests();
                     break;
 
                 case "Burnt Cinders":
                     Core.FarmingLogger($"{req.Name}", quant);
-                    Core.EquipClass(ClassType.Farm);
-                    SoW.Tyndarius();
+                    Core.EquipClass(ClassType.Solo);
                     Core.RegisterQuests(8131);
-                    while (!Bot.ShouldExit && !Core.CheckInventory(req.Name, quant))
+                    while (!Bot.ShouldExit && !Core.CheckInventory(req.ID, quant))
                     {
-                        Core.HuntMonster("fireplanewar", "ShadowClaw", "ShadowClaw Defeated", quant);
-                        Bot.Wait.ForPickup(req.Name);
+                        Core.HuntMonster("fireplanewar", "ShadowClaw", "ShadowClaw Defeated", log: false);
+                        Bot.Wait.ForPickup(req.ID);
                     }
                     Core.CancelRegisteredQuests();
                     break;
 
                 case "Seared Ashes":
                     Core.FarmingLogger($"{req.Name}", quant);
-                    Core.EquipClass(ClassType.Farm);
-                    while (!Bot.ShouldExit && !Core.CheckInventory(req.Name, quant))
+                    Core.EquipClass(ClassType.Solo);
+                    while (!Bot.ShouldExit && !Core.CheckInventory(req.ID, quant))
                     {
-                        Core.HuntMonster("fireplanewar", "ShadowFlame Phedra", req.Name, quant);
-                        Bot.Wait.ForPickup(req.Name);
+                        Core.HuntMonster("fireplanewar", "ShadowFlame Phedra", req.Name, quant, log: false);
+                        Bot.Wait.ForPickup(req.ID);
                     }
                     break;
 
                 case "ShadowFlame Flamberge":
                     Core.FarmingLogger($"{req.Name}", quant);
                     Core.EquipClass(ClassType.Farm);
-                    while (!Bot.ShouldExit && !Core.CheckInventory(req.Name, quant))
+                    while (!Bot.ShouldExit && !Core.CheckInventory(req.ID, quant))
                     {
                         Core.BuyItem("fireplanewar", 2007, req.Name, quant);
-                        Bot.Wait.ForPickup(req.Name);
+                        Bot.Wait.ForPickup(req.ID);
                     }
                     break;
 
                 case "Refulgent Flamberge":
                     Core.FarmingLogger($"{req.Name}", quant);
                     Core.EquipClass(ClassType.Farm);
-                    while (!Bot.ShouldExit && !Core.CheckInventory(req.Name, quant))
+                    while (!Bot.ShouldExit && !Core.CheckInventory(req.ID, quant))
                     {
-                        Core.HuntMonster("fireplanewar", "Shadowflame Soldier", req.Name, quant);
-                        Bot.Wait.ForPickup(req.Name);
+                        Core.HuntMonster("fireplanewar", "Shadowflame Soldier", req.Name, quant, log: false);
+                        Bot.Wait.ForPickup(req.ID);
                     }
                     break;
 
                 case "ShadowFlame Great Harp":
                     Core.FarmingLogger($"{req.Name}", quant);
                     Core.EquipClass(ClassType.Farm);
-                    while (!Bot.ShouldExit && !Core.CheckInventory(req.Name, quant))
+                    while (!Bot.ShouldExit && !Core.CheckInventory(req.ID, quant))
                     {
                         Core.BuyItem("fireplanewar", 2007, req.Name, quant);
-                        Bot.Wait.ForPickup(req.Name);
+                        Bot.Wait.ForPickup(req.ID);
                     }
                     break;
 
                 case "Vulcan Great Harp":
                     Core.FarmingLogger($"{req.Name}", quant);
                     Core.EquipClass(ClassType.Farm);
-                    while (!Bot.ShouldExit && !Core.CheckInventory(req.Name, quant))
+                    while (!Bot.ShouldExit && !Core.CheckInventory(req.ID, quant))
                     {
-                        Core.HuntMonster("fireplanewar", "Shadefire Onslaught", req.Name, quant);
-                        Bot.Wait.ForPickup(req.Name);
+                        Core.HuntMonster("fireplanewar", "Shadefire Onslaught", req.Name, quant, log: false);
+                        Bot.Wait.ForPickup(req.ID);
                     }
                     break;
             }

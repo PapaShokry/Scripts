@@ -1,3 +1,8 @@
+/*
+name:  Wheel of Doom Daily
+description:  Wheel of Doom
+tags: daily, wheel of doom
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

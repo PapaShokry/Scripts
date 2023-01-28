@@ -1,3 +1,8 @@
+/*
+name:  Sparrows Blood Daily
+description:  Sparrows Blood
+tags: daily, sparrows blood, void highlord, VHL, nulgath, elders blood
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

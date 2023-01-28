@@ -1,4 +1,9 @@
-﻿//cs_include Scripts/CoreBots.cs
+/*
+name: null
+description: null
+tags: null
+*/
+//cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -19,6 +24,14 @@ public class GetAllRanks
     {
         Core.SetOptions();
 
+        DoGetAllRanks();
+
+        Core.SetOptions(false);
+    }
+
+
+    public void DoGetAllRanks()
+    {
         TOD.FourthDimensionalPyramid();
         TOD.BaconCatFortress();
         TOD.LaserSharkInvasion();
@@ -26,10 +39,7 @@ public class GetAllRanks
         LOC.Kimberly();
         LOC.Lionfang();
 
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Reputation, true);
-
         Farm.GetAllRanks();
 
-        Core.SetOptions(false);
     }
 }

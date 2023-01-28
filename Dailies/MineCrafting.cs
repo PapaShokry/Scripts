@@ -1,3 +1,8 @@
+/*
+name:  Mine Crafting Daily
+description:  Mine Crafting
+tags: daily, mine crafting, metal
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 //cs_include Scripts/CoreFarms.cs
@@ -22,9 +27,14 @@ public class MineCrafting
     {
         Core.SetOptions();
 
-        BLOD.UnlockMineCrafting();
-        Daily.MineCrafting(new[] { Bot.Config!.Get<MineCraftingMetalsEnum>("metals").ToString() }, 10, false);
+        DoMinecrafting();
 
         Core.SetOptions(false);
+    }
+
+    public void DoMinecrafting()
+    {
+        BLOD.UnlockMineCrafting();
+        Daily.MineCrafting(new[] { Bot.Config!.Get<MineCraftingMetalsEnum>("metals").ToString() }, 10, false);
     }
 }

@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -24,19 +29,15 @@ public class SpoilsofLightMerge
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(
-            new[]
-            {
-                "Apprentice of the Light",
-                "Medal of Light",
-                "Furred Ruff of the Light",
-                "Apprentice of the Light Hair",
-                "Apprentice of the Light Locks",
-                "Medal of Honor",
-                "Citadel's Light Blade",
-                "Medal of Justice "
-            }
-        );
+        Core.BankingBlackList.AddRange(new[] {
+            "Apprentice of the Light",
+            "Medal of Light",
+            "Furred Ruff of the Light",
+            "Apprentice of the Light Hair",
+            "Apprentice of the Light Locks",
+            "Medal of Honor",
+            "Citadel's Light Blade",
+            "Medal of Justice "});
         Core.SetOptions();
 
         BuyAllMerge();
@@ -44,10 +45,10 @@ public class SpoilsofLightMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("lightguardwar", 1643, findIngredients);
+        Adv.StartBuyAllMerge("lightguardwar", 1643, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()
@@ -97,7 +98,7 @@ public class SpoilsofLightMerge
                     }
                     Core.CancelRegisteredQuests();
                     break;
-                   
+
                 case "Medal of Honor":
                     Core.FarmingLogger(req.Name, quant);
                     Core.EquipClass(ClassType.Farm);

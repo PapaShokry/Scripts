@@ -1,5 +1,11 @@
+/*
+name: Frostvale All Stories
+description: This will finish the entire frostvale storylines.
+tags: frostvale-story, seasonal, frostvale
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
+//cs_include Scripts/Story/Glacera.cs
 using Skua.Core.Interfaces;
 
 public class Frostvale
@@ -7,7 +13,7 @@ public class Frostvale
     public CoreBots Core => CoreBots.Instance;
     public IScriptInterface Bot => IScriptInterface.Instance;
     public CoreStory Story = new CoreStory();
-
+    public GlaceraStory GlaceraStory = new();
     public void ScriptMain(IScriptInterface Bot)
     {
         Core.SetOptions();
@@ -43,6 +49,9 @@ public class Frostvale
         Icepike();
         FrostvalPastPresentandFuture();
         Snowview();
+        SnowviewRace();
+        DeerHunt();
+        BowJangles();
     }
 
     public void IceCave()
@@ -604,11 +613,15 @@ public class Frostvale
 
         Story.PreLoad(this);
 
-        // Monster Gems 7856
-        Story.KillQuest(7856, "winterhorror", "Chillybones");
-
-        // Mega Monster Gems 7857
-        Story.KillQuest(7857, "winterhorror", "FrostBite");
+        // Monster Gems  7856 && Mega Monster Gems 7857
+        if (!Bot.Quests.IsUnlocked(7858))
+        {
+            Core.EnsureAccept(7856, 7857);
+            Core.KillMonster("winterhorror", "Enter", "Spawn", "*", "Monster Gem", 5);
+            Core.EnsureComplete(7856);
+            Core.KillMonster("winterhorror", "Enter", "Spawn", "*", "Mega Monster Gem", 3);
+            Core.EnsureComplete(7857);
+        }
 
         // Oh Heck! 7858
         Story.KillQuest(7858, "winterhorror", "Arthur and Elise");
@@ -628,6 +641,12 @@ public class Frostvale
 
     public void Cryostorm()
     {
+        if (!Bot.Quests.IsUnlocked(4705))
+        {
+            Core.Logger("Quests are locked. Running Glacera Script.");
+            GlaceraStory.DoAll();
+        }
+
         if (Core.isCompletedBefore(4716) || !Core.isSeasonalMapActive("cryostorm"))
             return;
 
@@ -773,7 +792,7 @@ public class Frostvale
 
     public void FrostvalPastPresentandFuture()
     {
-        if (Core.isCompletedBefore(6651) || Core.isSeasonalMapActive("frostvalperil"))
+        if (Core.isCompletedBefore(6651) || !Core.isSeasonalMapActive("frostvalperil"))
             return;
 
         Story.PreLoad(this);
@@ -862,10 +881,131 @@ public class Frostvale
         Story.KillQuest(9014, "snowview", "Tundra Steed");
         Story.MapItemQuest(9014, "snowview", 10995);
 
-        //Intrudere From the Stars (9015)
+        //Intruder From the Stars (9015)
         Story.KillQuest(9015, "snowview", "Vaderix");
     }
 
+    public void SnowviewRace()
+    {
+        if (Core.isCompletedBefore(9026) || !Core.isSeasonalMapActive("snowviewrace"))
+            return;
+
+        Story.PreLoad(this);
+
+        //Encroaching Frost (9017)
+        Story.KillQuest(9017, "snowviewrace", "Mountain Owl");
+        Story.MapItemQuest(9017, "snowviewrace", 11010);
+
+        //Horse Vision (9018)
+        Story.KillQuest(9018, "snowviewrace", "Tundra Steed");
+
+        //Frigid Mirage (9019)
+        Story.MapItemQuest(9019, "snowviewrace", new[] { 11011, 11012, 11013 });
+
+        //Hiding Cavities (9020)
+        Story.KillQuest(9020, "snowviewrace", new[] { "Mountain Owl", "Tundra Steed" });
+        Story.MapItemQuest(9020, "snowviewrace", 11014);
+
+        //Cosmic Interference (9021)
+        Story.KillQuest(9021, "snowviewrace", "Juvenile Vaderix");
+        Story.MapItemQuest(9021, "snowviewrace", 11015);
+
+        //Cold Resistance (9022)
+        Story.KillQuest(9022, "snowviewrace", "Juvenile Vaderix");
+
+        //Bandits of Summer (9023)
+        Story.MapItemQuest(9023, "snowviewrace", 11016);
+        Story.KillQuest(9023, "snowviewrace", "Bandit");
+
+        //Avalanche of Wings and Feelers (9024)
+        Story.KillQuest(9024, "snowviewrace", new[] { "Bandit", "Juvenile Vaderix" });
+
+        //Bargain Bin Bounty (9025)
+        Story.KillQuest(9025, "snowviewrace", "Bandit Fletcher");
+
+        //Vaderix Requiem (9026)
+        Story.KillQuest(9026, "snowviewrace", "Aurora Vaderix");
+    }
+    public void DeerHunt()
+    {
+        if (Bot.Quests.IsUnlocked(8433) || !Core.isSeasonalMapActive("deerhunt"))
+            return;
+
+        Story.PreLoad(this);
+
+        // 8423 Scout the Area,
+        Story.KillQuest(8423, "deerhunt", "Deer?");
+        Story.MapItemQuest(8423, "deerhunt", 9372);
+
+        // 8424 Deer?
+        Story.KillQuest(8424, "deerhunt", "Deer?");
+
+        // 8425 Comparing Claws
+        Story.KillQuest(8425, "deerhunt", new[] { "Scared Wolf", "Frightened Owl" });
+        Story.MapItemQuest(8425, "deerhunt", 9373, 4);
+
+        // 8426 Lair Investigated
+        Story.MapItemQuest(8426, "deerhunt", new[] { 9374, 9375 });
+
+        // 8427 Fight or Flight or Freeze
+        Story.KillQuest(8427, "deerhunt", "Frightened Owl");
+
+        // 8428 Not Deer Hunting
+        Story.KillQuest(8428, "deerhunt", "Deer?");
+
+        // 8429 Monstrous Tracks
+        Story.MapItemQuest(8429, "deerhunt", 9376, 6);
+
+        // 8430  Final Blessing
+        Story.KillQuest(8430, "deerhunt", new[] { "Deer?", "Scared Wolf", "Frightened Owl" });
+
+        // 8431 The Zweinichthirsch
+        Story.KillQuest(8431, "deerhunt", "Zweinichthirsch");
+
+        // 8432 Cries Investigated 
+        Story.MapItemQuest(8432, "deerhunt", 9377);
+
+    }
+
+    public void BowJangles()
+    {
+        if (Core.isCompletedBefore(7828) || !Core.isSeasonalMapActive("frostvale"))
+            return;
+
+        Story.PreLoad(this);
+        Core.EquipClass(ClassType.Solo);
+
+        //Beauty Comes At a Price (7819)
+        Story.KillQuest(7819, "towerofmirrors", "Scarletta");
+
+        //Bloody Skulls (7820)
+        Story.KillQuest(7820, "epicvordred", "Ultra Vordred");
+        
+        //Making The World a Cleaner Place (7821)
+        Story.KillQuest(7821, "palace", "Misery Eel");
+
+        //Big and Deadly (7822)
+        Bot.Quests.UpdateQuest(4361);
+        Story.KillQuest(7822, "treetitanbattle", "Dakka the Dire Dragon");
+
+        //A Hunting We Will Go (7823)
+        Story.KillQuest(7823, "darkoviaforest", "Lich Of The Stone");
+
+        //Returning to Oblivion (7824)
+        Story.KillQuest(7824, "underworld", new[] { "Dreadfiend of Nulgath", "Infernalfiend", "Bloodfiend" });
+
+        //Both Sides are Guilty (7825)
+        Story.KillQuest(7825, "judgement", new[] { "Aeacus", "Minos", "Rhadamanthys" });
+
+        //Bait and Switch (7826)
+        Story.KillQuest(7826, "doomvault", "Princess Angler");
+
+        //What Chaos Touches, We Destroy (7827)
+        Story.KillQuest(7827, "orecavern", "Naga Baas");
+
+        //A Finale to Remember (7828)
+        Story.KillQuest(7828, "stormtemple", "Chaos Lord Lionfang");
+    }
 
 
     // --------------------------------------------------------------------------------------------------------------------------

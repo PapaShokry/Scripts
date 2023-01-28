@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -27,16 +32,16 @@ public class OrbHuntMerge
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
-        OH.OrbHuntSaga();
         BuyAllMerge();
 
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
+        OH.OrbHuntSaga();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("orbhunt", 2060, findIngredients);
+        Adv.StartBuyAllMerge("orbhunt", 2060, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

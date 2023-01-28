@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreDailies.cs
@@ -11,15 +16,27 @@ public class UnlockMineCrafting_ArtixQuests
     public CoreBots Core => CoreBots.Instance;
     public CoreBLOD BLOD = new CoreBLOD();
     public CoreStory Story = new CoreStory();
+
+    string[] MineCaftingItems = {"BLinding Light of Destiny Handle", "Bonegrinder Medal",
+                     "Bone Dust", "Undead Essence", "Undead Energy",
+                     "Spirit Orb", "Loyal Spirit Orb"};
+
     public void ScriptMain(IScriptInterface bot)
     {
+        Core.BankingBlackList.AddRange(MineCaftingItems);
         Core.SetOptions();
-        Core.AddDrop("BLinding Light of Destiny Handle", "Bonegrinder Medal",
-                     "Bone Dust", "Undead Essence", "Undead Energy",
-                     "Spirit Orb", "Loyal Spirit Orb");
+
+        DoUnlockMineCrafting_ArtixQuests();
+
+        Core.SetOptions(false);
+    }
+
+    public void DoUnlockMineCrafting_ArtixQuests()
+    {
+        Core.AddDrop(MineCaftingItems);
 
         BLOD.UnlockMineCrafting();
 
-        Core.SetOptions(false);
+        Core.ToBank(MineCaftingItems);
     }
 }

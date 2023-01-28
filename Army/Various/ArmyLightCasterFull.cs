@@ -1,3 +1,8 @@
+/*
+name:  Army Light Caster
+description:  
+tags: army, lightcaster, lightmage, class, 0file, doall
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -48,11 +53,8 @@ public class ArmyLightCaster
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(new[]
-        {"Aranx's Pure Light, Lightcaster, Lightmage, Burning Blade, Burning Blade of Abezeth, Guardian of Spirits' Blade, Lance of Time, Avatar Of Death's Scythe"});
-
+        Core.BankingBlackList.AddRange(new[] { "Aranx's Pure Light, Lightcaster, Lightmage, Burning Blade, Burning Blade of Abezeth, Guardian of Spirits' Blade, Lance of Time, Avatar Of Death's Scythe" });
         Core.SetOptions();
-        bot.Options.RestPackets = false;
 
         LightCaster();
 
@@ -62,9 +64,9 @@ public class ArmyLightCaster
     public void LightCaster()
     {
         Core.EquipClass(ClassType.Farm);
-        Core.AddDrop(38153,31058,30266,31019,31028);
+        Core.AddDrop(38153, 31058, 30266, 31019, 31028);
 
-        while (!Bot.ShouldExit && !Core.CheckInventory(new[] {38153, 31058}))
+        while (!Bot.ShouldExit && !Core.CheckInventory(new[] { 38153, 31058 }))
         {
             Core.EnsureAccept(4510);
             Core.EnsureAccept(4511);
@@ -107,7 +109,7 @@ public class ArmyLightCaster
         Core.Join(map);
         WaitCheck();
         Core.EnsureAccept(questID);
-        
+
         foreach (string monster in monsters)
             Army.SmartAggroMonStart(map, monsters);
 

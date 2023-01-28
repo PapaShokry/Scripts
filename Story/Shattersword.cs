@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -21,7 +26,7 @@ public class Shattersword
     {
         if (Core.isCompletedBefore(2690))
             return;
-        
+
         if (!Core.IsMember)
         {
             Core.Logger("Shattersword is a member-only storyline.");

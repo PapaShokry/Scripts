@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -62,8 +67,9 @@ public class FiendPast
         //Defeat Baelgar 8489
         if (!Story.QuestProgression(8489))
         {
+            Bot.Map.Reload();
             Core.EnsureAccept(8489);
-            Core.HuntMonster("fiendpast", "Baelgar", "Baelgar Defeated");
+            Core.KillMonster("fiendpast", "r11", "Left", "Baelgar", "Baelgar Defeated");
             Core.EnsureComplete(8489);
         }
 

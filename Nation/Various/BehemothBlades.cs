@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/Nation/CoreNation.cs
@@ -26,6 +31,13 @@ public class BehemothBlade
         Core.BankingBlackList.AddRange(new[] { "", "Combat Trophy", "Basic War Sword", "Behemoth Blade of Shadow", "Behemoth Blade of Light" });
         Core.SetOptions();
 
+        Blades();
+
+        Core.SetOptions(false);
+    }
+
+    public void Blades()
+    {
         if (Bot.Config.Get<Blade>("BladeChoice") == Blade.Both)
         {
             BehemothBladeof("Shadow");
@@ -34,7 +46,6 @@ public class BehemothBlade
 
         else BehemothBladeof("$Bot.Config.Get<Blade>(\"BladeChoice\").ToString()");
 
-        Core.SetOptions(false);
     }
 
     public void BehemothBladeof(string blade)
@@ -55,7 +66,7 @@ public class BehemothBlade
             Farm.BludrutBrawlBoss(quant: 50);
             Core.BuyItem("battleon", 222, "Steel Afterlife");
         }
-        Farm.BludrutBrawlBoss();
+        Farm.BludrutBrawlBoss(quant: 500);
         Core.BuyItem("battleon", 222, $"Behemoth Blade of {Bot.Config.Get<Blade>("BladeChoice").ToString()}");
     }
 

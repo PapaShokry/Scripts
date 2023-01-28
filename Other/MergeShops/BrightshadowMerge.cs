@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -34,11 +39,11 @@ public class BrightshadowMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         SoC.BrightShadow();
         SoC.BrightChaos();
-        Adv.StartBuyAllMerge("brightshadow", 1921, findIngredients);
+        Adv.StartBuyAllMerge("brightshadow", 1921, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -137,7 +142,7 @@ public class Core7DD
             return;
 
         Core.Logger("Hunting the Ice Dragon of Greed!");
-            
+
         Story.PreLoad(this);
 
         // Looting is for Sneevils 5934
@@ -382,7 +387,7 @@ public class Core7DD
         Story.KillQuest(6003, "Maloth", "Golgar");
 
         // Hand over the Entry Code 6004
-        Story.KillQuest(6004, "Maloth", new[] { "Castle Guard", "Scroll Keeper", "Nervous Serf", "Locked Chest", "Golgar" });
+        Story.KillQuest(6004, "Maloth", new[] { "Golgar", "Castle Guard", "Scroll Keeper", "Nervous Serf", "Locked Chest" });
 
         // Confront the Dragon King 6005
         Story.KillQuest(6005, "Maloth", "Maloth");

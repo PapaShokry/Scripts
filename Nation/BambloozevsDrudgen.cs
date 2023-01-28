@@ -1,4 +1,9 @@
-﻿//cs_include Scripts/CoreBots.cs
+/*
+name: null
+description: null
+tags: null
+*/
+//cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/Nation/CoreNation.cs
 using Skua.Core.Interfaces;
@@ -23,18 +28,19 @@ public class BambloozevsDrudgen
     {
         Core.AddDrop(Nation.bagDrops);
 
-        Nation.BambloozevsDrudgen("Diamond of Nulgath", 1000);
-        if (Core.CheckInventory("Drudgen the Assistant"))
+        if (!Core.CheckInventory("Drudgen the Assistant"))
         {
-            while (!Bot.ShouldExit && !Core.CheckInventory("Tainted Gem", 1000))
-                Nation.ContractExchange(ChooseReward.TaintedGem);
-            while (!Bot.ShouldExit && !Core.CheckInventory("Dark Crystal Shard", 1000))
-                Nation.ContractExchange(ChooseReward.DarkCrystalShard);
-            while (!Bot.ShouldExit && !Core.CheckInventory("Gem of Nulgath", 300))
-                Nation.ContractExchange(ChooseReward.GemofNulgath);
-            while (!Bot.ShouldExit && !Core.CheckInventory("Blood Gem of the Archfiend", 100))
-                Nation.ContractExchange(ChooseReward.BloodGemoftheArchfiend);
+            Core.Logger("Missing: Drudgen the Assistant pet.", stopBot: true);
         }
-        Nation.BambloozevsDrudgen("Diamond of Nulgath", 1000);
+
+        while (!Bot.ShouldExit && !Core.CheckInventory("Tainted Gem", 1000))
+            Nation.ContractExchange(ChooseReward.TaintedGem);
+        while (!Bot.ShouldExit && !Core.CheckInventory("Dark Crystal Shard", 1000))
+            Nation.ContractExchange(ChooseReward.DarkCrystalShard);
+        while (!Bot.ShouldExit && !Core.CheckInventory("Gem of Nulgath", 300))
+            Nation.ContractExchange(ChooseReward.GemofNulgath);
+        while (!Bot.ShouldExit && !Core.CheckInventory("Blood Gem of the Archfiend", 100))
+            Nation.ContractExchange(ChooseReward.BloodGemoftheArchfiend);
+
     }
 }

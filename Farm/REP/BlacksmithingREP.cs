@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -26,9 +31,6 @@ public class BlacksmithingREP
     {
         Core.SetOptions();
 
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Reputation, false);
-
-        Adv.BestGear(GearBoost.rep);
         Farm.BlacksmithingREP(10, Bot.Config.Get<bool>("UseGold"), Bot.Config.Get<bool>("CanSolo"));
 
         Core.SetOptions(false);

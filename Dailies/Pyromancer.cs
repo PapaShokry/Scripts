@@ -1,3 +1,8 @@
+/*
+name:  Pyromancer Daily
+description:  Pyromancer
+tags: daily, insertthinghere, class
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

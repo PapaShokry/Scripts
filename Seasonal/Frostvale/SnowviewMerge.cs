@@ -1,6 +1,12 @@
+/*
+name: Snowview Merge
+description: This will get all or selected items on this merge shop.
+tags: snowview-merge, seasonal, frostvale
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
+//cs_include Scripts/Story/Glacera.cs
 //cs_include Scripts/Seasonal\Frostvale\Frostvale.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -25,7 +31,7 @@ public class SnowviewMerge
 
     public void ScriptMain(IScriptInterface Bot)
     {
-        Core.BankingBlackList.AddRange(new[] { "Fire Starting Kit "});
+        Core.BankingBlackList.AddRange(new[] { "Fire Starting Kit " });
         Core.SetOptions();
 
         BuyAllMerge();
@@ -33,12 +39,12 @@ public class SnowviewMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         Frostvale.Snowview();
-        
+
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("snowview", 2195, findIngredients);
+        Adv.StartBuyAllMerge("snowview", 2195, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

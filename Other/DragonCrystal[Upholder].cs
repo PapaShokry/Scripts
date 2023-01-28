@@ -1,6 +1,11 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
-//cs_include Scripts/Story/DragonRoad[Upholader].cs
+//cs_include Scripts/Story/DragonRoad[Upholder].cs
 using Skua.Core.Interfaces;
 
 public class DragonCristal
@@ -22,7 +27,7 @@ public class DragonCristal
     public void Quantity(int quant = 5000)
     {
         DragonRoad.StoryLine();
-        
+
         Core.RegisterQuests(4549);
         while (!Bot.ShouldExit && !Core.CheckInventory("Dragon Crystal", quant))
         {

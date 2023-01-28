@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Seasonal/TalkLikeaPirateDay/DragonPirateStory.cs
@@ -23,7 +28,7 @@ public class DragonCapitalStory
     {
         if (!Core.isSeasonalMapActive("dragoncapital"))
             return;
-            
+
         if (Core.isCompletedBefore(8287))
             return;
 

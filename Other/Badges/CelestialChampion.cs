@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -32,7 +37,7 @@ public class CelestialArenaChampion
         CA.Arena1to10();
         CA.Arena11to20();
         CA.Arena21to29();
-        
+
     }
 
     private string badge = "Celestial Champion";

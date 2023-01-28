@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -75,13 +80,14 @@ public class CoreVHL
         {
             Core.EnsureAccept(5660);
 
+            if (!Core.CheckInventory("Elders' Blood", ((quant - CurrentRoent) > 5 ? 5 : (quant - CurrentRoent))))
+                Daily.EldersBlood();
+            _SparrowMethod(((quant - CurrentRoent) > 5 ? 5 : (quant - CurrentRoent)));
+
             Nation.FarmVoucher(false);
             Farm.BlackKnightOrb();
-            if (!Core.CheckInventory("Nulgath Shaped Chocolate"))
-            {
-                Farm.Gold(2000000);
-                Core.BuyItem("citadel", 44, 38316);
-            }
+            Adv.BuyItem("citadel", 44, 38316);
+
             Core.BuyItem("yulgar", 16, "Aelita's Emerald");
             Nation.FarmUni13(1);
             Nation.FarmGemofNulgath(20);
@@ -89,10 +95,6 @@ public class CoreVHL
             Nation.EssenceofNulgath(50);
             Nation.SwindleBulk(100);
             Nation.ApprovalAndFavor(300, 300);
-
-            if (!Core.CheckInventory("Elders' Blood", ((quant - CurrentRoent) > 5 ? 5 : (quant - CurrentRoent))))
-                Daily.EldersBlood();
-            _SparrowMethod(((quant - CurrentRoent) > 5 ? 5 : (quant - CurrentRoent)));
 
             if (!Core.CheckInventory("Elders' Blood"))
                 Core.Logger($"Not enough \"Elders' Blood\", please do the daily {2 - Bot.Inventory.GetQuantity("Elders' Blood")} more times (not today)", messageBox: true, stopBot: true);
@@ -113,6 +115,10 @@ public class CoreVHL
         Core.Logger("Obtaining Void Crystal A & Void Crystal B");
         Core.AddDrop(Nation.bagDrops);
 
+        if (!Core.CheckInventory("Elders' Blood", 2))
+            Daily.EldersBlood();
+        _SparrowMethod(2);
+
         Nation.FarmUni13(1);
         Nation.FarmUni10(200);
         Nation.FarmGemofNulgath(150);
@@ -121,10 +127,6 @@ public class CoreVHL
         Nation.FarmBloodGem(30);
         Nation.FarmTotemofNulgath(15);
         Nation.SwindleBulk(200);
-
-        if (!Core.CheckInventory("Elders' Blood", 2))
-            Daily.EldersBlood();
-        _SparrowMethod(2);
 
         if (!Core.CheckInventory("Elders' Blood", 2))
             Core.Logger($"Not enough \"Elders' Blood\", please do the daily {2 - Bot.Inventory.GetQuantity("Elders' Blood")} more times (not today)", messageBox: true, stopBot: true);

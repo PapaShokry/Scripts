@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -14,16 +19,17 @@ public class DarkWarLegionGold
     {
         Core.SetOptions(disableClassSwap: true);
 
-        //Core.ActionDelay = 1000; //if script is having issues turning in or is slow; un // this line ^_^
+        DoDarkWarLegionGold();
 
-        // Farm.UseBoost(BoostIDs.Gold20, Skua.Core.Models.Items.BoostType.Gold);
+        Core.SetOptions(false);
+    }
 
+    public void DoDarkWarLegionGold()
+    {
         Core.EquipClass(ClassType.Farm);
         Adv.BestGear(GearBoost.gold);
         Bot.Drops.Start();
 
         Farm.DarkWarLegion();
-
-        Core.SetOptions(false);
     }
 }

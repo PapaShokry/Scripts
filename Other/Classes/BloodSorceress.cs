@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -24,6 +29,7 @@ public class BloodSorceress
         if (Core.CheckInventory("Blood Sorceress"))
             return;
 
+        Core.EquipClass(ClassType.Solo);
         Core.HuntMonster("towerofmirrors", "Scarletta", "Blood Sorceress", isTemp: false);
         if (rankUpClass)
             Adv.rankUpClass("Blood Sorceress");

@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -46,6 +51,9 @@
 //cs_include Scripts/Other/Badges/Goal.cs
 //cs_include Scripts/Other/Badges/UltraCarnax.cs
 //cs_include Scripts/Story/MagicThief.cs
+//cs_include Scripts/Story/Glacera.cs
+//cs_include Scripts/Seasonal/Frostvale/Frostvale.cs
+//cs_include Scripts/Seasonal/Frostvale/FrostvaleBadges.cs
 using Skua.Core.Interfaces;
 
 public class AllBadges
@@ -82,11 +90,19 @@ public class AllBadges
     public ThiefofChaosBadge ToC = new();
     public UltraCarnaxBadge UC = new();
     public GoalBadge G = new();
+    public FrostvaleBadges FV = new();
 
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
 
+        DoAll();
+
+        Core.SetOptions(false);
+    }
+    
+    public void DoAll()
+    {
         CRB.Badge();
         SPB.Badge();
         MPB.Badge();
@@ -115,8 +131,7 @@ public class AllBadges
         ToC.Badge();
         UC.Badge();
         G.Badge();
+        FV.Badges();
         //add more as they are made.
-
-        Core.SetOptions(false);
     }
 }

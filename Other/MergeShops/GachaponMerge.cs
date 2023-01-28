@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -27,7 +32,7 @@ public class GachaponMerge
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(new[] { "Second Chance Coin "});
+        Core.BankingBlackList.AddRange(new[] { "Second Chance Coin " });
         Core.SetOptions();
 
         BuyAllMerge();
@@ -35,11 +40,11 @@ public class GachaponMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         Eden.StoryLine();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("onsen", 1926, findIngredients);
+        Adv.StartBuyAllMerge("onsen", 1926, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

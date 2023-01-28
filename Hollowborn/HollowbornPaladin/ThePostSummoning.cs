@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -27,7 +32,6 @@ public class ThePostSummoning
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
-        Bot.Bank.Load();
 
         HBPal.GetAll();
 

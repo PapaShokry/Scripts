@@ -1,3 +1,8 @@
+/*
+name:  Army Darkon Errands
+description:  uses an army to farm the various Darkon errands
+tags: darkon, darkon errands, darkon's receipt, first errand, second errand, third errand
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/Army/CoreArmyLite.cs
 using Skua.Core.Interfaces;
@@ -16,6 +21,7 @@ public class ArmyDarkonErrands
     public bool DontPreconfigure = true;
     public List<IOption> Options = new List<IOption>()
     {
+        new Option<Method>("Method", "Which method to get Darkon's Receipt?", "Choose your method", Method.First_Errands_Weak_Team),
         sArmy.player1,
         sArmy.player2,
         sArmy.player3,
@@ -23,8 +29,7 @@ public class ArmyDarkonErrands
         sArmy.player5,
         sArmy.player6,
         sArmy.packetDelay,
-        CoreBots.Instance.SkipOptions,
-        new Option<Method>("Method", "Which method to get Darkon's Receipt?", "Choose your method", Method.First_Errands_Weak_Team)
+        CoreBots.Instance.SkipOptions
     };
 
     public void ScriptMain(IScriptInterface bot)
@@ -32,7 +37,6 @@ public class ArmyDarkonErrands
         Core.BankingBlackList.Add("Darkon's Receipt");
 
         Core.SetOptions(disableClassSwap: false);
-        Bot.Options.RestPackets = false;
 
         Setup(Bot.Config.Get<Method>("Method"), 222);
 
@@ -48,7 +52,7 @@ public class ArmyDarkonErrands
 
         else if (Method.ToString() == "Second_Errands")
             GetItem("doomvault", new[] { "Binky" }, 7325, "Darkon's Receipt", quant);
-            
+
         else if (Method.ToString() == "First_Errands_Strong_Team")
         {
             Core.EquipClass(ClassType.Farm);

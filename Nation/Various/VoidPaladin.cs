@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -153,7 +158,7 @@ public class VoidPaladin
         Core.AddDrop(CyberVoidSet);
         Core.CheckInventory(new[] { "Void Light of Destiny", "Void Paladin", "Void Paladin Helm", "Void Paladin Katana", "Void Paladin Katana Cape" });
         Core.EnsureAccept(6625);
-        Core.HuntMonster("dreadspace", "Dread Space Warrior", "Powerpack", 5);
+        Core.HuntMonster("dreadspace", "Undead Space Warrior", "Powerpack", 5);
         Core.EnsureComplete(6625);
         Bot.Drops.Pickup(CyberVoidSet);
     }

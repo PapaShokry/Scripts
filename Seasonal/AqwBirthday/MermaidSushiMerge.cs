@@ -1,3 +1,8 @@
+/*
+name: Mermaid Sushi Merge
+description: This will get all or selected items on this merge shop.
+tags: mermaid-sushi-merge, seasonal, aqw-anniversary
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -32,11 +37,11 @@ public class MermaidSushiMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         Bot.Quests.UpdateQuest(8892);
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("mermaidsushi", 2178, findIngredients);
+        Adv.StartBuyAllMerge("mermaidsushi", 2178, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

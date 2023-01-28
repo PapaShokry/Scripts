@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 using Skua.Core.Interfaces;
 using Skua.Core.Models.Items;
@@ -102,7 +107,7 @@ public class CoreDailies
         }
         if (quest == 3075 || quest == 3076)
             Bot.Drops.Add(Core.EnsureLoad(quest).Rewards.Select(x => x.Name).ToArray());
-        else Core.AddDrop(Core.EnsureLoad(quest).Rewards.Select(x => x.Name).ToArray());
+        else Core.AddDrop(Core.EnsureLoad(quest).Rewards.Select(x => x.Name).Where(x => !Core.CheckInventory(x, toInv: false)).ToArray());
         Core.AddDrop(Core.EnsureLoad(quest).Requirements.Select(x => x.Name).ToArray());
 
         return true;
@@ -173,6 +178,7 @@ public class CoreDailies
             return;
 
         Core.EnsureAccept(2098);
+        Core.EquipClass(ClassType.Farm);
         Core.HuntMonster("stalagbite", "Balboa", "Axe of the Prospector", 1, false);
         Core.HuntMonster("stalagbite", "Balboa", "Raw Ore", 30);
         foreach (string metal in metals)
@@ -435,10 +441,10 @@ public class CoreDailies
 
     public void GrumbleGrumble()
     {
-        if (!Core.CheckInventory("Crag & Bamboozle"))
+        if (!Core.CheckInventory(4845))
             return;
-        Core.Logger("Daily: Grumble Grumble (Blood Gem of the Archfiend");
-        if (!CheckDaily(592, false, "Diamond of Nulgath", "Blood Gem of the Archfiend"))
+        Core.Logger("Daily: Grumble Grumble (Blood Gem of the Archfiend)");
+        if (!CheckDaily(592, false, new[] { "Diamond of Nulgath", "Blood Gem of the Archfiend" }))
             return;
         Core.ChainComplete(592);
     }
@@ -494,6 +500,7 @@ public class CoreDailies
         Core.Logger("Daily: Crypto Token (/curio)");
         if (!CheckDaily(6187, true, "Crypto Token"))
             return;
+        Core.EquipClass(ClassType.Farm);
         DailyRoutine(6187, "boxes", "Sneevil", "Metal Ore", cell: "Enter", pad: "Spawn");
         Core.ToBank("Crypto Token");
     }
@@ -724,6 +731,7 @@ public class CoreDailies
             {
                 Core.AddDrop("Moglin MEAL");
                 Core.EnsureAccept(4159);
+                Core.EquipClass(ClassType.Farm);
                 Core.HuntMonster("nexus", "Frogzard", "Frogzard Meat", 3);
                 Core.EnsureComplete(4159);
                 Bot.Wait.ForPickup("Moglin MEAL");

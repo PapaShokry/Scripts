@@ -1,4 +1,9 @@
-﻿//cs_include Scripts/CoreBots.cs
+/*
+name: null
+description: null
+tags: null
+*/
+//cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Story/ThroneofDarkness/CoreToD.cs
@@ -13,13 +18,17 @@ public class BaconCatREP
     {
         Core.SetOptions();
 
+        DoRep();
+
+        Core.SetOptions(false);
+    }
+
+    public void DoRep()
+    {
         TOD.BaconCatFortress();
         TOD.LaserSharkInvasion();
 
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Reputation, false);
-
         Farm.BaconCatREP();
 
-        Core.SetOptions(false);
     }
 }

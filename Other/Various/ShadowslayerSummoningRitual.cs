@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreFarms.cs
@@ -25,7 +30,6 @@ public class ShadowslayerSummoningRitual
     {
         Core.SetOptions();
 
-        ShadowStory.Storyline();
         GetAll();
 
         Core.SetOptions(false);
@@ -33,6 +37,8 @@ public class ShadowslayerSummoningRitual
 
     public void GetAll()
     {
+        ShadowStory.Storyline();
+        
         List<ItemBase> RewardOptions = Core.EnsureLoad(8835).Rewards;
         List<string> RewardsList = new List<string>();
         foreach (Skua.Core.Models.Items.ItemBase Item in RewardOptions)
@@ -61,7 +67,7 @@ public class ShadowslayerSummoningRitual
                 {
                     Core.AddDrop("Meat Ration");
                     Core.EnsureAccept(8263);
-                    Core.HuntMonster("cellar", "GreenRat", "Green Mystery Meat", 10);
+                    Core.KillMonster("cellar", "Sewer1", "Left", "GreenRat", "Green Mystery Meat", 10);
                     Core.EnsureComplete(8263);
                     Bot.Wait.ForPickup("Meat Ration");
                 }
@@ -69,7 +75,7 @@ public class ShadowslayerSummoningRitual
                 {
                     Core.AddDrop("Grain Ration");
                     Core.EnsureAccept(8264);
-                    Core.HuntMonster("castletunnels", "Blood Maggot", "Bundle of Rice", 3);
+                    Core.KillMonster("castletunnels", "r5", "Left", "Blood Maggot", "Bundle of Rice", 3);
                     Core.EnsureComplete(8264);
                     Bot.Wait.ForPickup("Grain Ration");
                 }

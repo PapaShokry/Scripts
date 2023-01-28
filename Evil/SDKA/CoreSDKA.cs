@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -85,8 +90,10 @@ public class CoreSDKA
     public void DoAll()
     {
         if (Core.CheckInventory("Sepulchure's DoomKnight Armor") || !Core.IsMember)
+        {
+            Core.Logger("Player is either not member, or already owns the armor.");
             return;
-
+        }
         Core.AddDrop(SDKAItems);
 
         UnlockHardCoreMetals();

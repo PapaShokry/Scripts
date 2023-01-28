@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Story/CruxShip.cs
@@ -20,7 +25,7 @@ public class MummySlayerAndCruxShadowsDefender
 
     public void Badge()
     {
-        if (Core.HasWebBadge("Mummy Slayer") || Core.HasWebBadge("CruxShadows Defender")) 
+        if (Core.HasWebBadge("Mummy Slayer") || Core.HasWebBadge("CruxShadows Defender"))
         {
             Core.Logger("Already have the Mummy Slayer and CruxShadows Defender badge");
             return;

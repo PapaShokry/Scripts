@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -35,7 +40,7 @@ public class Manor
         Story.KillQuest(1060, "Manor", "Frigid Frogdrake");
 
         //Inscrutable Motivation 1061
-       Story.MapItemQuest(1061, "Manor", 404, 10);
+        Story.MapItemQuest(1061, "Manor", 404, 10);
 
         //Paradise is Not So Nice 1062
         Story.KillQuest(1062, "Manor", "Bird of Paradise");

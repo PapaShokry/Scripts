@@ -1,3 +1,8 @@
+/*
+name:  Dages Scroll Fragment Daily
+description:  Dages Scroll Fragment
+tags: daily, dages scroll fragment
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

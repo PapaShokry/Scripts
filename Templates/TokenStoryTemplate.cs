@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -17,7 +22,6 @@ public class TokenStoryTemplate
         Core.SetOptions();
 
         StoryLine();
-
         Core.SetOptions(false);
     }
 

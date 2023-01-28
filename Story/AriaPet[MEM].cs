@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -22,7 +27,7 @@ public class AriaPet
             Core.Logger("Aria Pet Storyline Is Member Only. Skipping this Script");
             return;
         }
-            
+
         if (Core.isCompletedBefore(46))
             return;
 

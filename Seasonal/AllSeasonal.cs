@@ -1,3 +1,8 @@
+/*
+name: All Seasonal Story
+description: This will finish all of seasonal story on current month.
+tags: seasonal, story
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -6,6 +11,7 @@
 //cs_include Scripts/Seasonal/AprilFools/MeateorHunt.cs
 //cs_include Scripts/Seasonal/AprilFools/SuperSLAYIN'Badge(GardenQuest).cs
 //cs_include Scripts/Seasonal/AprilFools/Mmmm,Meaty(or)(MeatyShard).cs
+//cs_include Scripts/Story/Glacera.cs
 //cs_include Scripts/Seasonal/Frostvale/Frostvale.cs
 //cs_include Scripts/Seasonal/Frostvale/MountOtzi.cs
 //cs_include Scripts/Seasonal/HerosHeartDay/Fezzini.cs

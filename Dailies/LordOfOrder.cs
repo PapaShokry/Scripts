@@ -1,3 +1,8 @@
+/*
+name:  Lord Of Order Daily
+description:  Lord Of Order
+tags: daily, lord of order, LOO
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreAdvanced.cs

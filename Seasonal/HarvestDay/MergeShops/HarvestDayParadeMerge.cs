@@ -1,3 +1,8 @@
+/*
+name: Harvest Day Parade Merge
+description: This will get all or selected items on this merge shop.
+tags: harvest-day-parade-merge, seasonal, harvest-day
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -24,7 +29,7 @@ public class HarvestDayParadeMerge
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.BankingBlackList.AddRange(new[] { "Pink Balloon Scrap", "Green Balloon Scrap", "Red Balloon Scrap "});
+        Core.BankingBlackList.AddRange(new[] { "Pink Balloon Scrap", "Green Balloon Scrap", "Red Balloon Scrap " });
         Core.SetOptions();
 
         BuyAllMerge();
@@ -32,12 +37,12 @@ public class HarvestDayParadeMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         if (!Core.isSeasonalMapActive("float"))
             return;
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("float", 234, findIngredients);
+        Adv.StartBuyAllMerge("float", 234, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

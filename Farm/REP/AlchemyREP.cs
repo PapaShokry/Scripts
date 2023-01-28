@@ -1,4 +1,9 @@
-﻿//cs_include Scripts/CoreBots.cs
+/*
+name: null
+description: null
+tags: null
+*/
+//cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 using Skua.Core.Interfaces;
 using Skua.Core.Options;
@@ -25,8 +30,6 @@ public class AlchemyREP
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
-
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Reputation, false);
 
         Farm.AlchemyREP(10, Bot.Config.Get<bool>("goldMethod"));
 

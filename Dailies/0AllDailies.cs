@@ -1,4 +1,9 @@
-﻿//cs_include Scripts/CoreBots.cs
+/*
+name:  All Dailies
+description:  Does all the avaiable dailies.
+tags: all dailies, dailies, daily, all
+*/
+//cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -12,7 +17,7 @@
 //cs_include Scripts/Good/BLoD/CoreBLOD.cs
 using Skua.Core.Interfaces;
 
-public class FarmAllDailys
+public class FarmAllDailies
 {
     public IScriptInterface Bot => IScriptInterface.Instance;
     public CoreBots Core => CoreBots.Instance;
@@ -25,46 +30,49 @@ public class FarmAllDailys
     {
         Core.SetOptions();
 
-        DoAllDailys();
+        DoAllDailies();
 
         Core.SetOptions(false);
     }
 
-    public void DoAllDailys()
+    public void DoAllDailies()
     {
         Core.Logger("Doing all dailies");
 
         LOO.GetLoO();
+        BLOD.UnlockMineCrafting();
 
+        //With solo class
         Daily.MadWeaponSmith();
         Daily.CyserosSuperHammer();
         Daily.BrightKnightArmor();
-        Daily.CollectorClass();
         Glac.FrozenTower();
-        Daily.Cryomancer();
         Daily.Pyromancer();
         Daily.DeathKnightLord();
         Daily.ShadowScytheClass();
         Daily.GrumbleGrumble();
+        Daily.MonthlyTreasureChestKeys();
+        Daily.WheelofDoom();
+        Daily.FreeDailyBoost();
+        Daily.BallyhooAdRewards();
+        Daily.PowerGem();
+        Daily.DesignNotes();
+        Daily.MoglinPets();
+        // Daily.NSoDDaily();
+
+        //With farm class
+        Daily.CollectorClass();
+        Daily.Cryomancer();
         Daily.EldersBlood();
         Daily.SparrowsBlood();
         Daily.ShadowShroud();
         Daily.DagesScrollFragment();
-        Daily.CryptoToken();
         Daily.BeastMasterChallenge();
         Daily.FungiforaFunGuy();
-        BLOD.UnlockMineCrafting();
         Daily.MineCrafting(new[] { "Aluminum", "Barium", "Gold", "Iron", "Copper", "Silver", "Platinum" }, 10, ToBank: true);
-        Daily.HardCoreMetals(ToBank: true);
-        Daily.MonthlyTreasureChestKeys();
-        Daily.WheelofDoom();
-        Daily.FreeDailyBoost();
-        // Daily.NSoDDaily();
-        Daily.BallyhooAdRewards();
-        Daily.PowerGem();
+        Daily.HardCoreMetals(new[] { "Arsenic", "Beryllium", "Chromium", "Palladium", "Rhodium", "Rhodium", "Thorium", "Mercury" }, 10, ToBank: true);
+        Daily.CryptoToken();
         Daily.GoldenInquisitor();
-        Daily.DesignNotes();
-        Daily.MoglinPets();
 
         Core.Logger("All dailies are completed");
     }

@@ -1,3 +1,8 @@
+/*
+name: null
+description: This bot farms the Dragon of Time class for you.
+tags: class, dot, damage over time, dragon of time, timeinn
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -46,7 +51,7 @@ public class DragonOfTime
 
     public void GetDoT(bool rankUpClass = true, bool doExtra = true)
     {
-        if ((!doExtra && Core.CheckInventory("Dragon of Time")) || (doExtra && Core.CheckInventory(Extras)))
+        if (doExtra ? Core.CheckInventory(Extras) : Core.CheckInventory("Dragon of Time"))
             return;
 
         Story.PreLoad(this);

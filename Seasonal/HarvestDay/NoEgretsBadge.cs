@@ -1,3 +1,8 @@
+/*
+name: No Egrets Badge
+description: This will get the No Egrets Badge.
+tags: no-egrets-badge, seasonal, harvest-day
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Seasonal/HarvestDay/CoreHarvestDay.cs

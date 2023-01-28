@@ -1,6 +1,14 @@
+/*
+name: Huntress Merge
+description: This will get all or selected items on this merge shop.
+tags: huntress-merge, seasonal, frostvale
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
+//cs_include Scripts/CoreStory.cs
+//cs_include Scripts/Seasonal/Frostvale/MountOtzi.cs
+
 using Skua.Core.Interfaces;
 using Skua.Core.Models.Items;
 using Skua.Core.Options;
@@ -12,6 +20,7 @@ public class HuntressMerge
     private CoreFarms Farm = new();
     private CoreAdvanced Adv = new();
     private static CoreAdvanced sAdv = new();
+    private MountOtzi MO = new();
 
     public List<IOption> Generic = sAdv.MergeOptions;
     public string[] MultiOptions = { "Generic", "Select" };
@@ -21,19 +30,21 @@ public class HuntressMerge
     private bool dontStopMissingIng = false;
 
     public void ScriptMain(IScriptInterface Bot)
-    {
+    {   
         Core.BankingBlackList.AddRange(new[] { "Sluagh Bell", "Punk Coal Elf Stabber", "Festive Punk Elf Stabber", "Wild Huntress' Sword " });
         Core.SetOptions();
 
+        
         BuyAllMerge();
 
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
+        MO.MountOtziQuests();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("otziwar", 2088, findIngredients);
+        Adv.StartBuyAllMerge("otziwar", 2088, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()
@@ -61,7 +72,7 @@ public class HuntressMerge
                     Core.RegisterQuests(8446, 8447, 8448);
                     while (!Bot.ShouldExit && !Core.CheckInventory(req.Name, quant))
                     {
-                        Core.HuntMonster("otziwar", "Sluagh Warrior", "Ancient Fragments", 3);
+                        Core.KillMonster("otziwar", "r6", "Left", "Sluagh Warrior", "Ancient Fragments", 3);
                         Bot.Wait.ForPickup(req.Name);
                     }
                     Core.CancelRegisteredQuests();

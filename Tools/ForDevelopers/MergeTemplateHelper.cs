@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -101,9 +106,7 @@ public class MergeTemplateHelper
             return;
         }
 
-
-        string AppPath = Core.AppPath ?? "";
-        string[] MergeTemplate = File.ReadAllLines(AppPath + @"\Scripts\Templates\MergeTemplate.cs");
+        string[] MergeTemplate = File.ReadAllLines(Path.Combine(CoreBots.ScriptsPath, "Templates", "MergeTemplate.cs"));
 
         int itemsIndex = Array.IndexOf(MergeTemplate, "                // Add how to get items here") - 1;
         if (itemsIndex < 0)
@@ -125,15 +128,15 @@ public class MergeTemplateHelper
             Core.Logger("Failed to find blackListIndex");
             return;
         }
-        MergeTemplate[blackListIndex] = "        Core.BankingBlackList.AddRange(new[] { \"" + String.Join("\", \"", itemsToLearn) + " \"});";
+        MergeTemplate[blackListIndex] = "        Core.BankingBlackList.AddRange(new[] { \"" + String.Join("\", \"", itemsToLearn) + "\"});";
 
-        int startIndex = Array.IndexOf(MergeTemplate, "        Adv.StartBuyAllMerge(\"map\", 1234, findIngredients);");
+        int startIndex = Array.IndexOf(MergeTemplate, "        Adv.StartBuyAllMerge(\"map\", 1234, findIngredients, buyOnlyThis, buyMode: buyMode);");
         if (startIndex < 0)
         {
             Core.Logger("Failed to find startIndex");
             return;
         }
-        MergeTemplate[startIndex] = $"        Adv.StartBuyAllMerge(\"{map.ToLower()}\", {shopID}, findIngredients);";
+        MergeTemplate[startIndex] = $"        Adv.StartBuyAllMerge(\"{map.ToLower()}\", {shopID}, findIngredients, buyOnlyThis, buyMode: buyMode);";
 
         shopItemNames.Add("    };");
 
@@ -144,8 +147,8 @@ public class MergeTemplateHelper
                             .Concat(new[] { "}" })
                             .ToArray();
 
-        string path = AppPath + $@"\Scripts\WIP\{className}Merge.cs";
-        Directory.CreateDirectory(AppPath + @"\Scripts\WIP");
+        string path = Path.Combine(CoreBots.ScriptsPath, "WIP", className + "Merge.cs");
+        Directory.CreateDirectory(Path.Combine(CoreBots.ScriptsPath, "WIP"));
         File.WriteAllLines(path, content);
         if (Bot.ShowMessageBox($"File has been generated. Path is {path}\n\nPress OK to open the file",
                                                 "File Generated", "OK").Text == "OK")

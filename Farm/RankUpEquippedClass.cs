@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -14,9 +19,12 @@ public class RankUpEquippedClass
     {
         Core.SetOptions(disableClassSwap: true);
 
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.CP, true);
-        Adv.rankUpClass(Bot.Player.CurrentClass.Name);
+        DoRankUpEquippedClass();
 
         Core.SetOptions(false);
     }
+
+    public void DoRankUpEquippedClass() => Adv.rankUpClass(Bot.Player.CurrentClass.Name);
+
+
 }

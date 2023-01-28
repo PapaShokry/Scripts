@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -28,16 +33,16 @@ public class FiendPastMerge
     {
         Core.SetOptions();
 
-        Fiend.DoAll();
         BuyAllMerge();
 
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
+        Fiend.DoAll();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("fiendpast", 2106, findIngredients);
+        Adv.StartBuyAllMerge("fiendpast", 2106, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

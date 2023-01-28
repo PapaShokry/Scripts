@@ -1,4 +1,9 @@
-﻿//cs_include Scripts/CoreBots.cs
+/*
+name: null
+description: null
+tags: null
+*/
+//cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
 //cs_include Scripts/Nation/CoreNation.cs
@@ -26,7 +31,7 @@ public class WillpowerExtraction
         Core.SetOptions(false);
     }
 
-    public void Unidentified34(int quant)
+    public void Unidentified34(int quant = 300)
     {
         if (Core.CheckInventory("Unidentified 34", quant))
             return;
@@ -48,14 +53,29 @@ public class WillpowerExtraction
             uni19(1);
 
             Core.EquipClass(ClassType.Farm);
-            Adv.BuyItem("tercessuinotlim", 1951, "Necrot", 5);
-            Adv.BuyItem("tercessuinotlim", 1951, "Chaoroot", 5);
-            Adv.BuyItem("tercessuinotlim", 1951, "Doomatter", 5);
+
+            if (!Core.CheckInventory("Necrot", 5))
+            {
+                Adv.BuyItem("tercessuinotlim", 1951, "Necrot", 10);
+                Bot.Wait.ForItemBuy();
+            }
+            
+            if (!Core.CheckInventory("Chaoroot", 5))
+            {
+                Adv.BuyItem("tercessuinotlim", 1951, "Chaoroot", 10);
+                Bot.Wait.ForItemBuy();
+            }
+
+            if (!Core.CheckInventory("Doomatter", 5))
+            {
+                Adv.BuyItem("tercessuinotlim", 1951, "Doomatter", 10);
+                Bot.Wait.ForItemBuy();
+            }
 
             if (!Core.CheckInventory("Mortality Cape of Revontheus"))
             {
                 Nation.ApprovalAndFavor(0, 35);
-                Adv.BuyItem("evilwarnul", 452, "Mortality Cape of Revontheus");
+                Adv.BuyItem("evilwarnul", 452, 13167);
                 Bot.Wait.ForItemBuy();
             }
 
@@ -101,11 +121,8 @@ public class WillpowerExtraction
             return;
 
         if (Core.IsMember)
-        {
-            while (!Bot.ShouldExit && !Core.CheckInventory("Receipt of Swindle", 6))
-                Nation.SwindleReturn();
-            Core.BuyItem("tercessuinotlim", 1951, "Unidentified 19");
-        }
+            Adv.BuyItem("tercessuinotlim", 1951, "Unidentified 19");
+            
         else Nation.Supplies("Unidentified 19");
     }
 }

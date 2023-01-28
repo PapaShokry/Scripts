@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 using Skua.Core.Interfaces;
 
@@ -25,7 +30,7 @@ public class HordeZombieSLAYER
         }
 
         Core.Logger($"Doing quest for {badge} badge");
-        
+
         Core.EquipClass(ClassType.Farm);
 
         Core.EnsureAccept(8670);

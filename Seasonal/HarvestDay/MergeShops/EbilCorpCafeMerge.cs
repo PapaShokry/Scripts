@@ -1,3 +1,8 @@
+/*
+name: Ebil Corp Cafe Merge
+description: This will get all or selected items on this merge shop.
+tags: ebil-corp-cafe-merge, seasonal, harvest-day
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -33,13 +38,13 @@ public class EbilCorpCafeMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         if (!Core.isSeasonalMapActive("ebiltakeover"))
             return;
         HD.EpilTakeOver();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("ebiltakeover", 2190, findIngredients);
+        Adv.StartBuyAllMerge("ebiltakeover", 2190, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

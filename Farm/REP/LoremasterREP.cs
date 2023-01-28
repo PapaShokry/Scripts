@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -12,8 +17,6 @@ public class LoremasterREP
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
-
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Reputation, false);
 
         Farm.LoremasterREP();
 

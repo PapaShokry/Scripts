@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/Nation/CoreNation.cs
@@ -26,10 +31,10 @@ public class OblivionNulgath
     {
         Core.SetOptions();
 
-        COBoN.OblivionNulgath(Bot.Config.Get<string >("Reward"), Bot.Config.Get<int>("Quanity"));
+        COBoN.OblivionNulgath(Bot.Config.Get<string>("Reward"), Bot.Config.Get<int>("Quanity"));
 
         Core.SetOptions(false);
-    }  
+    }
 
     private enum OblivionNulgathRewards
     {

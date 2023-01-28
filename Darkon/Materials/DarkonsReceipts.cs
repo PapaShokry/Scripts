@@ -1,3 +1,8 @@
+/*
+name:  Darkons Receipt
+description:  Darkons Receipt
+tags: darkon, darkons receipt
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs

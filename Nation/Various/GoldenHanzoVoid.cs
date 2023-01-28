@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/Nation/CoreNation.cs
@@ -32,7 +37,7 @@ public class GoldenHanzoVoid
         Nation.TheAssistant("Dark Crystal Shard", 15);
         Nation.FarmDiamondofNulgath(50);
         Nation.FarmVoucher(false);
-        
+
         Core.Join("evilwarnul");
         Bot.Shops.Load(456);
         List<ShopItem> shopdata = Bot.Shops.Items;

@@ -1,3 +1,8 @@
+/*
+name:  Eternal Drakath Set
+description:  Gets the Eternal Drakath Set
+tags: eternal drakath set, drakath, set
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreDailies.cs
@@ -49,8 +54,7 @@ public class EternalDrakath
 
         BLOD.FindingFragmentsBlade(2000, 0);
 
-        if (!Core.CheckInventory("Crystallized Chaos", 800))
-            Core.EquipClass(ClassType.Farm);
+        Core.EquipClass(ClassType.Farm);
         Core.KillMonster("chaoslab", "r3", "Center", "Chaorrupted Moglin", "Crystallized Chaos", 800, false);
 
         if (!Core.CheckInventory("Star Fragment", 33))

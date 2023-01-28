@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 using Skua.Core.Interfaces;
 
@@ -19,7 +24,7 @@ public class SweetSummerTreats
     {
         if (!Core.isSeasonalMapActive("summerbreak"))
             return;
-            
+
         string[] rewards = { "Sunflower Outfit", "SunFlower Locks", "Sunflower Hair" };
         if (Core.CheckInventory(rewards, toInv: false))
             return;

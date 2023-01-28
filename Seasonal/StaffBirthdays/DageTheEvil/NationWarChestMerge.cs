@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -34,13 +39,13 @@ public class NationWarChestMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         //Only edit the map and shopID here
         if (!Core.isSeasonalMapActive("darkwarnation"))
             return;
 
-        Adv.StartBuyAllMerge("darkwarnation", 2123, findIngredients);
+        Adv.StartBuyAllMerge("darkwarnation", 2123, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

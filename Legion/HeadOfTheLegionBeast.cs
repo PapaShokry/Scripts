@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -8,23 +13,6 @@ using Skua.Core.Interfaces;
 
 public class HeadoftheLegionBeast
 {
-    public IScriptInterface Bot => IScriptInterface.Instance;
-    public CoreBots Core => CoreBots.Instance;
-    public CoreFarms Farm = new();
-    public CoreAdvanced Adv = new();
-    public CoreStory Story = new();
-    public CoreLegion Legion = new();
-    public SevenCircles Circles = new();
-
-    public void ScriptMain(IScriptInterface bot)
-    {
-        Core.SetOptions();
-
-        LegionBeastHead();
-
-        Core.SetOptions(false);
-    }
-
     public string[] HeadLegionBeast =
     {
         "Penance",
@@ -42,6 +30,24 @@ public class HeadoftheLegionBeast
         "Aspect of Luxuria",
         "Face of Treachery"
     };
+
+    public IScriptInterface Bot => IScriptInterface.Instance;
+    public CoreBots Core => CoreBots.Instance;
+    public CoreFarms Farm = new();
+    public CoreAdvanced Adv = new();
+    public CoreStory Story = new();
+    public CoreLegion Legion = new();
+    public SevenCircles Circles = new();
+
+    public void ScriptMain(IScriptInterface bot)
+    {
+        Core.BankingBlackList.AddRange(HeadLegionBeast);
+        Core.SetOptions();
+
+        LegionBeastHead();
+
+        Core.SetOptions(false);
+    }
 
     public void LegionBeastHead()
     {
@@ -73,7 +79,6 @@ public class HeadoftheLegionBeast
         CircleHelm("Aspect of Luxuria");
         CircleHelm("Gluttony's Maw");
         CircleHelm("Stare of Greed");
-
         CircleHelm("Crown of Wrath", true);
         CircleHelm("Face of Treachery", true);
         CircleHelm("Faces of Violence", true);

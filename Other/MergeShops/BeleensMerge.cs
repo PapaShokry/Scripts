@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -40,16 +45,16 @@ public class BeleensMerge
         Core.BankingBlackList.AddRange(new[] { "Platinum Wings", "Fuchsia Dye", "Plague Strike Scythe", "Baby Red Dragon", "Zealith Reavers", "Great Astral Wings", "Wave Cutter", "Star Caster Staff", "Scarlet's Costume", "Infernal Dark Blade of Cruelty", "Chaos Dragonlord Helm", "Rose Aura of the Ascended", "Prismatic Dye", "Iron Dreadsaw", "Taro's Manslayer", "Dual Manslayer of Taro", "Demonhuntress Horns", "Demonhunter Horns", "DOOMFire Warrior", "Fire Imp Tail", "Unarmed", "Scarbucks Latte", "Valor High Halo", "Doge the Evil", "Shimmering Flakes", "Red Rose", "Scarbucks Espresso Cup", "Shadowslayer Armor", "ShadowSlayer Hat", "Shadow Z Hat", "Slayer's Neophyte Broadsword", "Reavers Of Good", "Slithering ShadowSlayer", "Slithering Hunter's Hat", "Slithering Hunter's Hat + Locks", "Slithering Hunter's Knife", "Slayer's Wooden Pistol", "Slayer's Wooden Rifle " });
         Core.SetOptions();
 
-        ArtixWedding.ArtixWeddingComplete();
         BuyAllMerge();
 
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
+        ArtixWedding.ArtixWeddingComplete();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("tower", 347, findIngredients);
+        Adv.StartBuyAllMerge("tower", 347, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

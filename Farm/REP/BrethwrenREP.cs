@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -15,12 +20,15 @@ public class BrethwrenREPFarm
     {
         Core.SetOptions();
 
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Reputation, false);
-        
+        DoRep();
+
+        Core.SetOptions(false);
+    }
+
+    public void DoRep()
+    {
         HarvestDay.BirdsWithHarms();
 
         Farm.BrethwrenREP();
-
-        Core.SetOptions(false);
     }
 }

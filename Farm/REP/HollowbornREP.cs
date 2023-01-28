@@ -1,4 +1,9 @@
-﻿//cs_include Scripts/CoreBots.cs
+/*
+name: null
+description: null
+tags: null
+*/
+//cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 using Skua.Core.Interfaces;
 public class HollowbornREP
@@ -9,8 +14,6 @@ public class HollowbornREP
     public void ScriptMain(IScriptInterface bot)
     {
         Core.SetOptions();
-
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Reputation, false);
 
         Farm.HollowbornREP();
 

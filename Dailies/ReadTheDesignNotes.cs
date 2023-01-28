@@ -1,3 +1,8 @@
+/*
+name:  Design Notes Daily
+description:  Design Notes
+tags: daily, design notes
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

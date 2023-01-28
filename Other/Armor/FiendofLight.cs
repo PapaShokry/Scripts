@@ -1,3 +1,8 @@
+/*
+name: Fiend of Light
+description: This script will obtain the items from Fiend of Light set that you choose.
+tags: learn-from-the-past, fiend-of-light
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreFarms.cs
@@ -32,13 +37,18 @@ public class FiendofLight
     {
         Core.SetOptions();
 
-        CoreSS.SepulchuresRise();
-
-        if (!Bot.Config.Get<bool>("SelectReward"))
-            ForeachSelect(6408); 
-        else OptionsSelect(Bot.Config.Get<RewardsSelection>("RewardSelect"), 6408);
+        DoFiendofLight();
 
         Core.SetOptions(false);
+    }
+
+    public void DoFiendofLight()
+    {
+        CoreSS.SepulchuresRise();
+        if (!Bot.Config.Get<bool>("SelectReward"))
+            ForeachSelect(6408);
+        else OptionsSelect(Bot.Config.Get<RewardsSelection>("RewardSelect"), 6408);
+
     }
 
     public void OptionsSelect(RewardsSelection reward = new(), int questID = 000)

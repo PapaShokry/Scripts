@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -8,16 +13,6 @@ public class JirabinChallenge
     public CoreBots Core => CoreBots.Instance;
     public CoreStory Story = new();
 
-    public void ScriptMain(IScriptInterface bot)
-    {
-        Core.SetOptions();
-
-        RunedWoods();
-        DetherTombs();
-        VoidBattle();
-
-        Core.SetOptions(false);
-    }
 
     public readonly string[] Drops =
     {
@@ -27,6 +22,23 @@ public class JirabinChallenge
         "Purified Void Blade",
         "Purified Void Daggers"
     };
+
+    public void ScriptMain(IScriptInterface bot)
+    {
+        Core.SetOptions();
+
+        DoAll();
+
+        Core.SetOptions(false);
+    }
+
+    public void DoAll()
+    {
+        RunedWoods();
+        DetherTombs();
+        VoidBattle();
+
+    }
 
     public void RunedWoods()
     {
@@ -45,8 +57,14 @@ public class JirabinChallenge
         Story.KillQuest(3978, "runedwoods", new[] { "Jies", "Void Warrior", "Frask" });
 
         //Catch the Ki'lks! 3979
-        Story.KillQuest(3979, "northlandlight", "Ice Ki'lk");
-        Story.KillQuest(3979, "northlands", new[] { "Fire Ki'lk", "Energy Ki'lk" });
+        if (!Story.QuestProgression(3979))
+        {
+            Core.EnsureAccept(3979);
+            Core.HuntMonster("northlandlight", "Ice Ki'lk", "Ice Ki'lk Slain", 5);
+            Core.HuntMonster("northlands", "Fire Ki'lk", "Fire Ki'lk Slain", 5);
+            Core.HuntMonster("northlands", "Energy Ki'lk", "Energy Ki'lk Slain", 5);
+            Core.EnsureComplete(3979);
+        }
 
         //Discover the Darkness 3980
         Story.KillQuest(3980, "runedwoods", "Frask");
@@ -83,7 +101,7 @@ public class JirabinChallenge
     {
         if (Core.isCompletedBefore(4005))
             return;
-            
+
         RunedWoods();
 
         Story.PreLoad(this);

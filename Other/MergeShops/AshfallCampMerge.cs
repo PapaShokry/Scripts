@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -32,10 +37,10 @@ public class AshfallCampMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("ashfallcamp", 1422, findIngredients);
+        Adv.StartBuyAllMerge("ashfallcamp", 1422, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()
@@ -88,13 +93,13 @@ public class AshfallCampMerge
 
                 case "Defender Badge":
                     Core.EquipClass(ClassType.Solo);
-                    Core.HuntMonster("AshfallCamp", "Blackrawk|Infernus|Smoldur", req.Name, quant);
+                    Core.HuntMonster("AshfallCamp", "Blackrawk|Infernus|Smoldur", req.Name, quant, false);
                     break;
 
                 case "Flame Claws":
                 case "Flame Heart":
                     Core.EquipClass(ClassType.Solo);
-                    Core.HuntMonster("AshfallCamp", "Smoldur", req.Name, quant);
+                    Core.HuntMonster("AshfallCamp", "Smoldur", req.Name, quant, false);
                     break;
 
                 case "Sulphur Ore":
@@ -154,24 +159,24 @@ public class AshfallCampMerge
                 case "Venom Sac":
                 case "Venom Fangs":
                     Core.EquipClass(ClassType.Solo);
-                    Core.HuntMonster("AshfallCamp", "Infernus", req.Name, quant);
+                    Core.HuntMonster("AshfallCamp", "Infernus", req.Name, quant, false);
                     break;
 
                 case "Crystal Eye":
                 case "Glass Horns":
                     Core.EquipClass(ClassType.Solo);
-                    Core.HuntMonster("AshfallCamp", "Blackrawk", req.Name, quant);
+                    Core.HuntMonster("AshfallCamp", "Blackrawk", req.Name, quant, false);
                     break;
 
                 case "Storm Heart":
                     Core.EquipClass(ClassType.Solo);
-                    Core.HuntMonster("Pride", "Valsarian", req.Name, quant);
+                    Core.HuntMonster("Pride", "Valsarian", req.Name, quant, false);
                     break;
 
                 case "Melted Glass":
                 case "Copper Wire":
                     Core.EquipClass(ClassType.Farm);
-                    Core.HuntMonster("Pride", "Cellar Guard|Drakel Guard|Elite Guard", req.Name, quant);
+                    Core.HuntMonster("Pride", "Cellar Guard|Drakel Guard|Elite Guard", req.Name, quant, false);
                     break;
 
             }

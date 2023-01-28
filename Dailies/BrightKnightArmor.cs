@@ -1,3 +1,8 @@
+/*
+name:  Bright Knight Armor Daily
+description:  Bright Knight Armor
+tags: daily, bright knight armor
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

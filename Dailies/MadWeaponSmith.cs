@@ -1,3 +1,8 @@
+/*
+name:  Mad Weapon Smith Daily
+description:  Mad Weapon Smith
+tags: daily, mad weapon smith
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

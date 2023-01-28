@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 using Skua.Core.Interfaces;
@@ -67,7 +72,7 @@ public class GravelynDoomFire
             Core.EnsureComplete(5461);
             Bot.Wait.ForPickup("Gravelyn's DoomFire Token");
         }
-        
+
         Core.BuyItem("darkthronehub", 1307, "DOOMFire OF Gravelyn");
         Core.BuyItem("darkthronehub", 1307, "Horned DOOMFire Helm");
         Core.ToBank(ShopItems);

@@ -1,3 +1,8 @@
+/*
+name: Super Slayin Badge
+description: This will get the Super Slayin Badge.
+tags: super-slayin-badge, seasonal, april-fools
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;

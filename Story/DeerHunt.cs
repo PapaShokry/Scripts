@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 using Skua.Core.Interfaces;
@@ -30,11 +35,11 @@ public class DeerHunt
 
         // Deer? 8424
         Story.KillQuest(8424, "deerhunt", "Deer?");
-        
+
         // Comparing Claws 8425
         Story.MapItemQuest(8425, "deerhunt", 9373, 4);
         Story.KillQuest(8425, "deerhunt", new[] { "Scared Wolf", "Frightened Owl" });
-        
+
         // Lair Investigated 8426
         Story.MapItemQuest(8426, "deerhunt", new[] { 9374, 9375 });
 

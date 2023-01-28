@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -24,7 +29,7 @@ public class DesolichFreed
     {
         if (!Core.IsMember)
             return;
-        
+
         if (Core.HasWebBadge("Desoloth Freed"))
         {
             Core.Logger($"Already have the Desoloth Freed badge");

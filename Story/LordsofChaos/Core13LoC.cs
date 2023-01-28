@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -91,7 +96,7 @@ public class Core13LoC
         {
             Core.EnsureAccept(6216);
             Core.GetMapItem(39, 5, "prison");
-            Adv.BuyItem("prison", 1559, 5661);
+            Core.BuyItem("prison", 1559, 42993);
             Core.EnsureComplete(6216);
         }
 
@@ -477,7 +482,7 @@ public class Core13LoC
 
     public void Wolfwing()
     {
-        if (Core.isCompletedBefore(598))
+        if (Core.isCompletedBefore(597) || Core.isCompletedBefore(598))
             return;
 
         Story.PreLoad(this);
@@ -723,8 +728,13 @@ public class Core13LoC
         Story.KillQuest(809, "cloister", "Karasu");
 
         //It's A Bough-t Time
-        Story.BuyQuest(810, "arcangrove", 211, "Mana Potion");
-        Story.MapItemQuest(810, "cloister", 141, 3);
+        if (!Story.QuestProgression(810))
+        {
+            Core.EnsureAccept(810);
+            Core.BuyItem("embersea", 1100, 5572);
+            Core.GetMapItem(141, 3, "cloister");
+            Core.EnsureComplete(810);
+        }
 
         //Wendigo Whereabouts
         Story.KillQuest(811, "cloister", "Wendigo");
@@ -1145,7 +1155,6 @@ public class Core13LoC
             Core.EnsureComplete(1472);
         }
 
-        Bot.Events.CellChanged += CutSceneFixer;
         //Choose: Khasaanda Confrontation?
         if (!Story.QuestProgression(1473))
         {
@@ -1165,20 +1174,56 @@ public class Core13LoC
             while (!Bot.ShouldExit && Bot.Player.Cell != "r17a")
             {
                 Bot.Sleep(2500);
-                Core.Jump("r17a", "Up");
+                Core.Jump("r17a");
                 Bot.Sleep(2500);
             }
         }
-        //if more maps get stuck, just fillin the bit below.
-        if (map == "Map" && cell != "Cell")
+
+        if (map == "finalbattle" && !Core.isCompletedBefore(3878))
         {
-            while (!Bot.ShouldExit && Bot.Player.Cell != "InsertCell")
+            if (!Bot.Quests.IsUnlocked(3877))
             {
-                Bot.Sleep(2500);
-                Core.Jump("Cell", "pad");
-                Bot.Sleep(2500);
+                while (!Bot.ShouldExit && Bot.Player.Cell != "r1")
+                {
+                    Bot.Sleep(2500);
+                    Core.Jump("r1");
+                    Bot.Sleep(2500);
+                }
+            }
+
+            else if (!Core.isCompletedBefore(3878))
+            {
+                while (!Bot.ShouldExit && Bot.Player.Cell != "r4")
+                {
+                    Bot.Sleep(2500);
+                    Core.Jump("r4");
+                    Bot.Sleep(2500);
+                }
+            }
+            else if (Core.isCompletedBefore(3878))
+            {
+                while (!Bot.ShouldExit && Bot.Player.Cell != "r9")
+                {
+                    Bot.Sleep(2500);
+                    Core.Jump("r9");
+                    Bot.Sleep(2500);
+                }
             }
         }
+
+        Bot.Events.CellChanged -= CutSceneFixer;
+
+
+        ///if more maps get stuck, just fillin the bit below.
+        // if (map == "Map" && cell != "Cell")
+        // {
+        //     while (!Bot.ShouldExit && Bot.Player.Cell != "InsertCell")
+        //     {
+        //         Bot.Sleep(2500);
+        //         Core.Jump("Cell");
+        //         Bot.Sleep(2500);
+        //     }
+        // }
     }
 
     public void KhasaandaTroll()
@@ -1771,7 +1816,12 @@ public class Core13LoC
         Story.MapItemQuest(2805, "stormtemple", 1729, 4);
 
         //New Shoes
-        Story.KillQuest(2806, "stormtemple", "Chaonslaught Warrior");
+        if (!Story.QuestProgression(2806)) //quest was fucky for no reason. hopefully a fix.
+        {
+            Core.EnsureAccept(2806);
+            Core.KillMonster("stormtemple", "r1", "Left", "Chaonslaught Warrior", "Lightning Boots");
+            Core.EnsureComplete(2806);
+        }
 
         //Mouth Of The Lion
         Story.KillQuest(2807, "stormtemple", "Chaonslaught Caster");
@@ -1906,50 +1956,56 @@ public class Core13LoC
         //Craft a Better Defense
         Story.MapItemQuest(3183, "battleontown", 2203);
 
-
-
-        //Reflect the Damage
-        if (!Story.QuestProgression(3184) || (!Core.isCompletedBefore(3188) || !Core.CheckInventory("Perfect Prism")))
+        if (!Core.isCompletedBefore(3188))
         {
-            Core.AddDrop("Perfect Prism");
-            Core.EnsureAccept(3184);
-            Core.HuntMonster("earthstorm", "Shard Spinner", "Reflective Fragment", 5);
-            Core.EnsureComplete(3184);
+            Core.EnsureAccept(3187);
+            Core.EquipClass(ClassType.Farm);
+            Core.AddDrop("Harpy Feather", "Perfect Prism", "Unchaorrupted Sample", "Shriekward Potion");
+
+            //Reflect the Damage
+            Core.RegisterQuests(3184);
+            while ((!Core.CheckInventory("Perfect Prism")))
+                Core.HuntMonster("earthstorm", "Shard Spinner", "Reflective Fragment", 5);
+            Core.CancelRegisteredQuests();
             Bot.Wait.ForPickup("Perfect Prism");
-        }
 
-        //Pure Chaos 
-        if (!Story.QuestProgression(3185) || (!Core.isCompletedBefore(3188) || !Core.CheckInventory("Unchaorrupted Sample")))
-        {
-            Core.AddDrop("Unchaorrupted Sample");
-            Core.EnsureAccept(3185);
-            Core.HuntMonster("bloodtuskwar", "Chaotic Horcboar", "Vials of Blood", 5);
-            Core.EnsureComplete(3185);
+            //Pure Chaos 
+            Core.RegisterQuests(3185);
+            while (!Core.CheckInventory("Unchaorrupted Sample"))
+                Core.HuntMonster("bloodtuskwar", "Chaotic Horcboar", "Vials of Blood", 5);
+            Core.CancelRegisteredQuests();
             Bot.Wait.ForPickup("Unchaorrupted Sample");
-        }
 
-        //Enemies of a Feather Flock Together
-        if (!Story.QuestProgression(3186) || (!Core.isCompletedBefore(3188) || !Core.CheckInventory("Harpy Feather")))
-        {
-            Core.AddDrop("Harpy Feather");
-            Core.EnsureAccept(3186);
-            Core.HuntMonster("bloodtuskwar", "Chaos Tigriff", "Feathers", 5);
-            Core.EnsureComplete(3186);
+            //Enemies of a Feather Flock Together
+            Core.RegisterQuests(3186);
+            while (!Core.CheckInventory("Harpy Feather"))
+                Core.HuntMonster("bloodtuskwar", "Chaos Tigriff", "Feathers", 5);
+            Core.CancelRegisteredQuests();
             Bot.Wait.ForPickup("Harpy Feather");
+
+            //Ward Off the Beast
+            Core.Join("mirrorportal");
+            Bot.Wait.ForMapLoad("mirrorportal");
+            Core.EnsureComplete(3187);
+            Bot.Wait.ForPickup("Shriekward Potion");
         }
-
-        //Ward Off the Beast
-        Core.Join("mirrorportal");
-        Bot.Wait.ForMapLoad("mirrorportal");
-        Story.ChainQuest(3187);
-
 
         //Horror Takes Flight
         if (!Story.QuestProgression(3188))
         {
+            Core.EquipClass(ClassType.Solo);
             Core.EnsureAccept(3188);
+            Core.BuyItem("mirrorportal", 774, "Shriekward Potion", 1);
+            Core.Equip("Shriekward Potion");
+            Bot.Skills.UseSkill(5);
             Core.HuntMonsterMapID("mirrorportal", 1, "Chaos Harpy Defeated");
             Core.EnsureComplete(3188);
+            if (Core.CheckInventory("Shriekward Potion"))
+            {
+                Core.JumpWait();
+                Core.SendPackets($"%xt%zm%unequipItem%{Bot.Map.RoomID}%{20771}%");
+                Core.SellItem("Shriekward Potion", all: true);
+            }
         }
 
         //Good, Evil and Chaos Battle!
@@ -2246,6 +2302,7 @@ public class Core13LoC
         // Defeat Drakath!
         if (!Story.QuestProgression(3876))
         {
+            Bot.Events.CellChanged += CutSceneFixer;
             Core.EnsureAccept(3876);
             if (!Bot.Quests.CanComplete(3876))
                 Core.HuntMonsterMapID("finalbattle", 1);
@@ -2255,15 +2312,17 @@ public class Core13LoC
         //Defeat Drakath.. again!
         if (!Story.QuestProgression(3877))
         {
+            Bot.Events.CellChanged += CutSceneFixer;
             Core.EnsureAccept(3877);
             if (!Bot.Quests.CanComplete(3877))
-                Core.HuntMonsterMapID("finalbattle", 14);
+                Core.HuntMonsterMapID("finalbattle", 1);
             Core.EnsureComplete(3877);
         }
 
         //Defeat Drakath!   
         if (!Story.QuestProgression(3878))
         {
+            Bot.Events.CellChanged += CutSceneFixer;
             Core.EnsureAccept(3878);
             if (!Bot.Quests.CanComplete(3878))
                 Core.HuntMonsterMapID("finalbattle", 23);
@@ -2289,8 +2348,8 @@ public class Core13LoC
         //The Final Showdown!
         if (!Story.QuestProgression(3881))
         {
-            Core.Join("finalshowdown"); // for the updatequestbit
             Core.EnsureAccept(3881);
+            Core.Join("finalshowdown"); // for the updatequestbit
             Core.KillMonster("finalshowdown", "r2", "Left", "Prince Drakath", "Prince Drakath Defeated");
             Core.EnsureComplete(3881);
         }

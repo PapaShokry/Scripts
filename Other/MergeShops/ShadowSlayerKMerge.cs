@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -35,13 +40,12 @@ public class ShadowSlayerKMerge
     {
         Core.SetOptions();
 
-        SSK.Storyline();
         BuyAllMerge();
 
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         var result = Bot.ShowMessageBox("Items containing the word \"Shadow\" in this shop cost 1 Elders' Blood per piece, " +
                                                 "which is a valuable resource used to get Void Highlord. Are you sure you want to continue?",
@@ -49,8 +53,9 @@ public class ShadowSlayerKMerge
         if (result != true)
             return;
 
+        SSK.Storyline();
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("safiria", 2044, findIngredients);
+        Adv.StartBuyAllMerge("safiria", 2044, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

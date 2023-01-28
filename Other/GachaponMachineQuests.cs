@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -83,7 +88,7 @@ public class GachaponMachine
         "A Story of Eden: Light Novel",
         "A Story of Eden: Special Edition",
     };
-    
+
     public void Gacha()
     {
         Eden.StoryLine();

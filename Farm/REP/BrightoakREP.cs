@@ -1,4 +1,9 @@
-﻿//cs_include Scripts/CoreBots.cs
+/*
+name: null
+description: null
+tags: null
+*/
+//cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/CoreDailies.cs
@@ -16,11 +21,16 @@ public class BrightoakREP
     {
         Core.SetOptions();
 
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Reputation, false);
+        DoRep();
+
+        Core.SetOptions(false);
+    }
+
+    public void DoRep()
+    {
 
         BrightOak.doall();
         Farm.BrightoakREP();
 
-        Core.SetOptions(false);
     }
 }

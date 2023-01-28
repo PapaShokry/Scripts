@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/Chaos/ChaosAvengerPreReqs.cs
 //cs_include Scripts/Chaos/DrakathsArmor.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -16,6 +21,7 @@
 //cs_include Scripts/Story/TitanAttack.cs
 //cs_include Scripts/Story/TowerOfDoom.cs
 //cs_include Scripts/Other/MergeShops/TitanGearIIMerge.cs
+//cs_include Scripts/Other/Badges/ChaosPuppetMaster.cs
 using Skua.Core.Interfaces;
 using Skua.Core.Options;
 
@@ -31,6 +37,7 @@ public class CoreHollowbornChaosEnvoy
     private EternalDrakath ED = new();
     private AscendedDrakathGear ADG = new();
     private TitanGearIIMerge TGM = new();
+    private ChaosPuppetMaster CPM = new();
 
     public string OptionsStorage = "HollowbornChaosEnvoy";
     public bool DontPreconfigure = true;
@@ -53,11 +60,17 @@ public class CoreHollowbornChaosEnvoy
     public void GetAll(bool getAllDrops = true)
     {
         StirringDiscord(getAllDrops);
+        Core.ToBank(Core.EnsureLoad(8998).Rewards.Select(x => x.Name).ToArray());
         InTheBeastsShadow(getAllDrops);
+        Core.ToBank(Core.EnsureLoad(8999).Rewards.Select(x => x.Name).ToArray());
         UniqueQuarry(getAllDrops);
+        Core.ToBank(Core.EnsureLoad(9000).Rewards.Select(x => x.Name).ToArray());
         WaveringIllusions(getAllDrops);
+        Core.ToBank(Core.EnsureLoad(9001).Rewards.Select(x => x.Name).ToArray());
         ShadowsOfDisdain();
+        Core.ToBank(Core.EnsureLoad(9002).Rewards.Select(x => x.Name).ToArray());
         PersistingMayhem(getAllDrops);
+        Core.ToBank(Core.EnsureLoad(9003).Rewards.Select(x => x.Name).ToArray());
     }
 
     public void StirringDiscord(bool getAll = true)
@@ -76,8 +89,8 @@ public class CoreHollowbornChaosEnvoy
         while (!Bot.ShouldExit && !Core.CheckInventory(rewards, any: !getAll))
         {
             Core.EquipClass(ClassType.Solo);
-            Core.HuntMonster("lagunabeach", "Heart of Chaos", "Chaos Pirate Crew", isTemp: false);
-            Core.HuntMonster("backroom", "Book Wyrm", "Maledictus Magum", isTemp: false);
+            Core.HuntMonster("lagunabeach", "Heart of Chaos", "Chaos Pirate Crew", isTemp: false, publicRoom: true);
+            Core.HuntMonster("backroom", "Book Wyrm", "Maledictus Magum", isTemp: false, publicRoom: true);
             Core.HuntMonster("chaosboss", "Ultra Chaos Warlord", "Chaotic War Essence", 15, false);
 
             Core.EquipClass(ClassType.Farm);
@@ -141,9 +154,11 @@ public class CoreHollowbornChaosEnvoy
         Core.RegisterQuests(9000);
         while (!Bot.ShouldExit && !Core.CheckInventory(rewards, any: !getAll))
         {
+            Core.EquipClass(ClassType.Farm);
+            Core.KillMonster("chaoswar", "r2", "Spawn", "*", "Chaos Tentacle", 300, isTemp: false);
+            Core.EquipClass(ClassType.Solo);
             Core.HuntMonster("sandcastle", "Chaos Sphinx", "Chaos Sphinx", isTemp: false);
             Core.HuntMonster("deepchaos", "Kathool", "Kathool Annihilator", isTemp: false);
-            Core.KillMonster("chaoswar", "r2", "Spawn", "*", "Chaos Tentacle", 300, isTemp: false);
             Core.HuntMonster("castleroof", "Chaos Dragon", "Chaos Dragon Slayer", isTemp: false);
             Core.HuntMonster("mirrorportal", "Chaos Harpy", "HarpyHunter", isTemp: false);
             Core.HuntMonster("orecavern", "Naga Baas", "Naga Baas Pet", isTemp: false);
@@ -181,6 +196,7 @@ public class CoreHollowbornChaosEnvoy
             Adv.BuyItem("deepforest", 1999, "Supreme Arcane Staff of Chaos");
         }
 
+        CPM.Badge();
         Core.RegisterQuests(9001);
         while (!Bot.ShouldExit && !Core.CheckInventory(rewards, any: !getAll))
         {
@@ -190,8 +206,8 @@ public class CoreHollowbornChaosEnvoy
             Core.EquipClass(ClassType.Solo);
             Core.HuntMonster("chaoslab", "Chaos Artix", "Chaorrupted Light of Destiny", isTemp: false);
             Core.HuntMonster("mqlesson", "Dragonoid", "Dragonoid of Hours", isTemp: false);
-            Core.HuntMonster("timespace", "Chaos Lord Iadoa", "Chaorrupted Hourglass", 30, isTemp: false);
-            Core.HuntMonster("chaoskraken", "Chaos Kraken", "Chaotic Invertebrae", 20, isTemp: false);
+            Core.HuntMonster("timespace", "Chaos Lord Iadoa", "Chaorrupted Hourglass", 30, isTemp: false, publicRoom: true);
+            Core.HuntMonster("chaoskraken", "Chaos Kraken", "Chaotic Invertebrae", 20, isTemp: false, publicRoom: true);
 
             Core.BuyItem("downbelow", 2004, "Chaos PuppetMaster");
 
@@ -225,7 +241,7 @@ public class CoreHollowbornChaosEnvoy
         Core.HuntMonster("finalshowdown", "Prince Drakath", "Drakath Pet", isTemp: false);
         CAV.FragmentsoftheLordsA();
         CAV.FragmentsoftheLordsB();
-        Core.HuntMonster("ultradrakath", "Champion of Chaos", "Trace of Chaos", 13, isTemp: false);
+        Core.HuntMonster("ultradrakath", "Champion of Chaos", "Trace of Chaos", 13, isTemp: false, publicRoom: true);
 
         Adv.BuyItem("transformation", 2002, "Chaorrupted Usurper");
 
@@ -248,7 +264,7 @@ public class CoreHollowbornChaosEnvoy
         Core.RegisterQuests(9003);
         while (!Bot.ShouldExit && !Core.CheckInventory(rewards, any: !getAll))
         {
-            Core.HuntMonster("ultradrakath", "Champion of Chaos", "Trace of Chaos", 13, isTemp: false);
+            Core.HuntMonster("ultradrakath", "Champion of Chaos", "Trace of Chaos", 13, isTemp: false, publicRoom: true);
 
             foreach (string s in rewards)
                 Bot.Wait.ForPickup(s);

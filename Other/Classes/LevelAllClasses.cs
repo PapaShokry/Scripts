@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -21,7 +26,8 @@ public class CoreClass
     public void Level()
     {
         List<InventoryItem> itemInv = Bot.Inventory.Items.FindAll(i => i.Category == ItemCategory.Class && i.Quantity != 302500);
-        foreach (InventoryItem item in itemInv) {
+        foreach (InventoryItem item in itemInv)
+        {
             Core.Logger($"Leveling {item.Name} class");
             Adv.rankUpClass(item.Name);
         }

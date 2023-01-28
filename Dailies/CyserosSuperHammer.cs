@@ -1,3 +1,8 @@
+/*
+name:  Cyseros Super Hammer Daily
+description:  Cyseros Super Hammer
+tags: daily, cyseros super hammer
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

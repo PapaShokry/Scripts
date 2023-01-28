@@ -1,3 +1,8 @@
+/*
+name: Beleen's Party Presents Merge
+description: This will get all or selected items on this merge shop.
+tags: beleens-party-presents-merge, seasonal, aqw-anniverasary
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -32,12 +37,12 @@ public class BeleensPartyPresentsMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         if (!Core.isSeasonalMapActive("yulgar20"))
             return;
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("yulgar20", 2177, findIngredients);
+        Adv.StartBuyAllMerge("yulgar20", 2177, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

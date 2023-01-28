@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -29,11 +34,6 @@ public class CelestialChampion
         Core.SetOptions();
 
         Core.BankingBlackList.AddRange(new[] { "Champion Sash", "Lumin Badge" });
-        Adv.BestGear(GearBoost.dmgAll);
-        CAQ.Arena1to10();
-        CAQ.Arena11to20();
-        CAQ.Arena21to29();
-        //Bot.Quests.UpdateQuest(6042);
         BuyAllMerge();
 
         Core.SetOptions(false);
@@ -41,6 +41,9 @@ public class CelestialChampion
 
     public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
+        CAQ.Arena1to10();
+        CAQ.Arena11to20();
+        CAQ.Arena21to29();
         //Only edit the map and shopID here
         Adv.StartBuyAllMerge("celestialarena", 1474, findIngredients, buyOnlyThis, buyMode: buyMode);
 
@@ -66,25 +69,13 @@ public class CelestialChampion
 
                 // Add how to get items here
                 case "Champion Sash":
-                    Core.Logger($"Farming {req.Name} ({currentQuant}/{quant})");
                     Core.EquipClass(ClassType.Solo);
-                    while (!Core.CheckInventory(req.Name, quant))
-                    {
-                        Core.HuntMonster("celestialarenad", "Aranx", "Champion Sash", quant, isTemp: false);
-                        Bot.Wait.ForPickup(req.Name);
-                    }
-                    Core.CancelRegisteredQuests();
+                    Core.HuntMonster("celestialarenad", "Aranx", "Champion Sash", quant, isTemp: false);
                     break;
 
                 case "Lumin Badge":
-                    Core.Logger($"Farming {req.Name} ({currentQuant}/{quant})");
                     Core.EquipClass(ClassType.Solo);
-                    while (!Core.CheckInventory(req.Name, quant))
-                    {
-                        Core.HuntMonster("celestialarenac", "Undead Raxgore Construct", "Lumin Badge", quant, isTemp: false);
-                        Bot.Wait.ForPickup(req.Name);
-                    }
-                    Core.CancelRegisteredQuests();
+                    Core.HuntMonster("celestialarenac", "Undead Raxgore Construct", "Lumin Badge", quant, isTemp: false);
                     break;
             }
         }

@@ -1,3 +1,8 @@
+/*
+name:  Army ArchMage Boss Items
+description:  uses an army to help farm the required boss items for archmage.
+tags: archmage, army, boss items
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -17,8 +22,8 @@ public class ArchMageMatsArmy
     public string OptionsStorage = "BossDrops";
     public List<IOption> Options = new List<IOption>()
     {
-        CoreBots.Instance.SkipOptions,
-        new Option<int>("armysize","Number of Accounts", "Input the number of players that it will be waiting for", 4)
+        new Option<int>("armysize","Number of Accounts", "Input the number of players that it will be waiting for", 4),
+        CoreBots.Instance.SkipOptions
     };
 
     public string[] Drops =
@@ -36,12 +41,9 @@ public class ArchMageMatsArmy
 
     public void ScriptMain(IScriptInterface bot)
     {
-        Core.SetOptions(disableClassSwap: true);
-        bot.Options.RestPackets = false;
-        Bot.Events.PlayerAFK += PlayerAFK;
         Core.BankingBlackList.AddRange(Drops);
-        Core.SetOptions();
-        Core.Unbank(Drops);
+        Core.SetOptions(disableClassSwap: true);
+        
         WaitingRoom();
 
         Core.SetOptions(false);
@@ -49,6 +51,8 @@ public class ArchMageMatsArmy
 
     public void WaitingRoom()
     {
+        Bot.Events.PlayerAFK += PlayerAFK;
+        Core.Unbank(Drops);
         Core.Logger($"We have {Bot.Config.Get<int>("armysize")} passenger/s signed up, lets hope this works LFMAO");
         Bot.Sleep(2500);
         GetmBois();
@@ -86,14 +90,14 @@ public class ArchMageMatsArmy
 
         while (!Bot.ShouldExit && !Core.CheckInventory(Drops))
         {
-            ArmyKillMonster("voidflibbi", "Enter", "Spawn", "Flibbitiestgibbet", "Void Essentia", log: false);
-            ArmyKillMonster("voidnightbane", "Enter", "Spawn", "Nightbane", "voidnightbane", log: false);
-            ArmyKillMonster("dage", "Boss", "Right", "Dage the Evil", "Vital Exanima", log: false);
-            ArmyKillMonster("fireavatar", "r9", "Left", "Avatar Tyndarius", "Everlight Flame", log: false);
-            ArmyKillMonster("tercessuinotlim", "Boss2", "Right", "Nulgath", "The Mortal Coil", log: false);
-            ArmyKillMonster("theworld", "r9", "Left", "Encore Darkon", "Undying Resolve", log: false);
-            ArmyKillMonster("celestialpast", "r11a", "Left", "Azalith", "drop", log: false);
-            ArmyKillMonster("darkcarnax", "Boss", "Right", "Nightmare Carnax", "Calamitous Ruin", log: false);
+            ArmyKillMonster("voidflibbi", "Enter", "Spawn", "Flibbitiestgibbet", "Void Essentia", isTemp: false, log: false);
+            ArmyKillMonster("voidnightbane", "Enter", "Spawn", "Nightbane", "Insatiable Hunger", isTemp: false, log: false);
+            ArmyKillMonster("dage", "Boss", "Right", "Dage the Evil", "Vital Exanima", isTemp: false, log: false);
+            ArmyKillMonster("fireavatar", "r9", "Left", "Avatar Tyndarius", "Everlight Flame", isTemp: false, log: false);
+            ArmyKillMonster("tercessuinotlim", "Boss2", "Right", "Nulgath", "The Mortal Coil", isTemp: false, log: false);
+            ArmyKillMonster("theworld", "r9", "Left", "Encore Darkon", "Undying Resolve", isTemp: false, log: false);
+            ArmyKillMonster("celestialpast", "r11a", "Left", "Azalith", "The Divine Will", isTemp: false, log: false);
+            ArmyKillMonster("darkcarnax", "Boss", "Right", "Nightmare Carnax", "Calamitous Ruin", isTemp: false, log: false);
             ArmyKillMonster("archmage", "r2", "Right", "Prismata", "Elemental Binding", 250, isTemp: false, log: false);
         }
         Core.ConfigureAggro(false);

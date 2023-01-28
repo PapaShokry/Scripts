@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 using Skua.Core.Interfaces;
 using Skua.Core.Models.Items;
@@ -387,29 +392,37 @@ public class CoreFarms
         Core.JumpWait();
         while (!Bot.ShouldExit && !Core.CheckInventory("The Secret 4"))
         {
-            Core.Join("bludrutbrawl", "Enter0", "Spawn", ignoreCheck: true);
+            while (!Bot.ShouldExit && Bot.Map.Name != "bludrutbrawl")
+            {
+                Bot.Sleep(5000);
+                Core.JumpWait();
+                Core.Join("bludrutbrawl", "Enter0", "Spawn");
+            }
 
             Core.PvPMove(5, "Morale0C");
             Core.PvPMove(4, "Morale0B");
             Core.PvPMove(7, "Morale0A");
             Core.PvPMove(9, "Crosslower");
             Core.PvPMove(14, "Crossupper", 528, 255);
+
             Core.PvPMove(18, "Resource1A");
-
             Bot.Kill.Monster("(B) Defensive Restorer");
             Bot.Drops.Pickup("The Secret 4");
             Bot.Kill.Monster("(B) Defensive Restorer");
             Bot.Drops.Pickup("The Secret 4");
-
-            if (Core.CheckInventory("The Secret 4"))
-                break;
 
             Core.PvPMove(20, "Resource1B");
+            Bot.Kill.Monster("(B) Defensive Restorer");
+            Bot.Drops.Pickup("The Secret 4");
+            Bot.Kill.Monster("(B) Defensive Restorer");
+            Bot.Drops.Pickup("The Secret 4");
 
-            Bot.Kill.Monster("(B) Defensive Restorer");
-            Bot.Drops.Pickup("The Secret 4");
-            Bot.Kill.Monster("(B) Defensive Restorer");
-            Bot.Drops.Pickup("The Secret 4");
+            while (!Bot.ShouldExit && Bot.Map.Name != "battleon")
+            {
+                Bot.Sleep(5000);
+                Core.JumpWait();
+                Core.Join("battleon");
+            }
         }
     }
 
@@ -419,7 +432,7 @@ public class CoreFarms
     /// <param name="item">Name of the desired item</param>
     /// <param name="quant">Desired quantity</param>
     /// <param name="canSoloBoss">Whether you can solo the Boss without killing Restorers and Brawlers</param>
-    public void BludrutBrawlBoss(string item = "Combat Trophy", int quant = 500, bool canSoloBoss = true)
+    public void BludrutBrawlBoss(string item = "Combat Trophy", int quant = 5000, bool canSoloBoss = true)
     {
         if (Core.CheckInventory(item, quant))
             return;
@@ -477,11 +490,15 @@ public class CoreFarms
             Bot.Sleep(Core.ActionDelay);
             Bot.Wait.ForPickup(item);
 
-            while (!Bot.ShouldExit && Bot.Map.Name != "battleon")
+            Core.Logger("Delaying exit");
+            Bot.Sleep(7500);
+
+            while (Bot.Map.Name != "battleon")
             {
-                Bot.Sleep(5000);
-                Core.JumpWait();
-                Core.Join("battleon");
+                int i = 0;
+                Core.Logger($"Attemping Exit {i++}.");
+                Bot.Map.Join("battleon-999999");
+                Bot.Sleep(Core.ActionDelay);
             }
         }
     }
@@ -618,10 +635,11 @@ public class CoreFarms
             else if (!P2w)
                 Bot.Send.Packet($"%xt%zm%crafting%1%getAlchWait%{reagentid1.ID}%{reagentid2.ID}%false%Ready to Mix%{reagent1}%{reagent2}%{rune}%{modifier}%");
             if (P2w)
-                Bot.Sleep(1500);
+                Bot.Sleep(2500);
             else Bot.Sleep(11000);
             if (P2w && Core.CheckInventory("Dragon Runestone"))
                 Bot.Send.Packet($"%xt%zm%crafting%1%checkAlchComplete%{reagentid1.ID}%{reagentid2.ID}%true%Mix Complete%{reagent1}%{reagent2}%{rune}%{trait}%");
+
             else if (!P2w)
                 Bot.Send.Packet($"%xt%zm%crafting%1%checkAlchComplete%{reagentid1.ID}%{reagentid2.ID}%false%Mix Complete%{reagent1}%{reagent2}%{rune}%{modifier}%");
         }
@@ -654,15 +672,20 @@ public class CoreFarms
     /// </summary>
     public enum AlchemyTraits
     {
-        Dam = 11736, // Potent Honor Potion (trait, itemID)
-        APw = 11741, // Potent Battle Elixir
-        Luc = 11683, // Fate Tonic
-        Int = 11635, // Sage Tonic
-        SPw = 11745, // Potent Malevolence Elixir    
-        hOu = 11761, // Healer Elixer / Potent Guard Potion / Unstable Healer Elixer // rep spam with jerra
-        hRe = 11758, // Potent Revitalize Elixi
-        mRe = 12056, // Potent Destruction Elixir
-        End = 11647 // Body Tonic
+        Dam = 0, // Potent Honor Potion (trait, itemID)
+        APw = 1, // Potent Battle Elixir
+        Luc = 2, // Fate Tonic
+        Int = 3, // Sage Tonic
+        SPw = 4, // Potent Malevolence Elixir    
+        hOu = 5, // Healer Elixer / Potent Guard Potion / Unstable Healer Elixer // rep spam with jerra
+        hRe = 6, // Potent Revitalize Elixi
+        mRe = 7, // Potent Destruction Elixir
+        End = 8, // Body Tonic
+        Eva = 9, //
+        Str = 10,
+        Cri = 11,
+        Dex = 12,
+        Wis = 13
         //more to be added by request
     };
 
@@ -884,18 +907,20 @@ public class CoreFarms
         }
         Core.CancelRegisteredQuests();
 
-        Core.EquipClass(ClassType.Solo);
-        Core.RegisterQuests(8736);
         Bot.Quests.UpdateQuest(3484);
+        Core.RegisterQuests(8736);
         while (!Bot.ShouldExit && FactionRank("Blacksmithing") < rank && !UseGold)
         {
-            Bot.Sleep(Core.ActionDelay);
-            Bot.Drops.Add("Monster Trophy");
-            if (CanSolo)
-                Core.HuntMonster("towerofdoom10", "Slugbutter", "Monster Trophy", 15, isTemp: false, log: false);
-            else Core.KillMonster("towerofdoom10", "Enter", "Spawn", "*", "Monster Trophy", 15, isTemp: false, log: false);
+            Core.EquipClass(ClassType.Solo);
             Core.HuntMonster("hydrachallenge", "Hydra Head 25", "Hydra Scale Piece", 75, isTemp: false, log: false);
             Core.HuntMonster("maul", "Creature Creation", "Creature Shard", isTemp: false, log: false);
+            if (CanSolo)
+                Core.HuntMonster("towerofdoom10", "Slugbutter", "Monster Trophy", 15, isTemp: false, log: false);
+            else
+            {
+                Core.EquipClass(ClassType.Farm);
+                Core.KillMonster("towerofdoom10", "Enter", "Spawn", "*", "Monster Trophy", 15, isTemp: false, log: false);
+            }
         }
         Core.CancelRegisteredQuests();
         ToggleBoost(BoostType.Reputation, false);
@@ -995,7 +1020,7 @@ public class CoreFarms
 
     public void BrethwrenREP(int rank = 10)
     {
-        if (FactionRank("Brethwren") >= rank)
+        if (FactionRank("Brethwren") >= rank || !Core.isSeasonalMapActive("birdswithharms"))
             return;
 
         if (!Bot.Quests.IsAvailable(8989))
@@ -1614,7 +1639,8 @@ public class CoreFarms
 
         while (Bot.Map.Name != "battleon")
         {
-            Core.Logger("Now exiting brawl.");
+            int i = 0;
+            Core.Logger($"Attemping Exit {i++}.");
             Bot.Map.Join("battleon-999999");
             Bot.Sleep(Core.ActionDelay);
         }
@@ -1813,23 +1839,31 @@ public class CoreFarms
         if (!Bot.ShouldExit && FactionRank("Loremaster") < rank)
         {
 
-            while (!Bot.ShouldExit && FactionRank("Loremaster") < 3 && FactionRank("Loremaster") < rank)
+            while (!Bot.ShouldExit && FactionRank("Loremaster") < rank)
             {
+
                 Core.EquipClass(ClassType.Farm);
                 Core.RegisterQuests(7505); //Studying the Rogue 7505
                 while (!Bot.ShouldExit && FactionRank("Loremaster") < rank)
                 {
-                    Core.HuntMonster("wardwarf", "Drow Assassin", "Poisoned Dagger", 4, log: false);
-                    Core.HuntMonster("wardwarf", "D'wain Jonsen", "Scroll: Opportunity's Strike", log: false);
+
                     if (Core.IsMember && FactionRank("Loremaster") >= 3)
-                        break;
+                        LoremasterREPAbove3();
+                    else
+                    {
+                        Core.HuntMonster("wardwarf", "Drow Assassin", "Poisoned Dagger", 4, log: false);
+                        Core.HuntMonster("wardwarf", "D'wain Jonsen", "Scroll: Opportunity's Strike", log: false);
+                    }
                 }
                 Core.CancelRegisteredQuests();
                 ToggleBoost(BoostType.Reputation, false);
                 Core.SavedState(false);
-                return;
             }
-            if (!Bot.Quests.IsUnlocked(3032) && Core.IsMember) //Need boat for this questsline (member only)
+        }
+
+        void LoremasterREPAbove3()
+        {
+            if (!Bot.Quests.IsUnlocked(3032)) //Need boat for this questsline (member only)
             {
                 Core.EnsureAccept(3029); //Rosetta Stones 3029
                 Core.HuntMonster("druids", "Void Bear", "Voidstone", 6);
@@ -1843,11 +1877,11 @@ public class CoreFarms
                 Core.HuntMonster("druids", "Void Ghast", "Ghast's Death Cry", 4);
                 Core.EnsureComplete(3031);
             }
+
             Core.EquipClass(ClassType.Solo);
             Core.RegisterQuests(3032); //Quite the Problem 3032
-            while (!Bot.ShouldExit && Core.IsMember && FactionRank("Loremaster") < rank)
+            while (!Bot.ShouldExit && FactionRank("Loremaster") < rank)
                 Core.HuntMonster("druids", "Young Void Giant", "Void Giant Death Knell", log: false);
-            Core.CancelRegisteredQuests();
         }
     }
 
@@ -2397,7 +2431,7 @@ public class CoreFarms
         {
             Core.FarmingLogger($"Super-Fan Swag Token A", quant);
 
-            Core.RegisterQuests(1310);
+            Core.RegisterQuests(1310, 1312, 1313, 1314);
             while (!Bot.ShouldExit && !Core.CheckInventory("Super-Fan Swag Token C", 200))
                 Core.KillMonster("collectorlab", "r2", "Right", "*", "Doppelganger Documents", log: false);
             Core.CancelRegisteredQuests();

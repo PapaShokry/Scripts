@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreDailies.cs
@@ -15,7 +20,7 @@
 //cs_include Scripts/Story/ElegyofMadness(Darkon)/CoreAstravia.cs
 
 //cs_include Scripts/Story/FireIsland/CoreFireIsland.cs
-//cs_include Scripts/Story/Friday13th/CoreFriday13th.cs
+//cs_include Scripts/Seasonal/Friday13th/Story/CoreFriday13th.cs
 
 //cs_include Scripts/Story/IsleOfFotia/CoreIsleOfFotia.cs
 
@@ -73,6 +78,7 @@
 //cs_include Scripts/Story/Bludrut.cs
 //cs_include Scripts/Story/BoneBreak.cs
 //cs_include Scripts/Story/Borgars.cs
+//cs_include Scripts/Story/BrightCrystalStory.cs
 
 //cs_include Scripts/Story/CastleOfGlass.cs
 //cs_include Scripts/Story/CastleTunnels.cs
@@ -90,7 +96,7 @@
 //cs_include Scripts/Story/DoomVaultB.cs
 //cs_include Scripts/Story/Downward.cs
 //cs_include Scripts/Story/DragonFableOrigins.cs
-//cs_include Scripts/Story/DragonRoad[Upholader].cs
+//cs_include Scripts/Story/DragonRoad[Upholder].cs
 //cs_include Scripts/Story/DreamPalace.cs
 //cs_include Scripts/Story/Dwarfhold.cs
 //cs_include Scripts/Story/DwarvesVsGiants.cs
@@ -270,6 +276,7 @@ public class AllStories
     public Bludrut Bludrut = new();
     public BoneBreak BoneBreak = new();
     public Borgars Borgars = new();
+    public BrightCrystalStory BrightCrystal = new();
 
     public CastleOfGlass CastleOfGlass = new();
     public CastleTunnels CastleTunnels = new();
@@ -573,6 +580,9 @@ public class AllStories
         Borgars.StoryLine();
         Core.Logger($"Story: Borgars - Complete");
 
+        BrightCrystal.CrystalBrightQuests();
+        Core.Logger($"Story: Bright Crystal - Complete");
+
 
         CastleOfGlass.StoryLine();
         Core.Logger($"Story: CastleOfGlass - Complete");
@@ -623,7 +633,7 @@ public class AllStories
         DoomVaultA.StoryLine();
         Core.Logger($"Story: Doom Vault B - Complete");
         DoomVaultB.StoryLine();
-        
+
         Core.Logger($"Story: Doom Vault A - Complete");
 
         Downward.StoryLine();

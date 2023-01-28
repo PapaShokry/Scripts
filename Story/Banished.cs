@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreDailies.cs
@@ -31,7 +36,7 @@ public class Banished
         Story.PreLoad(this);
         HikarisQuests();
         Knave1sQuests();
-
+        HimisQuests();
     }
 
     public void HikarisQuests()
@@ -137,5 +142,42 @@ public class Banished
 
         // Banish the Banished One
         Story.KillQuest(2028, "banished", "Desterrat Moya");
+    }
+
+    public void HimisQuests()
+    {
+        if (Core.isCompletedBefore(9044))
+            return;
+
+        HikarisQuests();
+
+        Story.PreLoad(this);
+
+        //Recover and Recycle (9040)
+        Story.KillQuest(9040, "brokenwoods", "Extrikiti");
+
+        //Tormented Fang Uncleansed Grove (9041)
+        Core.EquipClass(ClassType.Solo);
+        Story.KillQuest(9041, "deepforest", "Aberrant Horror");
+        Core.EquipClass(ClassType.Farm);
+
+        //Slice of Life (9042)
+        if (!Story.QuestProgression(9042))
+        {
+            Core.EnsureAccept(9042, 739);
+            Core.AddDrop("Racing Trophy");
+            while (!Bot.ShouldExit && !Core.CheckInventory("Racing Trophy", 20))
+                Core.ChainComplete(746);
+            Core.HuntMonster("table", "Roach", "Gold Roach Antenna", 10);
+            Core.EnsureComplete(739, 5420);
+            Core.EnsureComplete(9042);
+        }
+
+        //Null and Void (9043)
+        Story.KillQuest(9043, "thevoid", "Dark Djinn");
+
+        //Summoning and Sealing (9044)
+        Core.EquipClass(ClassType.Solo);
+        Story.KillQuest(9044, "brokenwoods", "Eldritch Amalgamation");
     }
 }

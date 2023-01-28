@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Story/Artixpointe.cs
@@ -29,7 +34,7 @@ public class BirthdaySavior
 
         Core.Logger($"Doing Artixpointe story for {badge} badge");
         AP.OmniArtifact();
-        
+
     }
 
     private string badge = "6th Birthday Savior";

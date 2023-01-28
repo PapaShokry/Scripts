@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -17,9 +22,15 @@ public class DarkToken
     {
         Core.SetOptions();
 
-        WS.WorldSoulQuests();
-        Legion.DarkToken();
+        FarmDarkToken();
 
         Core.SetOptions(false);
+    }
+
+    public void FarmDarkToken()
+    {
+
+        WS.WorldSoulQuests();
+        Legion.DarkToken();
     }
 }

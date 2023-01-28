@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreDailies.cs
@@ -22,7 +27,6 @@ public class HollowbornOblivionBlade
         Core.SetOptions();
 
         GetBlade();
-        Adv.EnhanceItem("Hollowborn Oblivion Blade", EnhancementType.Lucky, CapeSpecial.None, HelmSpecial.None, WeaponSpecial.Spiral_Carve);
 
         Core.SetOptions(false);
     }
@@ -62,6 +66,7 @@ public class HollowbornOblivionBlade
         HB.FreshSouls(1, 350);
         Core.EnsureComplete(7294);
         Bot.Wait.ForPickup("Hollowborn Oblivion Blade");
+        Adv.EnhanceItem("Hollowborn Oblivion Blade", EnhancementType.Lucky, CapeSpecial.None, HelmSpecial.None, WeaponSpecial.Spiral_Carve);
     }
 
     public void ArchFiendEnchantedOrbs()

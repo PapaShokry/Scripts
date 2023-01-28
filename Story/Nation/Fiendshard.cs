@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreStory.cs
 //cs_include Scripts/Story/Nation/Originul.cs
@@ -39,8 +44,14 @@ public class Fiendshard_Story
         Story.KillQuest(7894, "Fiendshard", "Paladin Fiend");
 
         // Unlock the Door
-        Story.KillQuest(7895, "Fiendshard", new[] { "Rogue Fiend", "Paladin Fiend", "Void Knight" });
-        Story.MapItemQuest(7895, "Fiendshard", 7984);
+        if (!Core.isCompletedBefore(7895))
+        {
+            Core.EnsureAccept(7895);
+            Core.HuntMonster("fiendshard", "Rogue Fiend", "Rogue Fiend Defeated", 5);
+            Core.HuntMonster("fiendshard", "Paladin Fiend", "Paladin Fiend Defeated", 5);
+            Core.HuntMonster("fiendshard", "Void Knight", "Void Knight Defeated", 3);
+            Story.MapItemQuest(7895, "Fiendshard", 7984);
+        }
 
         // Dirtlicking Guards
         Story.KillQuest(7896, "Fiendshard", "Paladin Fiend");
@@ -50,13 +61,28 @@ public class Fiendshard_Story
 
         // Destroy the Fiend Shard
         // Archfiend DeathLord quests can be done without finishing this quest.
+        Bot.Events.CellChanged += CutSceneFixer;
         if (!Core.isCompletedBefore(7898))
         {
             Core.EnsureAccept(7898);
             Core.KillMonster("fiendshard", "r9", "Left", "Nulgath's Fiend Shard", "Nulgath's Fiend Shard Destroyed");
             Core.KillMonster("fiendshard", "r9", "Left", "Paladin Fiend", "Fiends Fended Off", 15);
             Core.EnsureComplete(7898);
+            Bot.Events.CellChanged -= CutSceneFixer;
         }
     }
 
+
+    void CutSceneFixer(string map, string cell, string pad)
+    {
+        if (map == "fiendshard" && cell != "r9")
+        {
+            while (!Bot.ShouldExit && Bot.Player.Cell != "r9")
+            {
+                Bot.Sleep(2500);
+                Core.Jump("r9", "Left");
+                Bot.Sleep(2500);
+            }
+        }
+    }
 }

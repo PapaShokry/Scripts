@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -25,7 +30,7 @@ public class InventoryEnhancer
         if (Core.CBOBool("DisableAutoEnhance", out bool _disableAutoEnhance) && _disableAutoEnhance)
             return;
 
-        List<string> InventoryItems = Bot.Inventory.Items.FindAll(x => x.EnhancementLevel < Bot.Player.Level && (x.ItemGroup != "None" && x.ItemGroup != "am" && x.ItemGroup != "co" && x.ItemGroup != "pe")).Select(x => x.Name).ToList();
+        List<string> InventoryItems = Bot.Inventory.Items.FindAll(x => x.EnhancementLevel < Bot.Player.Level && (x.ItemGroup != "None" && x.ItemGroup != "am" && x.ItemGroup != "mi" && x.ItemGroup != "co" && x.ItemGroup != "pe")).Select(x => x.Name).ToList();
 
         if (InventoryItems.Count == 0)
             Core.Logger("The bot couldn't find any items in your inventory that need enhancing.");

@@ -1,3 +1,8 @@
+/*
+name:  Golden Inquisitor Daily
+description:  Golden Inquisitor
+tags: daily, golden inquisitor
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreDailies.cs
 using Skua.Core.Interfaces;

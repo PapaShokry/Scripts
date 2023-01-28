@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -13,11 +18,7 @@ public class DiabolicalREP
     {
         Core.SetOptions();
 
-        UnlockDiabolical();
-
-        //Farm.UseBoost(ChangeToBoostID, Skua.Core.Models.Items.BoostType.Reputation, false);
-
-        Farm.DiabolicalREP();
+        DoRep();
 
         Core.SetOptions(false);
     }
@@ -29,5 +30,12 @@ public class DiabolicalREP
             Story.KillQuest(7875, "timevoid", "Unending Avatar");
             Story.KillQuest(7876, "twilightedge", "ChaosWeaver Warrior");
         }
+    }
+
+    public void DoRep()
+    {
+        UnlockDiabolical();
+        Farm.DiabolicalREP();
+
     }
 }

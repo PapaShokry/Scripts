@@ -1,3 +1,8 @@
+/*
+name: Frostval Barbarian (Class)
+description: This will finish the required quest and farms the required materials in order to get the Frostval Barbarian (Class).
+tags: frostval-barbarian, class, seasonal, frostvale
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -29,7 +34,7 @@ public class FrostvalBarbarian
 
     public void GetFB(bool rankUpClass = true)
     {
-        
+
         if (Core.CheckInventory("Frostval Barbarian"))
             return;
         if (!Core.isSeasonalMapActive("frostvale"))

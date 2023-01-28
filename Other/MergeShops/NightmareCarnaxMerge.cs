@@ -1,3 +1,8 @@
+/*
+name: null
+description: null
+tags: null
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreStory.cs
@@ -47,11 +52,11 @@ public class NightmareCarnaxMerge
         Core.SetOptions(false);
     }
 
-    public void BuyAllMerge()
+    public void BuyAllMerge(string buyOnlyThis = null, mergeOptionsEnum? buyMode = null)
     {
         DarkCarnax.Storyline(true);
         //Only edit the map and shopID here
-        Adv.StartBuyAllMerge("darkcarnax", 2170, findIngredients);
+        Adv.StartBuyAllMerge("darkcarnax", 2170, findIngredients, buyOnlyThis, buyMode: buyMode);
 
         #region Dont edit this part
         void findIngredients()

@@ -1,3 +1,8 @@
+/*
+name:  Army Penny for Your Thoughts
+description:  
+tags: army, penny for your thoughts, dark spirit orb
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 //cs_include Scripts/CoreAdvanced.cs
@@ -35,7 +40,6 @@ public class ArmyPennyForYourThoughts
         Core.BankingBlackList.AddRange(Loot);
 
         Core.SetOptions(disableClassSwap: true);
-        bot.Options.RestPackets = false;
 
         Setup();
 

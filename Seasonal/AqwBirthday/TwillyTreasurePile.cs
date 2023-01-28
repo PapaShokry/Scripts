@@ -1,3 +1,8 @@
+/*
+name: Twilly's Treasure Pile
+description: This will do the Twilly's Treasure Pile quest and obtain all of the rewards.
+tags: twillys-treasure-pile, seasonal, aqw-anniversary
+*/
 //cs_include Scripts/CoreBots.cs
 //cs_include Scripts/CoreFarms.cs
 using Skua.Core.Interfaces;
